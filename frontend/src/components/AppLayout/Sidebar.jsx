@@ -21,7 +21,7 @@ const Sidebar = () => {
       <ul className='mt-10 space-y-3'>
         {
           menuItems?.map((item,idx)=>{
-            return <li onClick={() => setselected(item.id)} className={`text-lg flex items-center gap-2 p-3 ${selected == item.id && 'bg-purple-800 text-white font-bold'} rounded-2xl hover:cursor-pointer ${selected!=item.id && 'hover:bg-purple-300'}`}>{item.icon} {item.label}</li>
+            return <li onClick={() => setselected(item.id)} className={`text-lg flex items-center gap-2 p-3 ${selected == item.id && 'bg-purple-800 text-white font-bold'} rounded-2xl hover:cursor-pointer ${selected!=item.id && 'hover:bg-purple-300 hover:font-bold'}`}>{item.icon} {item.label}</li>
           })
         }
       </ul>

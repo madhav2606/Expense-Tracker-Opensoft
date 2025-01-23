@@ -17,7 +17,7 @@ const Layout = () => {
                 {isSidebarOpen && <Sidebar/>}
             </div>
             <div className='w-full border border-l-1 border-gray-400'>
-                <Navbar toggleSidebar={toggleSidebar} />
+                <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
                 <App />
                 <Footer />
             </div>
