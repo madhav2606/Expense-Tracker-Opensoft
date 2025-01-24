@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />} />
+        <Route path="*" element={<Layout />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signIn" element={<SignInPage />} />
         //route path for forgot password

@@ -3,7 +3,7 @@ import { Facebook, Twitter, Instagram, Linkedin, CircleDollarSign } from "lucide
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-800 text-white py-6 px-4">
+        <footer className="bg-gray-800 text-white py-6 px-4 mt-10">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-center">
                     <div className="w-2/5">
