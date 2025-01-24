@@ -1,16 +1,26 @@
-import { useState } from 'react'
-import '../../App.css'
+import React,{ useState } from "react"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import "../../App.css"
+import Expenses from "../Expense/Expenses"
+import AdminDash from "../Admin/AdminDash"
+import BudgetGoals from "../Budget/BudgetGoals"
+import GroupBill from "../Groups/GroupBill"
+import Settings from "../AppSettings/Settings"
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className='flex items-center justify-center p-3 text-3xl min-h-screen'>
-         Expense Tracker App
-      </div>
-    </>
+    <div className="min-h-screen">
+        <Routes>
+          <Route path="/expenses" element={<Expenses />} />
+          <Route path="/admin" element={<AdminDash />} />
+          <Route path="/budget" element={<BudgetGoals />} />
+          <Route path="/groups" element={<GroupBill />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+    </div>
   )
 }
 
 export default App
+
