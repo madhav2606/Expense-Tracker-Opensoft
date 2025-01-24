@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/AppLayout/Sidebar";
 import Footer from "./components/AppLayout/Footer";
 import Navbar from "./components/AppLayout/Navbar";
-import SignInPage from "./components/Sign_in/SignInPage";
-import SignUpPage from "./components/Sign_in/SignUpPage";
+import SignInPage from "./components/Authentication/SignInPage";
+import SignUpPage from "./components/Authentication/SignUpPage";
 import App from "./components/AppLayout/App";
 
 const Layout = () => {

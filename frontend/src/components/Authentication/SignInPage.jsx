@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import SignInImg from "./Illustration.jpg"
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-    } else {
-      alert("Sign Up Successful!");
-    }
+    alert("Sign In Successful!");
   };
 
   return (
@@ -20,9 +16,9 @@ const SignUpPage = () => {
       {/* Left Side: Illustration */}
       <div className="hidden md:flex items-center justify-center bg-purple-600 text-white w-full md:w-1/2">
         <div className="text-center p-10">
-          <h1 className="text-3xl font-bold mb-4">Join Spend Sense</h1>
+          <h1 className="text-3xl font-bold mb-4">Welcome to Spend Sense</h1>
           <img
-            src="https://via.placeholder.com/400"
+            src={SignInImg}
             alt="Illustration"
             className="w-3/4 mx-auto"
           />
@@ -33,9 +29,25 @@ const SignUpPage = () => {
       <div className="flex items-center justify-center w-full md:w-1/2 p-10 bg-white">
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-bold text-purple-600 text-center mb-6">
-            Sign Up
+            Sign In
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Social Login */}
+            <button
+              type="button"
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+            >
+              Login with Google
+            </button>
+            <button
+              type="button"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+            >
+              Login with Facebook
+            </button>
+
+            <div className="text-center text-gray-500">OR</div>
+
             {/* Email Input */}
             <div>
               <label className="block text-gray-700 font-medium">Email</label>
@@ -64,34 +76,28 @@ const SignUpPage = () => {
               />
             </div>
 
-            {/* Confirm Password Input */}
-            <div>
-              <label className="block text-gray-700 font-medium">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
-                className="w-full border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
-                required
-              />
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md"
             >
-              Register
+              Login
             </button>
           </form>
 
+          <div className="flex justify-between text-sm mt-4">
+            <label>
+              <input type="checkbox" className="mr-2" /> Remember me
+            </label>
+            <a href="#" className="text-purple-500 hover:underline">
+              Forgot Password?
+            </a>
+          </div>
+
           <div className="text-center text-sm mt-6">
-            Already have an account?{" "}
-            <Link to="/" className="text-purple-600 font-medium">
-              Sign In
+            Don't have an account?{" "}
+            <Link to="/signUp" className="text-purple-600 font-medium">
+              Register
             </Link>
           </div>
         </div>
@@ -100,4 +106,5 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;
+
