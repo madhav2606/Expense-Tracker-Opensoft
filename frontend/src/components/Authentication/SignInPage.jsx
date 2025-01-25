@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import SignInImg from "./Illustration.jpg"
+import { Eye, EyeClosed, KeyRound, Mail } from "lucide-react";
 
 
 
@@ -18,14 +19,11 @@ const SignInPage = () => {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen items-center justify-center bg-white-100">
-      {/* Left Side: Illustration */}
-          <img
-            src={SignInImg}
-            alt="Illustration"
-            className="w-150 h-150 mx-auto"
-          />
-
-      {/* Right Side: Form */}
+      <img
+        src={SignInImg}
+        alt="Illustration"
+        className="w-150 h-150 mx-auto"
+      />
       <div className="flex flex-col items-center justify-center w-full md:w-1/2 h-screen p-10 bg-gray-100">
         <h1 className="text-5xl font-bold mb-8 flex items-center gap-2 drop-shadow-lg">Welcome to <p className="text-5xl text-purple-800">$PEND</p> Sense</h1>
         <div className="max-w-md w-full">
@@ -33,7 +31,6 @@ const SignInPage = () => {
             Sign In
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Social Login */}
             <button
               type="button"
               className="w-full bg-white shadow-md hover:bg-gray-50 text-black font-medium py-2 px-4 rounded-md"
@@ -53,37 +50,35 @@ const SignInPage = () => {
 
             {/* Email Input */}
             <div>
-              <label className="block text-black font-medium">Email</label>
-              <input                     
+              <label className="gap-2 m-1 text-gray-700 font-medium flex"><Mail className="w-4.5" />Email</label>
+              <input
                 type="email"
                 value={email}
-                
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="✉ example@gmail.com"
+                placeholder="example@gmail.com"
                 className="w-full bg-white border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
                 required
               />
             </div>
 
-            {/* Password Input */}
             <div>
-              <label className="block text-black font-medium">
-                Password
+              <label className="gap-2 m-1 text-gray-700 font-medium flex">
+                <KeyRound className="w-4.5" />Password
               </label>
               <div className="relative w-full">
-              
-              <input              
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder= "🔒 Enter your password"
-                className="w-full bg-white border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
-                required
-              />
+
+                <input
+                  type={togglePassword ? "password" : "text"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="w-full bg-white border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
+                  required
+                />
+                {togglePassword ? <Eye onClick={() => setTogglePassword(!togglePassword)} className="absolute inset-y-2 right-3" /> : <EyeClosed onClick={() => setTogglePassword(!togglePassword)} className="absolute inset-y-2 right-3" />}
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-purple-700 hover:bg-purple-900 text-white font-medium py-2 px-4 rounded-md"
