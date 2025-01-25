@@ -3,6 +3,7 @@ import { Users, Activity, BarChart2, Shield } from "lucide-react";
 import UserActivity from './UserActivity';
 import RecentUsers from './RecentUsers';
 import CountUp from 'react-countup';
+import './admin.css'
 
 const AdminDash = () => {
     const stats = [
