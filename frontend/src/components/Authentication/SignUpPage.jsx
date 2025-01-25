@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import SignUpImg from "./signUPimg.png"
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
@@ -16,23 +17,18 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-purple-100">
+    <div className="flex flex-col md:flex-row justify-center items-center min-h-screen bg-white">
       {/* Left Side: Illustration */}
-      <div className="hidden md:flex items-center justify-center bg-purple-600 text-white w-full md:w-1/2">
-        <div className="text-center p-10">
-          <h1 className="text-3xl font-bold mb-4">Join Spend Sense</h1>
           <img
-            src="https://via.placeholder.com/400"
+            src={SignUpImg}
             alt="Illustration"
-            className="w-3/4 mx-auto"
+            className="w-180 h-128 md:flex mx-auto"
           />
-        </div>
-      </div>
 
-      {/* Right Side: Form */}
-      <div className="flex items-center justify-center w-full md:w-1/2 p-10 bg-white">
+      <div className="flex items-center justify-center w-full md:w-1/2 h-screen p-10 bg-gray-100">
         <div className="max-w-md w-full">
-          <h2 className="text-3xl font-bold text-purple-600 text-center mb-6">
+        <h1 className="text-5xl font-bold mb-8 flex items-center justify-center gap-2 drop-shadow-lg">Join <p className="text-5xl text-purple-800">$PEND</p> Sense</h1>
+          <h2 className="text-3xl font-bold text-purple-800 text-center mb-6">
             Sign Up
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -43,7 +39,7 @@ const SignUpPage = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="example@gmail.com"
+                placeholder="✉ example@gmail.com"
                 className="w-full border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
                 required
               />
@@ -58,7 +54,7 @@ const SignUpPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="🔒 Enter your password"
                 className="w-full border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
                 required
               />
@@ -73,7 +69,7 @@ const SignUpPage = () => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
+                placeholder="🔒 Confirm your password"
                 className="w-full border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
                 required
               />
@@ -82,7 +78,7 @@ const SignUpPage = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md"
+              className="w-full bg-purple-700 hover:bg-purple-900 text-white font-medium py-2 px-4 rounded-md"
             >
               Register
             </button>
