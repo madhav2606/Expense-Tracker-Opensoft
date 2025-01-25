@@ -10,6 +10,7 @@ import ExpenseList from "../Dashboard/ExpenseList"
 import SignUpPage from "../Authentication/SignUpPage"
 import SignInPage from "../Authentication/SignInPage"
 import UserManage from "../Admin/UserManage"
+import ActivityMonitor from "../Admin/ActivityMonitor"
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
 
           <Route path="/admin" element={<AdminDash />} />
           <Route path="/admin/users" element={<UserManage />} />
+          <Route path="/admin/activity" element={<ActivityMonitor />} />
 
           <Route path="/budget" element={<BudgetGoals />} />
           <Route path="/groups" element={<GroupBill />} />

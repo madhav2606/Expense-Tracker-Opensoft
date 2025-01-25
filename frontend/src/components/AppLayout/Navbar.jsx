@@ -18,7 +18,6 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
             <div className='flex gap-10'>
             <Bell className='hover:cursor-pointer hover:bg-gray-200 p-2 w-10 h-10 rounded-full' />
             <div className='flex items-center gap-2 text-xl hover:cursor-pointer'>
-
                 <CircleUserRound className='w-8 h-8' />Profile
             </div>
             </div>

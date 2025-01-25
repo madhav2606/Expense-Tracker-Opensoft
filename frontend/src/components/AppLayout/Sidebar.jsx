@@ -12,7 +12,7 @@ import {
 import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
-  const [selected, setSelected] = useState('Dashboard');
+  const [selected, setSelected] = useState('Admin');
   const [adminOpen, setAdminOpen] = useState(false);
 
   const menuItems = [
