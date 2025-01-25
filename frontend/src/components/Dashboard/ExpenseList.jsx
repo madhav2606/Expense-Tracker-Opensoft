@@ -1,5 +1,7 @@
 import React , {useState} from 'react'
 import {Pencil , Trash2 , Eye} from 'lucide-react'
+import Modal from './Modal';
+
 const ExpenseList = () => {
 
   //sample data array
@@ -46,20 +48,44 @@ const ExpenseList = () => {
     },
   ]);
 
+  //Modal state
+
+  const [addExpenseModal , setAddExpenseModal] = useState(false);
+  const [viewExpenseModal , setViewExpenseModal] = useState(false);
+  const [editExpenseModal , setEditExpenseModal] = useState(false);
+  const [newExpense, setNewExpense] = useState(
+    { date: '', amount: '', category: '', paymentMethod: '', description: '' }
+  );
+  const [selectedExpense , setSelectedExpense] = useState(null);
+  const [expenseToEdit, setExpenseToEdit] = useState(null);
+
+    // Handle input changes for new expense
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      if (editExpenseModal) {
+        setExpenseToEdit({ ...expenseToEdit, [name]: value });
+      } else {
+        setNewExpense({ ...newExpense, [name]: value });
+      }
+    };
 
   //handle add expenses
   function handleAddExpense(){
-    //Navigate to AddExpense page
+    setExpenses([...expenses, { id: expenses.length + 1, ...newExpense }]);
+    setAddExpenseModal(false);
+    setNewExpense({ date: '', amount: '', category: '', paymentMethod: '', description: '' });
   }
 
   //handle edit expenses
-  function handleEditExpense(){
-    //Navigate to EditExpense Page
+  function handleEditExpense(expense){
+    setExpenseToEdit(expense);
+    setEditExpenseModal(true);
   }
 
  //handle view expense
- function handleViewExpense(){
-  //Navigate to view Expense page
+ function handleViewExpense(expense){
+  setSelectedExpense(expense);
+  setViewExpenseModal(true);
  }
 
  //handle delete expense
@@ -71,18 +97,25 @@ function handleDeleteExpense(id){
   }
 }
 
+// Save edited expense
+const handleSaveEditedExpense = () => {
+  setExpenses(expenses.map((expense) => (expense.id === expenseToEdit.id ? expenseToEdit : expense)));
+  setEditExpenseModal(false);
+  setExpenseToEdit(null);
+};
+
   return (
     <div className='flex  min-h-screen'>
       <main className="flex-1 bg-white rounded-md  p-4 ml-4">
     <div className="flex items-center justify-between mb-4">
       <h1 className="text-2xl font-bold">Expenses</h1>
-      <button onClick={handleAddExpense} className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500">
+      <button onClick={() => setAddExpenseModal(true)} className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500 cursor-pointer">
         Add New Expense
       </button>
     </div>
     <div className="overflow-x-auto">
       <table className="table-auto w-full border-collapse">
-        {/* Table header */}
+       
         <thead>
           <tr>
             <th className="text-left px-4 py-2">Date</th>
@@ -93,7 +126,7 @@ function handleDeleteExpense(id){
           </tr>
         </thead>
 
-        {/* Table body */}
+       
         <tbody>
           {expenses.map((expense, index) => (
             <tr key={index} className="odd:bg-white even:bg-gray-50 h-[10rem]">
@@ -103,13 +136,13 @@ function handleDeleteExpense(id){
               <td className=" px-4 py-2">{expense.paymentMethod}</td>
               <td className="px-4 py-2">{expense.description}</td>
               <td className=" px-4 py-2 text-center space-x-2">
-                <button onClick={handleEditExpense} className="text-yellow-500 hover:text-yellow-600 cursor-pointer">
+                <button onClick={() => handleEditExpense(expense)} className="text-yellow-500 hover:text-yellow-600 cursor-pointer">
                   <Pencil />
                 </button>
                 <button onClick={() => handleDeleteExpense(expense.id)} className=" text-yellow-500 hover:text-yellow-600 cursor-pointer">
                   <Trash2 />
                 </button>
-                <button onClick={handleViewExpense} className=' text-yellow-500 hover:text-yellow-600 cursor-pointer'>
+                <button onClick={() => handleViewExpense(expense)} className=' text-yellow-500 hover:text-yellow-600 cursor-pointer'>
                   <Eye />
                 </button>
               </td>
@@ -119,6 +152,101 @@ function handleDeleteExpense(id){
       </table>
     </div>
   </main>
+
+  {addExpenseModal && (
+        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-md p-6 w-4/6 h-5/6">
+            <h2 className="text-xl font-bold mb-4">Add New Expense</h2>
+            <form>
+              <input
+                type="date"
+                name="date"
+                value={newExpense.date}
+                onChange={handleInputChange}
+                className="w-full mb-2 p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="amount"
+                placeholder="Amount"
+                value={newExpense.amount}
+                onChange={handleInputChange}
+                className="w-full mb-2 p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="category"
+                placeholder="Category"
+                value={newExpense.category}
+                onChange={handleInputChange}
+                className="w-full mb-2 p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="paymentMethod"
+                placeholder="Payment Method"
+                value={newExpense.paymentMethod}
+                onChange={handleInputChange}
+                className="w-full mb-2 p-2 border rounded"
+              />
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={newExpense.description}
+                onChange={handleInputChange}
+                className="w-full mb-2 p-2 border rounded"
+              />
+              <button
+                type="button"
+                onClick={handleAddExpense}
+                className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500 cursor-pointer "
+              >
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddExpenseModal(false)}
+                className="bg-gray-400 text-white px-4 py-2 ml-2 rounded-md shadow  hover:bg-gray-500 cursor-pointer"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+
+      {viewExpenseModal && selectedExpense && (
+        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-md p-6  w-3xl h-5/6">
+          <div className="flex flex-col items-center justify-center pt-28">
+            <h2 className="text-xl font-bold mb-4">Expense Details</h2>
+            <p><strong>Date:</strong> {selectedExpense.date}</p>
+            <p><strong>Amount:</strong> {selectedExpense.amount}</p>
+            <p><strong>Category:</strong> {selectedExpense.category}</p>
+            <p><strong>Payment Method:</strong> {selectedExpense.paymentMethod}</p>
+            <p><strong>Description:</strong> {selectedExpense.description}</p>
+            <button
+              onClick={() => setViewExpenseModal(false)}
+              className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow mt-4 hover:bg-yellow-500 cursor-pointer"
+            >
+              Close
+            </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editExpenseModal && expenseToEdit && (
+        <Modal
+          title="Edit Expense"
+          onClose={() => setEditExpenseModal(false)}
+          onSave={handleSaveEditedExpense}
+          expense={expenseToEdit}
+          handleInputChange={handleInputChange}
+        />
+      )}
+
     </div>
   )
 }
