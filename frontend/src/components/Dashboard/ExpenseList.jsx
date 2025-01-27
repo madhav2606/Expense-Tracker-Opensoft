@@ -67,7 +67,8 @@ const ExpenseList = () => {
   const filteredExpenses = expenses.filter(
     (expense) =>
       expense.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      expense.description.toLowerCase().includes(searchQuery.toLowerCase())
+      expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      expense.paymentMethod.toLocaleLowerCase().includes(searchQuery.toLowerCase())
   );
 
   //sort functionality
@@ -159,7 +160,7 @@ const handleSaveEditedExpense = () => {
      <div className="mb-4">
           <input
             type="text"
-            placeholder="Search by category or description..."
+            placeholder="Search by category/description/payment method..."
             value={searchQuery}
             onChange={handleSearch}
             className="w-full p-2 border rounded"
