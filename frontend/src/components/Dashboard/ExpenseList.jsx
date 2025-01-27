@@ -59,6 +59,45 @@ const ExpenseList = () => {
   const [selectedExpense , setSelectedExpense] = useState(null);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
 
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [sortBy, setSortBy] = useState(""); 
+  const [isAscending, setIsAscending] = useState(true);
+
+//search function
+  const filteredExpenses = expenses.filter(
+    (expense) =>
+      expense.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      expense.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  //sort functionality
+  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
+    if (sortBy === "date") {
+      return isAscending
+        ? new Date(a.date) - new Date(b.date)
+        : new Date(b.date) - new Date(a.date);
+    } else if (sortBy === "amount") {
+      return isAscending ? a.amount - b.amount : b.amount - a.amount;
+    } else {
+      return 0; // Default (no sorting applied)
+    }
+  });
+
+    
+    const handleSearch = (e) => {
+      setSearchQuery(e.target.value);
+    };
+  
+    // Handle sort criteria and order
+    const handleSort = (criteria) => {
+      if (sortBy === criteria) {
+        setIsAscending(!isAscending);
+      } else {
+        setSortBy(criteria);
+        setIsAscending(true);
+      }
+    };
+
     // Handle input changes for new expense
     const handleInputChange = (e) => {
       const { name, value } = e.target;
@@ -113,6 +152,42 @@ const handleSaveEditedExpense = () => {
         Add New Expense
       </button>
     </div>
+
+     
+     <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by category or description..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        
+        <div className="flex justify-end mb-4 space-x-4">
+          <button
+            onClick={() => handleSort("date")}
+            className={`px-4 py-2 rounded-md shadow ${
+              sortBy === "date"
+                ? "bg-yellow-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            Sort by Date {sortBy === "date" ? (isAscending ? "↑" : "↓") : ""}
+          </button>
+          <button
+            onClick={() => handleSort("amount")}
+            className={`px-4 py-2 rounded-md shadow ${
+              sortBy === "amount"
+                ? "bg-yellow-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            Sort by Amount {sortBy === "amount" ? (isAscending ? "↑" : "↓") : ""}
+          </button>
+        </div>
+
     <div className="overflow-x-auto">
       <table className="table-auto w-full border-collapse">
        
@@ -128,7 +203,7 @@ const handleSaveEditedExpense = () => {
 
        
         <tbody>
-          {expenses.map((expense, index) => (
+          {sortedExpenses.map((expense, index) => (
             <tr key={index} className="odd:bg-white even:bg-gray-50 h-[10rem]">
               <td className="px-4 py-2">{expense.date}</td>
               <td className="px-4 py-2">{expense.amount}</td>
