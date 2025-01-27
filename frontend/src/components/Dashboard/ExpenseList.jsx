@@ -77,7 +77,9 @@ const ExpenseList = () => {
         ? new Date(a.date) - new Date(b.date)
         : new Date(b.date) - new Date(a.date);
     } else if (sortBy === "amount") {
-      return isAscending ? a.amount - b.amount : b.amount - a.amount;
+      const amountA = parseFloat(a.amount.replace("$", ""));
+      const amountB = parseFloat(b.amount.replace("$", ""));
+      return isAscending ? amountA - amountB : amountB - amountA;
     } else {
       return 0; // Default (no sorting applied)
     }
