@@ -2,21 +2,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import SignUpImg from "./signUPimg.png"
 import { Eye, EyeClosed, Key, KeyRound, Mail } from "lucide-react";
+import axios from "axios";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [togglePassword, setTogglePassword] = useState(false)
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-    } else {
-      alert("Sign Up Successful!");
-    }
-  };
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-center min-h-screen bg-white">
@@ -89,7 +81,7 @@ const SignUpPage = () => {
 
           <div className="text-center text-sm mt-6">
             Already have an account?{" "}
-            <Link to="/signIn" className="text-purple-600 font-medium">
+            <Link to="/signin" className="text-purple-600 font-medium">
               Sign In
             </Link>
           </div>

@@ -1,17 +1,33 @@
-const express = require('express');
+import express from 'express';
+import cors from 'cors'
+import authenticationRouter from './src/routers/authentication.router.js'
+import { connectDB } from "./src/db/index.js";
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
-const port = 3000; // You can choose any available port
 
-// Middleware (optional, but often used)
-app.use(express.json()); // To parse incoming JSON requests
-app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
+app.use(cors());
 
-// Define routes
-app.get('/', (req, res) => {
-  res.send('Hello from Express.js!');
-});
+app.get("/", (req, res) => res.send("Hello"));
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+
+
+const port = process.env.PORT;
+app.use('/', authenticationRouter);
+
+
+connectDB()
+.then(()=>{
+    app.listen(port,()=>{
+        console.log(`listening on ${port}`);
+    })
+})
+.catch((error)=>{
+    res.send(error.message);
+})
+
+
+    

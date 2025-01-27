@@ -13,7 +13,7 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="*" element={<Layout />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/signIn" element={<SignInPage />} />
+        <Route path="/signin" element={<SignInPage />} />
         {/* route path for forgot password */}
       </Routes>
     </BrowserRouter>
