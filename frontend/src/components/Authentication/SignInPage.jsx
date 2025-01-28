@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import SignInImg from "./Illustration.jpg"
 import { Eye, EyeClosed, KeyRound, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 
@@ -9,12 +11,27 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [togglePassword, setTogglePassword] = useState(false);
+  const navigate = useNavigate();
 
-
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    alert("Sign In Successful!");
+
+    try {
+      const response = await axios.post("http://localhost:3000/signin", {
+        email,
+        password
+      });
+      const data = response.data
+
+      if (response.status === 200) {
+        localStorage.setItem('token', data.token);
+        console.log("you are signed in");
+        navigate("/");
+      }
+      
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
   };
 
   return (

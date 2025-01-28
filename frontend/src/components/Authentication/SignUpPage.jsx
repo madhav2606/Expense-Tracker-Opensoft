@@ -3,12 +3,35 @@ import { Link } from "react-router-dom";
 import SignUpImg from "./signUPimg.png"
 import { Eye, EyeClosed, Key, KeyRound, Mail } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [togglePassword, setTogglePassword] = useState(false)
+  const [togglePassword, setTogglePassword] = useState(false);
+  const navigate = useNavigate();
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:3000/signup", {
+        email,
+        password
+      });
+      
+      if (response.status === 201) {
+        console.log("Successfully signed up");
+        navigate("/signin");
+      }
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-center min-h-screen bg-white">

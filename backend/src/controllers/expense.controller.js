@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router();
 
-import { Expense } from '../src/models/expenseModel.js';
+import { Expense } from '../models/expenseModel.js';
 
 export const AddExpense = async(request,response)=>{
     try{

@@ -10,10 +10,38 @@ import {
   Wallet
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Sidebar = () => {
   const [selected, setSelected] = useState('Admin');
   const [adminOpen, setAdminOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async(req, res)=>{
+    try {
+      const token = localStorage.getItem("token");
+    if(!token){
+      alert("you are not signed in");
+      navigate('/signin');
+      return;
+    }
+    await axios.post(
+      "http://localhost:3000/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      }
+    );
+    localStorage.removeItem("token");
+    console.log("signed out");
+    navigate("/signin");
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
   const menuItems = [
     {
@@ -94,6 +122,7 @@ const Sidebar = () => {
 
       <div className='mt-auto'>
         <li
+          onClick={handleLogout}
           className='hover:cursor-pointer flex items-center gap-2 text-lg p-3 
           hover:bg-purple-300 hover:font-bold rounded-2xl'
         >
