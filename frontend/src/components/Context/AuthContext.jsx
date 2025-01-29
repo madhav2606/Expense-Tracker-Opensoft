@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(
         !!localStorage.getItem("token")
     );
-    const [user, setUser] = useState(localStorage.getItem("user") || null);
+    const [user, setUser] = useState();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,6 +23,11 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(false);
         }
     }, []);
+
+    useEffect(() => {
+        console.log(user)
+    }, [user])
+
 
     const signIn = async (email, password) => {
         try {
@@ -35,7 +40,6 @@ export const AuthProvider = ({ children }) => {
                 const { token, user } = response.data;
 
                 localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user));
 
                 setIsAuthenticated(true);
                 setUser(user);
@@ -46,9 +50,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const signUp = async (email, password) => {
+    const signUp = async (name, email, password) => {
         try {
             const response = await axios.post("http://localhost:3000/signup", {
+                name,
                 email,
                 password,
             });
@@ -62,7 +67,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = async() => {
+    const logout = async () => {
         try {
             const token = localStorage.getItem("token");
             if (!token) {

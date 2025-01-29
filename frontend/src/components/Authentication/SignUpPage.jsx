@@ -1,30 +1,30 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import SignUpImg from "./signUPimg.png"
-import { Eye, EyeClosed, Key, KeyRound, Mail } from "lucide-react";
-import axios from "axios";
+import SignUpImg from "./signUPimg.png";
+import { Eye, EyeClosed, KeyRound, Mail, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
-
-
 const SignUpPage = () => {
+  const [name, setName] = useState(""); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [togglePassword, setTogglePassword] = useState(false);
   const navigate = useNavigate();
-  const {signUp} =useAuth()
-
+  const { signUp } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    signUp(email,password);
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    signUp(name, email, password);
   };
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-center min-h-screen bg-white">
-      {/* Left Side: Illustration */}
       <img
         src={SignUpImg}
         alt="Illustration"
@@ -33,14 +33,30 @@ const SignUpPage = () => {
 
       <div className="flex items-center justify-center w-full md:w-1/2 h-screen p-10 bg-gray-100">
         <div className="max-w-md w-full">
-          <h1 className="text-5xl font-bold mb-8 flex items-center justify-center gap-2 drop-shadow-lg">Join <p className="text-5xl text-purple-800">$PEND</p> Sense</h1>
+          <h1 className="text-5xl font-bold mb-8 flex items-center justify-center gap-2 drop-shadow-lg">
+            Join <p className="text-5xl text-purple-800">$PEND</p> Sense
+          </h1>
           <h2 className="text-3xl font-bold text-purple-800 text-center mb-6">
             Sign Up
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Input */}
             <div>
-              <label className="text-gray-700 font-medium flex gap-2 m-1"><Mail className="w-4.5" />Email</label>
+              <label className="text-gray-700 font-medium flex gap-2 m-1">
+                <User className="w-4.5" /> Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                className="w-full border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-gray-700 font-medium flex gap-2 m-1">
+                <Mail className="w-4.5" /> Email
+              </label>
               <input
                 type="email"
                 value={email}
@@ -51,7 +67,6 @@ const SignUpPage = () => {
               />
             </div>
 
-            {/* Password Input */}
             <div className="relative">
               <label className="gap-2 m-1 text-gray-700 font-medium flex">
                 <KeyRound className="w-4.5" /> Password
@@ -64,13 +79,23 @@ const SignUpPage = () => {
                 className="w-full border rounded-md py-2 px-4 focus:outline-none focus:border-purple-500"
                 required
               />
-              {togglePassword ? <Eye onClick={() => setTogglePassword(!togglePassword)} className="absolute inset-y-9 right-3" /> : <EyeClosed onClick={() => setTogglePassword(!togglePassword)} className="absolute inset-y-9 right-3" />}
+              {togglePassword ? (
+                <Eye
+                  onClick={() => setTogglePassword(!togglePassword)}
+                  className="absolute inset-y-9 right-3 cursor-pointer"
+                />
+              ) : (
+                <EyeClosed
+                  onClick={() => setTogglePassword(!togglePassword)}
+                  className="absolute inset-y-9 right-3 cursor-pointer"
+                />
+              )}
             </div>
 
             {/* Confirm Password Input */}
             <div className="relative">
               <label className="gap-2 m-1 text-gray-700 font-medium flex">
-                <KeyRound className="w-4.5" />Confirm Password
+                <KeyRound className="w-4.5" /> Confirm Password
               </label>
               <input
                 type="password"

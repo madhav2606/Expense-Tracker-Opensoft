@@ -1,27 +1,42 @@
 import { MoreHorizontal } from 'lucide-react'
 import React, { useState, useEffect, useRef } from 'react'
 
-const users = [
-    { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "User", status: "Active" },
-    { id: 2, name: "Bob Smith", email: "bob@example.com", role: "Manager", status: "Active" },
-    { id: 3, name: "Charlie Brown", email: "charlie@example.com", role: "User", status: "Inactive" },
-    { id: 4, name: "Diana Ross", email: "diana@example.com", role: "Admin", status: "Active" },
-    { id: 5, name: "Edward Norton", email: "edward@example.com", role: "User", status: "Active" },
-]
+
 
 const UserManage = () => {
     const [isOpen, setIsOpen] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState(users);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    
 
     useEffect(() => {
         setFilteredUsers(
-            users.filter((user) =>
+            filteredUsers?.filter((user) =>
                 user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 user.email.toLowerCase().includes(searchQuery.toLowerCase())
             )
         );
     }, [searchQuery]);
+
+
+    useEffect(() => {
+        const getUsers = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/getUsers'); // Ensure correct endpoint
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("Fetched users:", data);
+                setFilteredUsers(data);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        getUsers();
+    }, [filteredUsers]);
+
 
     return (
         <div className='flex flex-col gap-8 mx-10'>
