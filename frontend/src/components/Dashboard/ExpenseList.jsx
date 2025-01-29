@@ -1,47 +1,43 @@
 import React , {useState} from 'react'
 import {Pencil , Trash2 , Eye} from 'lucide-react'
 import Modal from './Modal';
+import axios from 'axios';
 
 const ExpenseList = () => {
 
   //sample data array
   const [expenses , setExpenses] = useState([
     {
-      id:1,
       date: '2025-01-20',
-      amount: '$100',
+      amount: 100,
       category: 'Transport',
       paymentMethod: 'Cash',
       description: 'Bus fare',
     },
     {
-      id:2,
       date: '2025-01-21',
-      amount: '$50',
+      amount: 50,
       category: 'Food',
       paymentMethod: 'Card',
       description: 'Lunch at a cafe',
     },
     {
-      id:3,
       date: '2025-01-22',
-      amount: '$200',
+      amount: 200,
       category: 'Shopping',
       paymentMethod: 'UPI',
       description: 'Bought clothes',
     },
     {
-      id:4,
       date: '2025-01-23',
-      amount: '$300',
+      amount: 300,
       category: 'Entertainment',
       paymentMethod: 'Credit Card',
       description: 'Movie tickets',
     },
     {
-      id:5,
       date: '2025-01-24',
-      amount: '$150',
+      amount: 150,
       category: 'Groceries',
       paymentMethod: 'PayPal',
       description: 'Weekly groceries',
@@ -54,7 +50,7 @@ const ExpenseList = () => {
   const [viewExpenseModal , setViewExpenseModal] = useState(false);
   const [editExpenseModal , setEditExpenseModal] = useState(false);
   const [newExpense, setNewExpense] = useState(
-    { date: '', amount: '', category: '', paymentMethod: '', description: '' }
+    {  amount: "", description: "" , date:"", paymentMethod: "",  category: ""}
   );
   const [selectedExpense , setSelectedExpense] = useState(null);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
@@ -112,11 +108,38 @@ const ExpenseList = () => {
     };
 
   //handle add expenses
-  function handleAddExpense(){
-    setExpenses([...expenses, { id: expenses.length + 1, ...newExpense }]);
-    setAddExpenseModal(false);
-    setNewExpense({ date: '', amount: '', category: '', paymentMethod: '', description: '' });
-  }
+  const handleAddExpense = async () => {
+    const token = localStorage.getItem("token");
+        if (!token) {
+          alert("you are not signed in");
+          navigate('/signin');
+          return;
+        }
+        console.log(newExpense);
+        
+    try {
+        const response = await axios.post("http://localhost:3000/expenses/add",newExpense,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+        );
+        if (response.status==201) {
+            const addedExpense = response.data;
+            setExpenses([...expenses, { ...addedExpense }]);
+            setAddExpenseModal(false);
+            setNewExpense({  amount: "", description: "" , date:"", paymentMethod: "",  category: ""});
+        } else {
+            console.log("Error adding expense:", response.data.message);
+            alert("Failed to add expense. Please try again.");
+        }
+    } catch (error) {
+        console.log("Error adding expense:", error.message);
+        alert("An error occurred while adding the expense. Please try again.");
+    }
+};
+
 
   //handle edit expenses
   function handleEditExpense(expense){

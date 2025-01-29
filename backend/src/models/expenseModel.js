@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const expenseSchema = mongoose.Schema(
     {
           amount:{
-            type:Number,
+            type:String,
             required:true,
           },
           description:{
@@ -17,14 +17,14 @@ const expenseSchema = mongoose.Schema(
             type:String,
             required:true,
           },
-          PaymentMethod:{
+          paymentMethod:{
             type:String,
             required:true,
           },
     },
-    {
-        timestamps:true,
-    }
+    // {
+    //     timestamps:true,
+    // }
 )
 
 export const Expense = mongoose.model('expense', expenseSchema);

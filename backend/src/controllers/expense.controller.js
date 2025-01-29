@@ -1,24 +1,26 @@
-import express from 'express'
+import express, { request } from 'express'
 const router = express.Router();
+// router.use(express.json());
 
 import { Expense } from '../models/expenseModel.js';
 
-export const AddExpense = async(request,response)=>{
+export const AddExpense = async(request,response) => {
     try{
-        if(!request.body.amount|| !request.body.description|| !request.body.date ||!request.body.category ||!request.body.PaymentMethod){
+        if(!request.body.amount || !request.body.description || !request.body.date || !request.body.category ||!request.body.paymentMethod){
             return response.status(400).send({
-                message:'send all required fields',
+                message:'send all required fields plz',
             });
         }
         const newExpense = {
             amount: request.body.amount,
             description: request.body.description,
             date: request.body.date,
+            paymentMethod: request.body.paymentMethod,
             category: request.body.category,
-            PaymentMethod: request.body.PaymentMethod
         };
 
         const expense = await Expense.create(newExpense);
+        console.log(expense);
         return response.status(201).send(expense);
     }catch(error){
         console.log(error.message);
@@ -26,34 +28,9 @@ export const AddExpense = async(request,response)=>{
     }
 }
 
-export const ViewExpense = async(request,response)=>{
-    try{
-        const expenses = await Expense.find({});
-        return response.status(200).send({
-            count:expenses.length,
-            data:expenses
-        });
-    }catch(error){
-        console.log(error.message);
-        response.status(500).send({message:error.message})
-    }
-}
-
-export const ViewIndividualExpense = async(request, response)=>{
-    try{
-        const {id} = request.params;
-        const expense = await Expense.findById(id);
-        return response.status(200).send(expense);
-    }catch(error){
-        console.log(error.message);
-        response.status(500).send({message:error.message})
-    }
-}
-
-
 export const UpdatExpense = async(request,response)=>{
     try {
-        if(!request.body.amount|| !request.body.description|| !request.body.date ||!request.body.category ||!request.body.PaymentMethod){
+        if(!request.body.amount|| !request.body.description|| !request.body.date ||!request.body.category ||!request.body.paymentMethod){
             return response.status(400).send({
                 message:"send all required field"
             });

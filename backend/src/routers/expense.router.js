@@ -4,15 +4,11 @@ import {
     AddExpense,
     DeleteExpense,
     UpdatExpense,
-    ViewExpense,
-    ViewIndividualExpense
 } from '../controllers/expense.controller.js';
 
 const router = Router();
 router.route("/expenses/add").post(checkForUserAuthentication, AddExpense);
-router.route("/expenses/viewindividual/:id").get(ViewIndividualExpense);
-router.route("/expenses/view").get(ViewExpense);
-router.route("/expenses/delete/:id").delete(DeleteExpense);
-router.route("/expenses/update/:id").put(UpdatExpense);
+router.route("/expenses/delete/:id").delete(checkForUserAuthentication,DeleteExpense);
+router.route("/expenses/update/:id").put(checkForUserAuthentication,UpdatExpense);
 
 export default router;
