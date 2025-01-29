@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "../models/User.js";
+import moment from "moment/moment.js";
 
 // "/getUsers"
 export const getAllUsers = async (req, res) => {
@@ -80,12 +81,12 @@ export const deleteUser = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const {name,email}=req.body;
+        const { name, email } = req.body;
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
         if (!name || !email) {
             return res.status(400).json({ message: "Enter all fields" });
-          }
+        }
 
         // if(emailRegex.test(email)){
         //     return res.status(400).json({ message: 'Invalid email format' });
@@ -97,7 +98,7 @@ export const updateUser = async (req, res) => {
         }
 
         user.name = name;
-        user.email=email;
+        user.email = email;
 
         await user.save();
 
@@ -110,3 +111,60 @@ export const updateUser = async (req, res) => {
         res.status(500).json({ message: "Error updating user info", error: error.message });
     }
 }
+
+// "/dasboardStats"
+export const dashStats = async (req, res) => {
+     try {
+        const totalUsers = await User.countDocuments();
+
+        const activeUsers = await User.countDocuments({ status: 'Active' });
+
+        const userRoles = await User.distinct('role');
+
+         const { startOfWeek: startThisWeek, endOfWeek: endThisWeek } = getDateRange(0);
+         const { startOfWeek: startLastWeek, endOfWeek: endLastWeek } = getDateRange(1);
+ 
+         const newUsersThisWeek = await User.countDocuments({
+             createdAt: { $gte: startThisWeek, $lt: endThisWeek }
+         });
+ 
+         const activeThisWeek = await User.countDocuments({
+             updatedAt: { $gte: startThisWeek, $lt: endThisWeek }
+         });
+ 
+         const activeLastWeek = await User.countDocuments({
+             updatedAt: { $gte: startLastWeek, $lt: endLastWeek }
+         });
+ 
+         let activityPercentageIncrease = 0;
+         if (activeLastWeek > 0) {
+             activityPercentageIncrease = ((activeThisWeek - activeLastWeek) / activeLastWeek) * 100;
+         }
+
+        const activePercentage = (activeUsers / totalUsers) * 100;
+        let activityLevel = 'Low';
+        if (activePercentage > 70) activityLevel = 'High';
+        else if (activePercentage > 40) activityLevel = 'Medium';
+
+        res.json({
+            totalUsers,
+            activeUsers,
+            userRoles,
+            activityLevel,
+            activePercentage,
+            newUsersThisWeek,
+            activityPercentageIncrease
+        }); 
+     } catch (error) {
+        res.status(500).json({ message: "Error fetching dashboard stats", error: error.message });
+     }
+}
+
+const getDateRange = (weeksAgo = 0) => {
+    const startOfWeek = moment().subtract(weeksAgo, 'weeks').startOf('isoWeek').toDate();
+    const endOfWeek = moment().subtract(weeksAgo, 'weeks').endOf('isoWeek').toDate();
+    return { startOfWeek, endOfWeek };
+};
+
+// "/activityChart"
+
