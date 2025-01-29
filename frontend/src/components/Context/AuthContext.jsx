@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         console.log(user)
-    }, [user])
+    }, [])
 
 
     const signIn = async (email, password) => {
@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
                 const { token, user } = response.data;
 
                 localStorage.setItem("token", token);
+                localStorage.setItem("user",JSON.stringify(user))
 
                 setIsAuthenticated(true);
                 setUser(user);

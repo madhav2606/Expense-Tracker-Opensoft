@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { User } from './User.js';
+
 const expenseSchema = mongoose.Schema(
     {
           amount:{
@@ -21,10 +23,15 @@ const expenseSchema = mongoose.Schema(
             type:String,
             required:true,
           },
+          createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true, 
+          }
     },
-    // {
-    //     timestamps:true,
-    // }
+    {
+        timestamps:true,
+    }
 )
 
 export const Expense = mongoose.model('expense', expenseSchema);

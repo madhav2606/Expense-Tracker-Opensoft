@@ -3,12 +3,14 @@ import { checkForUserAuthentication } from "../middleware/auth.middleware.js";
 import {
     AddExpense,
     DeleteExpense,
-    UpdatExpense,
+    GetExpenses,
+    UpdateExpense,
 } from '../controllers/expense.controller.js';
 
 const router = Router();
-router.route("/expenses/add").post(checkForUserAuthentication, AddExpense);
+router.route("/expenses/add/:id").post(checkForUserAuthentication, AddExpense);
 router.route("/expenses/delete/:id").delete(checkForUserAuthentication,DeleteExpense);
-router.route("/expenses/update/:id").put(checkForUserAuthentication,UpdatExpense);
+router.route("/expenses/update/:id").put(checkForUserAuthentication,UpdateExpense);
+router.route("/expenses/get/:userId").get(checkForUserAuthentication,GetExpenses)
 
 export default router;

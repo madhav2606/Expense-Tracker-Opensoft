@@ -1,67 +1,107 @@
-import express, { request } from 'express'
-const router = express.Router();
-// router.use(express.json());
 
-import { Expense } from '../models/expenseModel.js';
+import { Expense } from '../models/expenseModel.js'
+import { User } from '../models/User.js';
 
-export const AddExpense = async(request,response) => {
-    try{
-        if(!request.body.amount || !request.body.description || !request.body.date || !request.body.category ||!request.body.paymentMethod){
+export const AddExpense = async (request, response) => {
+    try {
+        if (!request.body.amount || !request.body.description || !request.body.date || !request.body.category || !request.body.paymentMethod) {
             return response.status(400).send({
-                message:'send all required fields plz',
+                message: 'Send all required fields including userId',
             });
         }
+
+        const { amount, description, date, category, paymentMethod } = request.body;
+        const {id}=request.params
+        const user = await User.findById(id);
+        if (!user) {
+            return response.status(404).send({ message: 'User not found' });
+        }
+
         const newExpense = {
-            amount: request.body.amount,
-            description: request.body.description,
-            date: request.body.date,
-            paymentMethod: request.body.paymentMethod,
-            category: request.body.category,
+            amount,
+            description,
+            date,
+            paymentMethod,
+            category,
+            createdBy: id,
         };
 
         const expense = await Expense.create(newExpense);
-        console.log(expense);
-        return response.status(201).send(expense);
-    }catch(error){
-        console.log(error.message);
-        response.status(500).send({message: error.message});
-    }
-}
 
-export const UpdatExpense = async(request,response)=>{
+        await User.findByIdAndUpdate(
+            id,
+            { $push: { expenses: expense._id } },
+            { new: true }
+        );
+
+        return response.status(201).send(expense);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+};
+
+export const UpdateExpense = async (request, response) => {
     try {
-        if(!request.body.amount|| !request.body.description|| !request.body.date ||!request.body.category ||!request.body.paymentMethod){
+        if (!request.body.amount || !request.body.description || !request.body.date || !request.body.category || !request.body.paymentMethod) {
             return response.status(400).send({
-                message:"send all required field"
+                message: "Send all required fields",
             });
         }
-        const {id} = request.params;
-        const result = await Expense.findByIdAndUpdate(id,request.body);
 
-        if(!result){
-            return response.status(404).json({message:"expense not found"});
+        const { id } = request.params;
+    
+        const result = await Expense.findByIdAndUpdate(id, request.body, { new: true });
+
+        if (!result) {
+            return response.status(404).json({ message: "Expense not found" });
         }
-        return response.status(200).send({message:"expense updated successsfully"})
+
+        return response.status(200).send({ message: "Expense updated successfully" });
     } catch (error) {
         console.log(error.message);
-        response.status(500).send({message:error.message});
+        response.status(500).send({ message: error.message });
     }
-}
+};
 
-
-export const DeleteExpense = async(request,response)=>{
+export const DeleteExpense = async (request, response) => {
     try {
-        const {id} = request.params;
+        const { id } = request.params;
+
         const result = await Expense.findByIdAndDelete(id);
 
-        if(!result){
-            return response.status(404).json({message:"expense not found"});
+        if (!result) {
+            return response.status(404).json({ message: "Expense not found" });
         }
-        return response.status(200).send({message:"expense deleted successsfully"})
+
+        await User.updateOne(
+            { expenses: id }, 
+            { $pull: { expenses: id } }
+        );
+
+        return response.status(200).send({ message: "Expense deleted successfully" });
     } catch (error) {
         console.log(error.message);
-        response.status(500).send({message:error.message});
+        response.status(500).send({ message: error.message });
     }
-}
+};
 
-export default router;
+export const GetExpenses = async (req, res) => {
+    try {
+        const { userId } = req.params; 
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+
+        const expenses = await Expense.find({ createdBy: userId });
+
+        if (!expenses.length) {
+            return res.status(404).json({ message: "No expenses found for this user" });
+        }
+
+        res.status(200).json(expenses);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};

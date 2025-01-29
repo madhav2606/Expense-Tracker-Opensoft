@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { Expense } from './expenseModel.js';
 
 const UserSchema = new mongoose.Schema({
   name:{
@@ -24,6 +25,12 @@ const UserSchema = new mongoose.Schema({
     enum: ['Active', 'Inactive'],
     default: 'Active'
   },
+  expenses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Expense', 
+    },
+  ],
 },{timestamps:true});
 
 export const User = mongoose.model('User', UserSchema);
