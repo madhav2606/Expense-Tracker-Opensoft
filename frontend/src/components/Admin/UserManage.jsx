@@ -1,33 +1,25 @@
 import { MoreHorizontal } from 'lucide-react'
-import React, { useState, useEffect, useRef } from 'react'
-
-
+import React, { useState, useEffect } from 'react'
+import Avatar from 'react-avatar';
 
 const UserManage = () => {
-    const [isOpen, setIsOpen] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
-    
-
-    useEffect(() => {
-        setFilteredUsers(
-            filteredUsers?.filter((user) =>
-                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        );
-    }, [searchQuery]);
-
+    const [editingUser, setEditingUser] = useState(null);
+    const [editedName, setEditedName] = useState('');
+    const [editedEmail, setEditedEmail] = useState('');
+    // const [isEditing, setisEditing] = useState(false)
+   
 
     useEffect(() => {
         const getUsers = async () => {
             try {
-                const response = await fetch('http://localhost:3000/getUsers'); // Ensure correct endpoint
+                const response = await fetch('http://localhost:3000/getUsers');
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log("Fetched users:", data);
                 setFilteredUsers(data);
             } catch (error) {
                 console.error("Error fetching users:", error);
@@ -37,23 +29,143 @@ const UserManage = () => {
         getUsers();
     }, []);
 
+    useEffect(() => {
+        setFilteredUsers(prevUsers =>
+            prevUsers.filter(user =>
+                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        );
+    }, [searchQuery]);
+
+    const handleStatus = async (email) => {
+        const isConfirmed = window.confirm("Are you sure you want to change the status of this user?");
+        if (!isConfirmed) return;
+        try {
+            const response = await fetch('http://localhost:3000/changeStatus', {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            setFilteredUsers(prevUsers =>
+                prevUsers.map(user =>
+                    user.email === email
+                        ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
+                        : user
+                )
+            );
+            setIsOpen(false)
+        } catch (error) {
+            console.log("Error changing status:", error);
+        }
+    };
+
+
+    const handleRole = async (email) => {
+        const isConfirmed = window.confirm(`Are you sure you want to change the role of this user?`);
+        if (!isConfirmed) return;
+        try {
+            const response = await fetch('http://localhost:3000/changeRole', {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            setFilteredUsers(prevUsers =>
+                prevUsers.map(user =>
+                    user.email === email
+                        ? { ...user, role: user.role === "Admin" ? "User" : "Admin" }
+                        : user
+                )
+            );
+            setIsOpen(false)
+        } catch (error) {
+            console.log("Error changing role:", error);
+        }
+    };
+
+    const handleEdit = (user) => {
+        setEditingUser(user._id);
+        setEditedName(user.name);
+        setEditedEmail(user.email);
+    };
+
+    const handleSaveEdit = async (id) => {
+        const isConfirmed = window.confirm("Are you sure you want to save the changes?");
+        if (!isConfirmed) return;
+        try {
+            const response = await fetch(`http://localhost:3000/updateUser/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name: editedName, email: editedEmail }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            setFilteredUsers(prevUsers =>
+                prevUsers.map(user =>
+                    user._id === id ? { ...user, name: editedName, email: editedEmail } : user
+                )
+            );
+            setEditingUser(null);
+            setIsOpen(false)
+        } catch (error) {
+            console.log("Error updating user:", error);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        const isConfirmed = window.confirm("Are you sure you want to delete this user?");
+        if (!isConfirmed) return;
+        try {
+            const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            setFilteredUsers(filteredUsers.filter(user => user._id !== id));
+            setIsOpen(false)
+        } catch (error) {
+            console.log("Error deleting user:", error);
+        }
+    };
 
     return (
         <div className='flex flex-col gap-8 mx-10'>
             <h1 className='text-4xl mt-8 font-bold'>User Management</h1>
             <div className='flex items-center space-x-5'>
-                <input type="text"
+                <input
+                    type="text"
                     placeholder='Search users...'
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className='p-2 rounded-xl border w-2/5'
                 />
-                {/* <button className='px-4 p-2 text-white bg-purple-800 rounded-xl hover:cursor-pointer'>Search</button> */}
             </div>
-            <table className="min-w-full border-collapse">
+            <table className="min-w-full border-collapse overflow-auto">
                 <thead>
                     <tr className="text-left">
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600 col-span-2">Name</th>
+                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Name</th>
                         <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Email</th>
                         <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Role</th>
                         <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Status</th>
@@ -61,35 +173,90 @@ const UserManage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredUsers.length > 0 ? (filteredUsers?.map((user, index) => (
-                        <tr key={index} className="relative hover:bg-gray-50">
-                            <td className="p-4 border-b border-gray-200">{user.name}</td>
-                            <td className="p-4 border-b border-gray-200">{user.email}</td>
-                            <td className="p-4 border-b border-gray-200">{user.role}</td>
-                            <td className="p-4 border-b border-gray-200">{user.status}</td>
-                            <td
-                                className="p-4 border-b border-gray-200 hover:cursor-pointer"
-                                onClick={() => setIsOpen(isOpen === index ? null : index)}
-                            >
-                                <MoreHorizontal />
-                            </td>
-                            {isOpen === index && (
-                                <ul className="absolute right-10 top-14 bg-purple-800 text-white p-2 z-50 rounded-xl shadow-md">
-                                    <li className="p-2 hover:bg-purple-600 cursor-pointer">Edit User</li>
-                                    <li className="p-2 hover:bg-purple-600 cursor-pointer">Change Role</li>
-                                    <li className="p-2 hover:bg-purple-600 cursor-pointer">Deactivate User</li>
-                                </ul>
-                            )}
-                        </tr>
-                    ))) : (
+                    {filteredUsers.length > 0 ? (
+                        filteredUsers.map((user, index) => (
+                            <tr key={index} className="relative hover:bg-gray-50">
+                                <td className="p-4 border-b border-gray-200 flex gap-4">
+                                <Avatar round={true}  name={user.name} size="40" />
+                                    {editingUser === user._id ? (
+                                        <input
+                                            type="text"
+                                            value={editedName}
+                                            onChange={(e) => setEditedName(e.target.value)}
+                                            className="border rounded p-2"
+                                        />
+                                    ) : (
+                                        user.name
+                                    )}
+                                </td>
+                                <td className="p-4 border-b border-gray-200">
+                                    {editingUser === user._id ? (
+                                        <input
+                                            type="email"
+                                            value={editedEmail}
+                                            onChange={(e) => setEditedEmail(e.target.value)}
+                                            className="border rounded p-2"
+                                        />
+                                    ) : (
+                                        user.email
+                                    )}
+                                </td>
+                                <td className="p-4 border-b border-gray-200">{user.role}</td>
+                                <td className="p-4 border-b border-gray-200">{user.status}</td>
+                                <td
+                                    className="p-4 border-b border-gray-200 hover:cursor-pointer"
+                                    onClick={() => setIsOpen(isOpen === index ? null : index)}
+                                >
+                                    <MoreHorizontal />
+                                </td>
+                                {isOpen === index && (
+                                    <ul className="absolute right-10 top-14 bg-purple-800 text-white p-2 z-50 rounded-xl shadow-md">
+                                        <li
+                                            className="p-2 hover:bg-purple-600 cursor-pointer"
+                                            onClick={() => {
+                                                if (editingUser == null) {
+                                                    handleEdit(user)
+                                                }
+                                                else {
+                                                    handleSaveEdit(editingUser)
+                                                }
+
+                                            }
+                                            }
+                                        >
+                                            {editingUser != null ? "Save User" : "Edit User"}
+                                        </li>
+                                        <li
+                                            className="p-2 hover:bg-purple-600 cursor-pointer"
+                                            onClick={() => handleRole(user.email)}
+                                        >
+                                            Change Role
+                                        </li>
+                                        <li
+                                            className="p-2 hover:bg-purple-600 cursor-pointer"
+                                            onClick={() => handleStatus(user.email)}
+                                        >
+                                            {user.status === "Active" ? "Deactivate User" : "Activate User"}
+                                        </li>
+                                        <li
+                                            className="p-2 hover:bg-purple-600 cursor-pointer"
+                                            onClick={() => handleDelete(user._id)}
+                                        >
+                                            Delete User
+                                        </li>
+                                    </ul>
+                                )}
+                            </tr>
+                        ))
+                    ) : (
                         <tr>
-                            <td>No users found</td>
+                            <td className="p-4 text-center" colSpan="5">No users found</td>
                         </tr>
                     )}
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};
 
-export default UserManage
+export default UserManage;
