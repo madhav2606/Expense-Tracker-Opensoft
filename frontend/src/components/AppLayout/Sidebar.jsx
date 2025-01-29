@@ -12,35 +12,15 @@ import {
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../Context/AuthContext';
 
 const Sidebar = () => {
   const [selected, setSelected] = useState('Admin');
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
-
-  const handleLogout = async(req, res)=>{
-    try {
-      const token = localStorage.getItem("token");
-    if(!token){
-      alert("you are not signed in");
-      navigate('/signin');
-      return;
-    }
-    await axios.post(
-      "http://localhost:3000/logout",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
-      }
-    );
-    localStorage.removeItem("token");
-    console.log("signed out");
-    navigate("/signin");
-    } catch (error) {
-      console.log(error.message);
-    }
+  const {logout} =useAuth();
+  const handleLogout = async (req, res) => {
+    logout();
   }
 
   const menuItems = [

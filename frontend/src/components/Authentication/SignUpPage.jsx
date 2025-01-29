@@ -4,6 +4,7 @@ import SignUpImg from "./signUPimg.png"
 import { Eye, EyeClosed, Key, KeyRound, Mail } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
 
 
@@ -13,24 +14,12 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [togglePassword, setTogglePassword] = useState(false);
   const navigate = useNavigate();
-
+  const {signUp} =useAuth()
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3000/signup", {
-        email,
-        password
-      });
-      
-      if (response.status === 201) {
-        console.log("Successfully signed up");
-        navigate("/signin");
-      }
-    } catch (error) {
-      console.log(error.response.data.message);
-    }
+    signUp(email,password);
   };
 
   return (
