@@ -23,8 +23,6 @@ const ActivityMonitor = () => {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const activities = await response.json();
-
-                console.log(activities)
                 setFilteredUsers(activities)
 
             } catch (error) {
@@ -34,9 +32,9 @@ const ActivityMonitor = () => {
         fetchActivity();
     }, [])
 
-    const formatDate=(timestamp)=>{
-      const date=new Date(timestamp)
-      return date.toLocaleDateString()
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp)
+        return date.toLocaleString()
     }
 
     return (
