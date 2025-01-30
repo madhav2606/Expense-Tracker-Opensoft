@@ -1,25 +1,43 @@
 import { MoreHorizontal } from 'lucide-react'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, act } from 'react'
+import Avatar from 'react-avatar';
 
-const activities = [
-    { id: 1, user: "Alice Johnson", action: "Login", timestamp: "2023-07-05 09:30:00" },
-    { id: 2, user: "Bob Smith", action: "Update Profile", timestamp: "2023-07-05 10:15:00" },
-    { id: 3, user: "Charlie Brown", action: "Create Post", timestamp: "2023-07-05 11:00:00" },
-    { id: 4, user: "Diana Ross", action: "Delete Comment", timestamp: "2023-07-05 11:45:00" },
-    { id: 5, user: "Edward Norton", action: "Logout", timestamp: "2023-07-05 12:30:00" },
-]
 
 const ActivityMonitor = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState(activities);
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
     useEffect(() => {
         setFilteredUsers(
-            activities.filter((user) =>
+            filteredUsers?.filter((user) =>
                 user.action.toLowerCase().includes(searchQuery.toLowerCase())
             )
         );
     }, [searchQuery]);
+
+    useEffect(() => {
+        const fetchActivity = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/getActivity");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const activities = await response.json();
+
+                console.log(activities)
+                setFilteredUsers(activities)
+
+            } catch (error) {
+                console.error("Error fetching activities", error);
+            }
+        }
+        fetchActivity();
+    }, [])
+
+    const formatDate=(timestamp)=>{
+      const date=new Date(timestamp)
+      return date.toLocaleDateString()
+    }
 
     return (
         <div className='flex flex-col gap-8 mx-10'>
@@ -44,9 +62,9 @@ const ActivityMonitor = () => {
                 <tbody>
                     {filteredUsers.length > 0 ? (filteredUsers?.map((item, index) => (
                         <tr key={index} className="relative hover:bg-gray-50">
-                            <td className="p-4 border-b border-gray-200">{item.user}</td>
+                            <td className="p-4 border-b border-gray-200 flex gap-5 items-center"><Avatar round={true} name={item.user} size="40" />{item.user}</td>
                             <td className="p-4 border-b border-gray-200">{item.action}</td>
-                            <td className="p-4 border-b border-gray-200">{item.timestamp}</td>
+                            <td className="p-4 border-b border-gray-200">{formatDate(item.timestamp)}</td>
                         </tr>
                     ))) : (
                         <tr>

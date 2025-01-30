@@ -16,18 +16,35 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
+        const verifyToken = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setIsAuthenticated(false);
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/verify", {
+                    method: "GET",
+
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                const data = await response.json();
+                if (!data.authenticated) {
+                    localStorage.removeItem("token");
+                    navigate("/signin");
+                } else {
+                    setIsAuthenticated(true);
+                }
+            } catch (error) {
+                console.error("Error verifying token:", error);
+                setIsAuthenticated(false);
+            }
+        };
+
+        // verifyToken();
     }, []);
-
-    useEffect(() => {
-        console.log(user)
-    }, [])
-
 
     const signIn = async (email, password) => {
         try {
@@ -40,7 +57,7 @@ export const AuthProvider = ({ children }) => {
                 const { token, user } = response.data;
 
                 localStorage.setItem("token", token);
-                localStorage.setItem("user",JSON.stringify(user))
+                localStorage.setItem("user", JSON.stringify(user))
 
                 setIsAuthenticated(true);
                 setUser(user);
@@ -71,21 +88,24 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             const token = localStorage.getItem("token");
+            const userId = JSON.parse(localStorage.getItem("user"))._id;
+
             if (!token) {
                 alert("you are not signed in");
                 navigate('/signin');
                 return;
             }
+            localStorage.removeItem("token");
             await axios.post(
                 "http://localhost:3000/logout",
-                {},
+                {userId},
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
             );
-            localStorage.removeItem("token");
+            
             localStorage.removeItem("user")
             console.log("signed out");
             setIsAuthenticated(false);

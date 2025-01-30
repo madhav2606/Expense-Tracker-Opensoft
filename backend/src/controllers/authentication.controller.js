@@ -1,6 +1,7 @@
 import { User } from "../models/User.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { logActivity } from "./activity.controller.js";
 
 const authenticatedUser = async (email, password) => {
   try {
@@ -60,6 +61,8 @@ export const loginUser = async (req, res) => {
     const payload = { id: authResult.user._id, email: authResult.user.email };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
+    await logActivity(authResult.user._id, "Login")
+
     return res.status(200).json({
       message: "User successfully logged in",
       token: token,
@@ -71,5 +74,19 @@ export const loginUser = async (req, res) => {
 };
 
 export const logoutUser = async (req, res) => {
-  res.status(200).json({ message: "User logged out successfully" });
+
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    await logActivity(userId, "LogOut");
+
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };

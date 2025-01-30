@@ -1,6 +1,7 @@
 
 import { Expense } from '../models/expenseModel.js'
 import { User } from '../models/User.js';
+import { logActivity } from './activity.controller.js';
 
 export const AddExpense = async (request, response) => {
     try {
@@ -34,6 +35,8 @@ export const AddExpense = async (request, response) => {
             { new: true }
         );
 
+        await logActivity(id,"Expense addition");
+
         return response.status(201).send(expense);
     } catch (error) {
         console.log(error.message);
@@ -49,13 +52,15 @@ export const UpdateExpense = async (request, response) => {
             });
         }
 
-        const { id } = request.params;
+        const { id,userId } = request.params;
     
         const result = await Expense.findByIdAndUpdate(id, request.body, { new: true });
 
         if (!result) {
             return response.status(404).json({ message: "Expense not found" });
         }
+
+        await logActivity(userId,"Expense Update")
 
         return response.status(200).send({ message: "Expense updated successfully" });
     } catch (error) {
@@ -66,7 +71,7 @@ export const UpdateExpense = async (request, response) => {
 
 export const DeleteExpense = async (request, response) => {
     try {
-        const { id } = request.params;
+        const { id,userId } = request.params;
 
         const result = await Expense.findByIdAndDelete(id);
 
@@ -78,6 +83,8 @@ export const DeleteExpense = async (request, response) => {
             { expenses: id }, 
             { $pull: { expenses: id } }
         );
+
+        await logActivity(userId,"Expense deletion")
 
         return response.status(200).send({ message: "Expense deleted successfully" });
     } catch (error) {

@@ -3,6 +3,7 @@ import cors from 'cors'
 import authenticationRouter from './src/routers/authentication.router.js';
 import expenseRouter from './src/routers/expense.router.js';
 import userRouter from './src/routers/user.router.js'
+import activityRouter from './src/routers/activity.router.js'
 import { connectDB } from "./src/db/index.js";
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -27,6 +28,7 @@ const port = process.env.PORT;
 app.use('/', authenticationRouter);
 app.use('/', expenseRouter);
 app.use('/',userRouter)
+app.use('/',activityRouter)
 
 connectDB()
 .then(()=>{

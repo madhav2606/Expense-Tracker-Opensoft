@@ -113,6 +113,7 @@ const ExpenseList = () => {
 
   const handleDeleteExpense = async (id) => {
     const token = localStorage.getItem("token");
+    const userId=JSON.parse(localStorage.getItem("user"))._id;
     if (!token) {
       alert("You are not signed in");
       navigate('/signin');
@@ -123,7 +124,7 @@ const ExpenseList = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/expenses/delete/${id}`, {
+      const response = await fetch(`http://localhost:3000/expenses/delete/${id}/${userId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -144,6 +145,7 @@ const ExpenseList = () => {
 
   const handleSaveEditedExpense = async() => {
     const token = localStorage.getItem("token");
+    const userId=JSON.parse(localStorage.getItem("user"))._id;
     if (!token) {
       alert("you are not signed in");
       navigate('/signin');
@@ -151,7 +153,7 @@ const ExpenseList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/expenses/update/${expenseToEdit._id}`, {
+      const response = await fetch(`http://localhost:3000/expenses/update/${expenseToEdit._id}/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
