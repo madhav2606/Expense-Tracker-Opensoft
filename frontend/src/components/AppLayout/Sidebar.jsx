@@ -33,7 +33,7 @@ const Sidebar = () => {
         { id: "Admin Dashboard", label: "Dashboard", path: "/admin" },
         { id: "User Management", label: "User Management", path: "/admin/users" },
         { id: "Activity Monitor", label: "Activity Monitor", path: "/admin/activity" },
-        { id: "Role Management", label: "Role Management", path: "/admin/roles" }
+        { id: "System Health and Performance", label: "System Health", path: "/admin/health" }
       ],
     },
     { id: "Dashboard", icon: <LayoutDashboard />, label: "Dashboard", path: '/dashboard' },
