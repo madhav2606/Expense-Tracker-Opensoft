@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "../models/User.js";
+import { Activity } from "../models/ActivityModel.js";
 import moment from "moment/moment.js";
 
 // "/getUsers"
@@ -114,57 +115,113 @@ export const updateUser = async (req, res) => {
 
 // "/dasboardStats"
 export const dashStats = async (req, res) => {
-     try {
+    try {
         const totalUsers = await User.countDocuments();
-
-        const activeUsers = await User.countDocuments({ status: 'Active' });
-
         const userRoles = await User.distinct('role');
 
-         const { startOfWeek: startThisWeek, endOfWeek: endThisWeek } = getDateRange(0);
-         const { startOfWeek: startLastWeek, endOfWeek: endLastWeek } = getDateRange(1);
- 
-         const newUsersThisWeek = await User.countDocuments({
-             createdAt: { $gte: startThisWeek, $lt: endThisWeek }
-         });
- 
-         const activeThisWeek = await User.countDocuments({
-             updatedAt: { $gte: startThisWeek, $lt: endThisWeek }
-         });
- 
-         const activeLastWeek = await User.countDocuments({
-             updatedAt: { $gte: startLastWeek, $lt: endLastWeek }
-         });
- 
-         let activityPercentageIncrease = 0;
-         if (activeLastWeek > 0) {
-             activityPercentageIncrease = ((activeThisWeek - activeLastWeek) / activeLastWeek) * 100;
-         }
+        const startThisWeek = moment().startOf('week').toDate(); 
+        const endThisWeek = moment().endOf('week').toDate();  
+        const startLastWeek = moment().subtract(1, 'weeks').startOf('week').toDate();  
+        const endLastWeek = moment().subtract(1, 'weeks').endOf('week').toDate(); 
+
+        const activeUsersResult = await Activity.aggregate([
+            {
+                $match: {
+                    timestamp: { $gte: startThisWeek, $lt: endThisWeek }
+                }
+            },
+            {
+                $group: {
+                    _id: "$user"
+                }
+            },
+            {
+                $count: "activeUsers"
+            }
+        ]);
+
+        const activeUsers = activeUsersResult.length > 0 ? activeUsersResult[0].activeUsers : 0;
+
+        const newUsersThisWeek = await User.countDocuments({
+            createdAt: { $gte: startThisWeek, $lt: endThisWeek }
+        });
+
+        const activeThisWeek = await Activity.distinct('user', {
+            timestamp: { $gte: startThisWeek, $lt: endThisWeek }
+        }).countDocuments();
+
+        const activeLastWeek = await Activity.distinct('user', {
+            timestamp: { $gte: startLastWeek, $lt: endLastWeek }
+        }).countDocuments();
+
+        let activityPercentageIncrease = 0;
+        if (activeLastWeek > 0) {
+            activityPercentageIncrease = ((activeThisWeek - activeLastWeek) / activeLastWeek) * 100;
+        }
 
         const activePercentage = (activeUsers / totalUsers) * 100;
+
+
         let activityLevel = 'Low';
         if (activePercentage > 70) activityLevel = 'High';
         else if (activePercentage > 40) activityLevel = 'Medium';
 
+
         res.json({
             totalUsers,
             activeUsers,
-            userRoles,
+            newUsersThisWeek,
+            activityPercentageIncrease,
             activityLevel,
             activePercentage,
-            newUsersThisWeek,
-            activityPercentageIncrease
-        }); 
-     } catch (error) {
+            userRoles
+        });
+    } catch (error) {
         res.status(500).json({ message: "Error fetching dashboard stats", error: error.message });
-     }
-}
-
-const getDateRange = (weeksAgo = 0) => {
-    const startOfWeek = moment().subtract(weeksAgo, 'weeks').startOf('isoWeek').toDate();
-    const endOfWeek = moment().subtract(weeksAgo, 'weeks').endOf('isoWeek').toDate();
-    return { startOfWeek, endOfWeek };
+    }
 };
 
-// "/activityChart"
 
+// "/activityChart"
+export const userStats = async (req, res) => {
+    try {
+        const usersStatsPerDay = [];
+        const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        for (let i = 6; i >= 0; i--) {
+            const dayStart = moment().subtract(i, 'days').startOf('day').toDate();
+            const dayEnd = moment().subtract(i, 'days').endOf('day').toDate();
+
+            const activeUsersForDay = await Activity.aggregate([
+                {
+                    $match: {
+                        timestamp: { $gte: dayStart, $lt: dayEnd }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$user"
+                    }
+                },
+                {
+                    $count: "activeUsers"
+                }
+            ]);
+
+            const newUsersForDay = await User.countDocuments({
+                createdAt: { $gte: dayStart, $lt: dayEnd }
+            });
+
+            usersStatsPerDay.push({
+                day: weekDays[6 - i],
+                activeUsers: activeUsersForDay.length > 0 ? activeUsersForDay[0].activeUsers : 0,
+                newUsers: newUsersForDay
+            });
+        }
+
+        res.json({
+            usersStatsPerDay
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching daily active and new users", error: error.message });
+    }
+};

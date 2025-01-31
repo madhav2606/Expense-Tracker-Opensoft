@@ -44,7 +44,7 @@ const AdminDash = () => {
         {
             title: "Active Users",
             value: stats.activeUsers,
-            description: `${stats.activePercentage}% of total users`,
+            description: `${stats.activePercentage.toFixed(0)}% of total users`,
             icon: <Activity className="h-4 w-4 text-muted-foreground" />,
         },
         {
