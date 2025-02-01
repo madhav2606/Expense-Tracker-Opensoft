@@ -9,6 +9,7 @@ import SignInPage from './components/Authentication/SignInPage.jsx'
 import { AuthProvider, useAuth } from './components/Context/AuthContext.jsx'
 
 import React from 'react'
+import ProfileSetting2 from './components/profilepage/ProfileSetting2.jsx'
 
 const Main = () => {
   const {isAuthenticated}=useAuth();
@@ -18,6 +19,7 @@ const Main = () => {
       <Route path="*" element={isAuthenticated?<Layout />:<SignInPage/>} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/signin" element={<SignInPage />} />
+      <Route path="/profile2" element={<ProfileSetting2 />} />
       {/* route path for forgot password */}
     </Routes>
   )

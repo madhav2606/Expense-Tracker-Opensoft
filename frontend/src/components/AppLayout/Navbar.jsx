@@ -1,5 +1,6 @@
 import React from 'react'
 import { CircleUserRound, Menu, Search, CircleDollarSign, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ isOpen, toggleSidebar }) => {
     return (
@@ -18,7 +19,10 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
             <div className='flex gap-10'>
             <Bell className='hover:cursor-pointer hover:bg-gray-200 p-2 w-10 h-10 rounded-full' />
             <div className='flex items-center gap-2 text-xl hover:cursor-pointer'>
-                <CircleUserRound className='w-8 h-8' />Profile
+                
+                <Link to='/profile2'>
+                <CircleUserRound className='w-8 h-8' />
+                </Link>
             </div>
             </div>
         </div>
