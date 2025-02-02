@@ -19,7 +19,6 @@ export const getActivity = async (req, res) => {
     }
 }
 
-
 export const logActivity = async (userId, action) => {
     try {
         await Activity.create({

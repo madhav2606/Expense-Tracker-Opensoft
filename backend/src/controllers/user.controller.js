@@ -123,7 +123,6 @@ export const dashStats = async (req, res) => {
         const endThisWeek = moment().endOf('week').toDate();  
         const startLastWeek = moment().subtract(1, 'weeks').startOf('week').toDate();  
         const endLastWeek = moment().subtract(1, 'weeks').endOf('week').toDate(); 
-
         const activeUsersResult = await Activity.aggregate([
             {
                 $match: {
@@ -180,7 +179,6 @@ export const dashStats = async (req, res) => {
         res.status(500).json({ message: "Error fetching dashboard stats", error: error.message });
     }
 };
-
 
 // "/activityChart"
 export const userStats = async (req, res) => {
