@@ -1,4 +1,4 @@
-import React,{ useState } from "react"
+import React, { useEffect, useState } from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import "../../App.css"
 import AdminDash from "../Admin/AdminDash"
@@ -9,19 +9,20 @@ import ExpenseList from "../Expense/ExpenseList"
 import UserManage from "../Admin/UserManage"
 import ActivityMonitor from "../Admin/ActivityMonitor"
 import SystemHealth from "../Admin/SystemHealth"
-import Dashboard from "../UserDashboard/Dashboard"
+import Dash from "../Dashboard/Dash"
+import { useAuth } from "../Context/AuthContext"
 
 function App() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen">
-        <Routes>
-          <Route path="/expenses" element={<ExpenseList />} />
-
+      <Routes>
           <Route path="/admin" element={<AdminDash />} />
           <Route path="/admin/users" element={<UserManage />} />
           <Route path="/admin/activity" element={<ActivityMonitor />} />
           <Route path="/admin/health" element={<SystemHealth />} />
-
+          <Route path="/expenses" element={<ExpenseList />} />
           <Route path="/budget" element={<BudgetGoals />} />
           <Route path="/groups" element={<GroupBill />} />
           <Route path="/settings" element={<Settings />} />

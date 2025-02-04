@@ -90,3 +90,20 @@ export const logoutUser = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const verify= (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ authenticated: false, message: "No token provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ authenticated: false, message: "Invalid token" });
+    }
+
+    return res.json({ authenticated: true, user: decoded });
+  });
+};
