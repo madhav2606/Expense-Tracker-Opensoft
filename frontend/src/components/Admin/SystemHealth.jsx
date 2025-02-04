@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ChartPie, CircleCheckBig, Clock, Cpu, Database, MemoryStick } from "lucide-react";
+import { useAuth } from "../Context/AuthContext";
+import AccessDenial from "../AuthRestrict/AccessDenial";
 
 const SystemHealth = () => {
     const [healthData, setHealthData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const {user}=useAuth();
     useEffect(() => {
         const fetchHealthData = async () => {
             try {
@@ -31,6 +33,8 @@ const SystemHealth = () => {
     const formatMemory = (memory) => {
         return (memory / (1024 * 1024)).toFixed(2)
     }
+
+    if(user?.role!=="Admin")return <AccessDenial/>;
 
     return (
         <div className="p-6 border border-gray-400 rounded-lg shadow-lg m-5 max-w-screen">

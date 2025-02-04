@@ -4,6 +4,8 @@ import UserActivity from './UserActivity';
 import RecentUsers from './RecentUsers';
 import CountUp from 'react-countup';
 import './admin.css';
+import { useAuth } from '../Context/AuthContext';
+import AccessDenial from '../AuthRestrict/AccessDenial';
 
 const AdminDash = () => {
     const [stats, setStats] = useState({
@@ -15,6 +17,7 @@ const AdminDash = () => {
         newUsersThisWeek:0,
         activityPercentageIncrease:0
     });
+    const {user}=useAuth();
 
     // Fetching data from the backend
     useEffect(() => {
@@ -60,7 +63,7 @@ const AdminDash = () => {
             icon: <BarChart2 className="h-4 w-4 text-muted-foreground" />,
         },
     ];
-
+    if(user?.role!=="Admin")return <AccessDenial/>
     return (
         <div className='flex flex-col gap-8 mx-10'>
             <h1 className='text-4xl mt-8  font-bold '>Admin Dashboard</h1>

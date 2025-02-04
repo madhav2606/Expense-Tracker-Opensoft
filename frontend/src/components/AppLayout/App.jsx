@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import "../../App.css"
+import Dashboard from "../UserDashboard/Dashboard"
 import AdminDash from "../Admin/AdminDash"
 import BudgetGoals from "../Budget/BudgetGoals"
 import GroupBill from "../Groups/GroupBill"
@@ -9,7 +10,6 @@ import ExpenseList from "../Expense/ExpenseList"
 import UserManage from "../Admin/UserManage"
 import ActivityMonitor from "../Admin/ActivityMonitor"
 import SystemHealth from "../Admin/SystemHealth"
-import Dash from "../Dashboard/Dash"
 import { useAuth } from "../Context/AuthContext"
 
 function App() {

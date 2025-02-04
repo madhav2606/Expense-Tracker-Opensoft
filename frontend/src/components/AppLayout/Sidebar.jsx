@@ -18,7 +18,7 @@ const Sidebar = () => {
   const [selected, setSelected] = useState('Admin');
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
-  const {logout} =useAuth();
+  const {logout,user} =useAuth();
   const handleLogout = async (req, res) => {
     logout();
   }
@@ -67,7 +67,7 @@ const Sidebar = () => {
                 </li>
               </Link>
             ) : (
-              <div>
+              user?.role=="Admin" && <div>
                 <Link to="/admin">
                   <li
                     onClick={() => { setAdminOpen(!adminOpen); setSelected("Admin Dashboard") }}

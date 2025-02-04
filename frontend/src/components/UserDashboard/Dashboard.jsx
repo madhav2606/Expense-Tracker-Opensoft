@@ -3,10 +3,13 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell
 } from 'recharts';
+import { useAuth } from '../Context/AuthContext';
+import InactiveAccount from '../AuthRestrict/InactiveAccount';
 
 const Dashboard = () => {
   const [timeframe, setTimeframe] = useState('monthly');
   const [filteredExpenseData, setFilteredExpenseData] = useState([]);
+  const { user } = useAuth();
 
   const data = {
     income: 1200,
@@ -26,17 +29,17 @@ const Dashboard = () => {
       { name: 'Nov', value: 75 },
       { name: 'Dec', value: 120 }
     ],
-    weeklyExpenses: [ 
-        { name: 'Week 1', value: 20 },
-        { name: 'Week 2', value: 35 },
-        { name: 'Week 3', value: 50 },
-        { name: 'Week 4', value: 45 },
-        { name: 'Week 5', value: 60 },
-      ],
-      yearlyExpenses: [ 
-        { name: '2023', value: 900 },
-        { name: '2024', value: 1200 },
-      ],
+    weeklyExpenses: [
+      { name: 'Week 1', value: 20 },
+      { name: 'Week 2', value: 35 },
+      { name: 'Week 3', value: 50 },
+      { name: 'Week 4', value: 45 },
+      { name: 'Week 5', value: 60 },
+    ],
+    yearlyExpenses: [
+      { name: '2023', value: 900 },
+      { name: '2024', value: 1200 },
+    ],
     categoryExpenseData: [
       { name: 'Rent', value: 150, color: '#9b59b6' },
       { name: 'Groceries', value: 80, color: '#f39c12' },
@@ -51,7 +54,7 @@ const Dashboard = () => {
     ]
   };
 
-  
+
   useEffect(() => {
     let filteredData;
     if (timeframe === 'monthly') {
@@ -64,12 +67,13 @@ const Dashboard = () => {
     setFilteredExpenseData(filteredData);
   }, [timeframe]);
 
-  
+
   const totalExpense = data.categoryExpenseData.reduce((sum, item) => sum + item.value, 0);
 
+  if (user?.status === "Inactive" && user?.role==="User") return <InactiveAccount />
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-     
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-purple-800 p-4 rounded-lg shadow-md text-center">
           <h3 className="text-lg font-semibold text-white">Income</h3>
@@ -85,7 +89,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      
+
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Expense Overview</h3>
         <div className="flex gap-3 mb-4">
@@ -105,9 +109,9 @@ const Dashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-       
+
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Recent Expenses</h3>
           <ul>
@@ -120,7 +124,7 @@ const Dashboard = () => {
           </ul>
         </div>
 
-       
+
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Category Expense</h3>
           <ResponsiveContainer width="100%" height={300}>

@@ -1,6 +1,8 @@
 import { MoreHorizontal } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import Avatar from 'react-avatar';
+import { useAuth } from '../Context/AuthContext';
+import AccessDenial from '../AuthRestrict/AccessDenial';
 
 const UserManage = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -9,8 +11,9 @@ const UserManage = () => {
     const [editingUser, setEditingUser] = useState(null);
     const [editedName, setEditedName] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
+    const { user } = useAuth();
     // const [isEditing, setisEditing] = useState(false)
-   
+
 
     useEffect(() => {
         const getUsers = async () => {
@@ -150,6 +153,8 @@ const UserManage = () => {
         }
     };
 
+    if (user?.role !== "Admin") return <AccessDenial />;
+
     return (
         <div className='flex flex-col gap-8 mx-10'>
             <h1 className='text-4xl mt-8 font-bold'>User Management</h1>
@@ -177,7 +182,7 @@ const UserManage = () => {
                         filteredUsers.map((user, index) => (
                             <tr key={index} className="relative hover:bg-gray-50">
                                 <td className="p-4 border-b border-gray-200 flex gap-4">
-                                <Avatar round={true}  name={user.name} size="40" />
+                                    <Avatar round={true} name={user.name} size="40" />
                                     {editingUser === user._id ? (
                                         <input
                                             type="text"

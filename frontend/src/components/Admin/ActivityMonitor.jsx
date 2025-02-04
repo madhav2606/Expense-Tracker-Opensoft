@@ -1,11 +1,14 @@
 import { MoreHorizontal } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import Avatar from 'react-avatar';
+import { useAuth } from '../Context/AuthContext';
+import AccessDenial from '../AuthRestrict/AccessDenial';
 
 const ActivityMonitor = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [allUsers, setAllUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const {user}=useAuth();
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -36,6 +39,8 @@ const ActivityMonitor = () => {
         const date = new Date(timestamp);
         return date.toLocaleString();
     };
+
+    if(user?.role!=="Admin")return <AccessDenial/>
 
     return (
         <div className='flex flex-col gap-8 mx-10'>

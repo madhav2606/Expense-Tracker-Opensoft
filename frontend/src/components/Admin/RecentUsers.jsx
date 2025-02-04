@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Avatar from 'react-avatar';
+import { useAuth } from '../Context/AuthContext';
 
 const RecentUsers = () => {
     const [recentUsers, setRecentUsers] = useState([])
@@ -29,7 +30,6 @@ const RecentUsers = () => {
         const formattedDate = date.toLocaleDateString();
         return formattedDate
     }
-
     return (
         <div className='space-y-2 w-1/2 border border-gray-500 rounded-xl p-2 px-4 overflow-auto h-96'>
             <h1 className='px-5 text-2xl font-bold'>Recent Users</h1>

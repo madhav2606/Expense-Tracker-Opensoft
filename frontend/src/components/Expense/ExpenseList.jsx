@@ -3,6 +3,7 @@ import { Pencil, Trash2, Eye, X, Calendar, DollarSign, Tag, CreditCard, FileText
 import Modal from './Modal';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
+import InactiveAccount from '../AuthRestrict/InactiveAccount';
 
 const ExpenseList = () => {
 
@@ -17,6 +18,7 @@ const ExpenseList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [isAscending, setIsAscending] = useState(true);
+  const {user}=useAuth();
 
   const [newExpense, setNewExpense] = useState(
     { amount: "", description: "", date: "", paymentMethod: "", category: "" }
@@ -204,6 +206,8 @@ const ExpenseList = () => {
     }
   }, []);
 
+
+  if (user?.status === "Inactive" && user?.role==="User") return <InactiveAccount />
   return (
     <div className='flex  min-h-screen'>
       <main className="flex-1 bg-white rounded-md  p-4 ml-4">
