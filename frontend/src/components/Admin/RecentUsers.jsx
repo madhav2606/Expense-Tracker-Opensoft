@@ -4,6 +4,7 @@ import { useAuth } from '../Context/AuthContext';
 
 const RecentUsers = () => {
     const [recentUsers, setRecentUsers] = useState([])
+    const {user}=useAuth();
 
     useEffect(() => {
         const getUsers = async () => {
@@ -13,6 +14,7 @@ const RecentUsers = () => {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
                     },
                     });
                 if (!response.ok) {

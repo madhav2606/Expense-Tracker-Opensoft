@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useAuth } from "../Context/AuthContext";
 
 const UserActivity = () => {
     const [data, setData] = useState([]);
+    const {user}=useAuth();
 
     useEffect(() => {
         const fetchUserStats = async () => {
@@ -13,6 +15,7 @@ const UserActivity = () => {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
                     },
                     });
                 if (!response.ok) {
@@ -22,8 +25,6 @@ const UserActivity = () => {
                 setData(stats.usersStatsPerDay );
             } catch (error) {
                 setError(error.message); 
-            } finally {
-                setLoading(false); 
             }
         };
         fetchUserStats();

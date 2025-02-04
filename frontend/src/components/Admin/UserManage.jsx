@@ -24,6 +24,7 @@ const UserManage = () => {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
                     },
                 });
                 if (!response.ok) {
@@ -58,6 +59,7 @@ const UserManage = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    userid: user?._id
                 },
                 body: JSON.stringify({ email }),
             });
@@ -89,6 +91,7 @@ const UserManage = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    userid: user?._id
                 },
                 body: JSON.stringify({ email }),
             });
@@ -125,6 +128,7 @@ const UserManage = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    userid: user?._id
                 },
                 body: JSON.stringify({ name: editedName, email: editedEmail }),
             });
@@ -153,6 +157,7 @@ const UserManage = () => {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    userid: user?._id
                 }
             });
 
@@ -231,42 +236,45 @@ const UserManage = () => {
                                     <MoreHorizontal />
                                 </td>
                                 {isOpen === index && (
-                                    <ul className="absolute right-10 top-14 bg-purple-800 text-white p-2 z-50 rounded-xl shadow-md">
-                                        <li
-                                            className="p-2 hover:bg-purple-600 cursor-pointer"
-                                            onClick={() => {
-                                                if (editingUser == null) {
-                                                    handleEdit(user)
-                                                }
-                                                else {
-                                                    handleSaveEdit(editingUser)
-                                                }
+                                    <td>
+                                        <ul className="absolute right-10 top-14 bg-purple-800 text-white p-2 z-50 rounded-xl shadow-md">
+                                            <li
+                                                className="p-2 hover:bg-purple-600 cursor-pointer"
+                                                onClick={() => {
+                                                    if (editingUser == null) {
+                                                        handleEdit(user)
+                                                    }
+                                                    else {
+                                                        handleSaveEdit(editingUser)
+                                                    }
 
-                                            }
-                                            }
-                                        >
-                                            {editingUser != null ? "Save User" : "Edit User"}
-                                        </li>
-                                        <li
-                                            className="p-2 hover:bg-purple-600 cursor-pointer"
-                                            onClick={() => handleRole(user.email)}
-                                        >
-                                            Change Role
-                                        </li>
-                                        <li
-                                            className="p-2 hover:bg-purple-600 cursor-pointer"
-                                            onClick={() => handleStatus(user.email)}
-                                        >
-                                            {user.status === "Active" ? "Deactivate User" : "Activate User"}
-                                        </li>
-                                        <li
-                                            className="p-2 hover:bg-purple-600 cursor-pointer"
-                                            onClick={() => handleDelete(user._id)}
-                                        >
-                                            Delete User
-                                        </li>
-                                    </ul>
+                                                }
+                                                }
+                                            >
+                                                {editingUser != null ? "Save User" : "Edit User"}
+                                            </li>
+                                            <li
+                                                className="p-2 hover:bg-purple-600 cursor-pointer"
+                                                onClick={() => handleRole(user.email)}
+                                            >
+                                                Change Role
+                                            </li>
+                                            <li
+                                                className="p-2 hover:bg-purple-600 cursor-pointer"
+                                                onClick={() => handleStatus(user.email)}
+                                            >
+                                                {user.status === "Active" ? "Deactivate User" : "Activate User"}
+                                            </li>
+                                            <li
+                                                className="p-2 hover:bg-purple-600 cursor-pointer"
+                                                onClick={() => handleDelete(user._id)}
+                                            >
+                                                Delete User
+                                            </li>
+                                        </ul>
+                                    </td>
                                 )}
+
                             </tr>
                         ))
                     ) : (

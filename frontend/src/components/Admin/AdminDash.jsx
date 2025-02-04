@@ -28,6 +28,7 @@ const AdminDash = () => {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
                     },
                     });
                 if (!response.ok) {
