@@ -19,7 +19,13 @@ const UserManage = () => {
     useEffect(() => {
         const getUsers = async () => {
             try {
-                const response = await fetch('http://localhost:3000/getUsers');
+                const response = await fetch('http://localhost:3000/getUsers', {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -41,7 +47,7 @@ const UserManage = () => {
                 user.email.toLowerCase().includes(searchQuery.toLowerCase())
             )
         );
-    }, [searchQuery,allUsers]);
+    }, [searchQuery, allUsers]);
 
     const handleStatus = async (email) => {
         const isConfirmed = window.confirm("Are you sure you want to change the status of this user?");
@@ -51,6 +57,7 @@ const UserManage = () => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ email }),
             });
@@ -81,6 +88,7 @@ const UserManage = () => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ email }),
             });
@@ -116,6 +124,7 @@ const UserManage = () => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ name: editedName, email: editedEmail }),
             });
@@ -142,6 +151,9 @@ const UserManage = () => {
         try {
             const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
                 method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
             });
 
             if (!response.ok) {

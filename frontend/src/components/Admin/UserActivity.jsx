@@ -8,7 +8,13 @@ const UserActivity = () => {
     useEffect(() => {
         const fetchUserStats = async () => {
             try {
-                const response = await fetch("http://localhost:3000/activityChart");
+                const response = await fetch("http://localhost:3000/activityChart",{
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }

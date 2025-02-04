@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         };
 
         if (isAuthenticated) fetchUserData(); // Fetch user only when authenticated
-    }, [user,isAuthenticated]);
+    }, [isAuthenticated]);
 
     const signIn = async (email, password) => {
         try {
