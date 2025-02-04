@@ -9,6 +9,7 @@ import ExpenseList from "../Expense/ExpenseList"
 import UserManage from "../Admin/UserManage"
 import ActivityMonitor from "../Admin/ActivityMonitor"
 import SystemHealth from "../Admin/SystemHealth"
+import Dashboard from "../UserDashboard/Dashboard"
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/budget" element={<BudgetGoals />} />
           <Route path="/groups" element={<GroupBill />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     </div>
