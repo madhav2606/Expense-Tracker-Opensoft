@@ -8,7 +8,7 @@ const ActivityMonitor = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [allUsers, setAllUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const {user}=useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -19,7 +19,7 @@ const ActivityMonitor = () => {
                 }
                 const activities = await response.json();
                 setAllUsers(activities);
-                setFilteredUsers(activities); 
+                setFilteredUsers(activities);
             } catch (error) {
                 console.error("Error fetching activities", error);
             }
@@ -40,46 +40,55 @@ const ActivityMonitor = () => {
         return date.toLocaleString();
     };
 
-    if(user?.role!=="Admin")return <AccessDenial/>
+    if (user?.role !== "Admin") return <AccessDenial />;
 
     return (
-        <div className='flex flex-col gap-8 mx-10'>
-            <h1 className='text-4xl mt-8 font-bold'>Activity Monitor</h1>
-            <div className='flex items-center space-x-5'>
+        <div className="max-w-6xl mx-auto p-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">Activity Monitor</h1>
+
+            {/* Search Bar */}
+            <div className="flex justify-center mb-6">
                 <input
                     type="text"
-                    placeholder='Search activities...'
+                    placeholder="Search activities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className='p-2 rounded-xl border w-2/5'
+                    className="p-3 rounded-lg border border-gray-300 w-1/2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
             </div>
-            <table className="min-w-full border-collapse">
-                <thead>
-                    <tr className="text-left">
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Name</th>
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Action</th>
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Timestamp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredUsers.length > 0 ? (
-                        filteredUsers.map((item, index) => (
-                            <tr key={index} className="relative hover:bg-gray-50">
-                                <td className="p-4 border-b border-gray-200 flex gap-5 items-center">
-                                    <Avatar round={true} name={item.user} size="40" />{item.user}
-                                </td>
-                                <td className="p-4 border-b border-gray-200">{item.action}</td>
-                                <td className="p-4 border-b border-gray-200">{formatDate(item.timestamp)}</td>
-                            </tr>
-                        ))
-                    ) : (
+
+            {/* Activity Table */}
+            <div className="overflow-hidden rounded-xl shadow-lg">
+                <table className="min-w-full bg-white rounded-lg overflow-auto">
+                    <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
                         <tr>
-                            <td className="p-4" colSpan="3">No users found</td>
+                            <th className="p-4 text-left">User</th>
+                            <th className="p-4 text-left">Action</th>
+                            <th className="p-4 text-left">Timestamp</th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredUsers.length > 0 ? (
+                            filteredUsers.map((item, index) => (
+                                <tr key={index} className="border-b hover:bg-gray-100 transition">
+                                    <td className="p-4 flex items-center space-x-3">
+                                        <Avatar round={true} name={item.user} size="40" /> 
+                                        <span className="font-medium text-gray-800">{item.user}</span>
+                                    </td>
+                                    <td className="p-4 text-gray-700">{item.action}</td>
+                                    <td className="p-4 text-gray-500">{formatDate(item.timestamp)}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td className="p-4 text-center text-gray-500" colSpan="3">
+                                    No activities found
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

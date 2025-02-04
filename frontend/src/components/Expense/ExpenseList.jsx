@@ -18,7 +18,7 @@ const ExpenseList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [isAscending, setIsAscending] = useState(true);
-  const {user}=useAuth();
+  const { user } = useAuth();
 
   const [newExpense, setNewExpense] = useState(
     { amount: "", description: "", date: "", paymentMethod: "", category: "" }
@@ -207,7 +207,7 @@ const ExpenseList = () => {
   }, []);
 
 
-  if (user?.status === "Inactive" && user?.role==="User") return <InactiveAccount />
+  if (user?.status === "Inactive" && user?.role === "User") return <InactiveAccount />
   return (
     <div className='flex  min-h-screen'>
       <main className="flex-1 bg-white rounded-md  p-4 ml-4">
@@ -252,36 +252,49 @@ const ExpenseList = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="table-auto w-full border-collapse">
-
-            <thead>
-              <tr>
-                <th className="text-left px-4 py-2">Date</th>
-                <th className="text-left px-4 py-2">Amount</th>
-                <th className="text-left px-4 py-2">Category</th>
-                <th className="text-left px-4 py-2">Payment Method</th>
-                <th className="text-left px-4 py-2">Description</th>
+          <table className="table-auto w-full border border-gray-200 rounded-xl  shadow-xl bg-white overflow-hidden">
+            {/* Table Head */}
+            <thead className="bg-yellow-400 border-b border-gray-300">
+              <tr className="text-gray-700 text-left">
+                <th className="px-6 py-3">Date</th>
+                <th className="px-6 py-3">Amount</th>
+                <th className="px-6 py-3">Category</th>
+                <th className="px-6 py-3">Payment Method</th>
+                <th className="px-6 py-3">Description</th>
+                <th className="px-6 py-3 text-center">Actions</th>
               </tr>
             </thead>
 
-
+            {/* Table Body */}
             <tbody>
               {sortedExpenses.map((expense, index) => (
-                <tr key={index} className="odd:bg-white even:bg-gray-50 h-[10rem]">
-                  <td className="px-4 py-2">{formatDate(expense.date)}</td>
-                  <td className="px-4 py-2">{expense.amount}</td>
-                  <td className=" px-4 py-2">{expense.category}</td>
-                  <td className=" px-4 py-2">{expense.paymentMethod}</td>
-                  <td className="px-4 py-2">{expense.description}</td>
-                  <td className=" px-4 py-2 text-center space-x-2">
-                    <button onClick={() => handleEditExpense(expense)} className="text-yellow-500 hover:text-yellow-600 cursor-pointer">
-                      <Pencil />
+                <tr
+                  key={index}
+                  className="odd:bg-white even:bg-gray-50 hover:bg-yellow-100 transition-all duration-200 border-b border-gray-200"
+                >
+                  <td className="px-6 py-4">{formatDate(expense.date)}</td>
+                  <td className="px-6 py-4 font-semibold text-gray-800">${expense.amount}</td>
+                  <td className="px-6 py-4">{expense.category}</td>
+                  <td className="px-6 py-4">{expense.paymentMethod}</td>
+                  <td className="px-6 py-4">{expense.description}</td>
+                  <td className="px-6 py-4 text-center space-x-2">
+                    <button
+                      onClick={() => handleEditExpense(expense)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-all"
+                    >
+                      <Pencil size={16} />
                     </button>
-                    <button onClick={() => handleDeleteExpense(expense._id)} className=" text-yellow-500 hover:text-yellow-600 cursor-pointer">
-                      <Trash2 />
+                    <button
+                      onClick={() => handleDeleteExpense(expense._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-all"
+                    >
+                      <Trash2 size={16} />
                     </button>
-                    <button onClick={() => handleViewExpense(expense)} className=' text-yellow-500 hover:text-yellow-600 cursor-pointer'>
-                      <Eye />
+                    <button
+                      onClick={() => handleViewExpense(expense)}
+                      className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-all"
+                    >
+                      <Eye size={16} />
                     </button>
                   </td>
                 </tr>
@@ -297,7 +310,7 @@ const ExpenseList = () => {
             <div className="flex justify-between items-center bg-yellow-400 text-white px-6 py-4">
               <h2 className="text-2xl font-bold">Add New Expense</h2>
               <button
-                onClick={()=>setAddExpenseModal(false)}
+                onClick={() => setAddExpenseModal(false)}
                 className="text-white hover:text-gray-200 transition-colors"
                 aria-label="Close modal"
               >
@@ -393,7 +406,7 @@ const ExpenseList = () => {
             <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-2">
               <button
                 type="button"
-                onClick={()=>setAddExpenseModal(false)}
+                onClick={() => setAddExpenseModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               >
                 Cancel

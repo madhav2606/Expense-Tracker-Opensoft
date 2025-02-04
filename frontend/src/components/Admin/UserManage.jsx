@@ -8,6 +8,7 @@ const UserManage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [editedName, setEditedName] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
@@ -24,6 +25,7 @@ const UserManage = () => {
                 }
                 const data = await response.json();
                 setFilteredUsers(data);
+                setAllUsers(data)
             } catch (error) {
                 console.error("Error fetching users:", error);
             }
@@ -33,13 +35,13 @@ const UserManage = () => {
     }, []);
 
     useEffect(() => {
-        setFilteredUsers(prevUsers =>
-            prevUsers.filter(user =>
+        setFilteredUsers(
+            allUsers?.filter(user =>
                 user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 user.email.toLowerCase().includes(searchQuery.toLowerCase())
             )
         );
-    }, [searchQuery]);
+    }, [searchQuery,allUsers]);
 
     const handleStatus = async (email) => {
         const isConfirmed = window.confirm("Are you sure you want to change the status of this user?");
@@ -156,7 +158,7 @@ const UserManage = () => {
     if (user?.role !== "Admin") return <AccessDenial />;
 
     return (
-        <div className='flex flex-col gap-8 mx-10'>
+        <div className='flex flex-col gap-8 mx-10 '>
             <h1 className='text-4xl mt-8 font-bold'>User Management</h1>
             <div className='flex items-center space-x-5'>
                 <input
@@ -167,14 +169,14 @@ const UserManage = () => {
                     className='p-2 rounded-xl border w-2/5'
                 />
             </div>
-            <table className="min-w-full border-collapse overflow-auto">
-                <thead>
+            <table className="min-w-full border-collapse overflow-hidden rounded-2xl shadow-lg">
+                <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
                     <tr className="text-left">
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Name</th>
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Email</th>
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Role</th>
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Status</th>
-                        <th className="p-4 border-b border-gray-200 text-sm text-gray-600">Actions</th>
+                        <th className="p-4 border-b border-gray-200 text-sm">Name</th>
+                        <th className="p-4 border-b border-gray-200 text-sm">Email</th>
+                        <th className="p-4 border-b border-gray-200 text-sm">Role</th>
+                        <th className="p-4 border-b border-gray-200 text-sm">Status</th>
+                        <th className="p-4 border-b border-gray-200 text-sm">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -207,7 +209,9 @@ const UserManage = () => {
                                     )}
                                 </td>
                                 <td className="p-4 border-b border-gray-200">{user.role}</td>
-                                <td className="p-4 border-b border-gray-200">{user.status}</td>
+                                <td className="p-4 border-b border-gray-200"><span className={`px-3 py-1 rounded-full text-sm font-medium ${user.status === "Active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                    {user.status}
+                                </span></td>
                                 <td
                                     className="p-4 border-b border-gray-200 hover:cursor-pointer"
                                     onClick={() => setIsOpen(isOpen === index ? null : index)}
