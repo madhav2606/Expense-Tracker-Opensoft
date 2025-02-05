@@ -154,7 +154,7 @@ const SpendingAnalyticsDashboard = () => {
     
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Payment Method Breakdown</h2>
-        <ResponsiveContainer className="w-full h-full">
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart data={paymentMethods}>
             <XAxis dataKey="method" />
             <YAxis />
