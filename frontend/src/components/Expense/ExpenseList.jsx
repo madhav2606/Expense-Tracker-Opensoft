@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import InactiveAccount from '../AuthRestrict/InactiveAccount';
 import Toast from '../Message/Toast';
+import { ConfirmModal } from '../Message/ConfirmModal';
 
 const ExpenseList = () => {
 
@@ -21,6 +22,22 @@ const ExpenseList = () => {
   const [isAscending, setIsAscending] = useState(true);
   const { user } = useAuth();
   const [toasts, setToasts] = useState([]);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    message: '',
+    onConfirm: () => { },
+  });
+
+  const openConfirmModal = (message, action) => {
+    setConfirmModal({
+      isOpen: true,
+      message,
+      onConfirm: () => {
+        action();
+        setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } });
+      }
+    });
+  };
 
   const showToast = (message, type) => {
     const id = Date.now();
@@ -30,7 +47,7 @@ const ExpenseList = () => {
   const removeToast = (id) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   };
-  
+
 
   const [newExpense, setNewExpense] = useState(
     { amount: "", description: "", date: "", paymentMethod: "", category: "" }
@@ -111,7 +128,7 @@ const ExpenseList = () => {
         setAddExpenseModal(false);
         setNewExpense({ amount: "", description: "", date: "", paymentMethod: "", category: "" });
         showToast("Expense Added successfully!", "success")
-        
+
       } else {
         console.log("Error adding expense:", response.data.message);
         alert("Failed to add expense. Please try again.");
@@ -141,29 +158,29 @@ const ExpenseList = () => {
       return;
     }
 
-    const confirmDelete = window.confirm('Are you sure you want to delete this expense?');
-    if (!confirmDelete) return;
+    openConfirmModal('Are you sure you want to delete this expense?', async () => {
 
-    try {
-      const response = await fetch(`http://localhost:3000/expenses/delete/${id}/${userId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+        const response = await fetch(`http://localhost:3000/expenses/delete/${id}/${userId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete expense");
+        if (!response.ok) {
+          throw new Error("Failed to delete expense");
+        }
+
+        setExpenses(prev => prev.filter(expense => expense._id !== id));
+        showToast("Expense deleted successfully!", "success")
+
+      } catch (error) {
+        console.error("Error deleting expense:", error.message);
+        alert("An error occurred while deleting the expense. Please try again.");
+        showToast("Failed to delete expense. Please try again.", "error")
       }
-
-      setExpenses(prev => prev.filter(expense => expense._id !== id));
-      showToast("Expense deleted successfully!", "success")
-
-    } catch (error) {
-      console.error("Error deleting expense:", error.message);
-      alert("An error occurred while deleting the expense. Please try again.");
-      showToast("Failed to delete expense. Please try again.", "error")
-    }
+    });
   };
 
   const handleSaveEditedExpense = async () => {
@@ -174,26 +191,27 @@ const ExpenseList = () => {
       navigate('/signin');
       return;
     }
+    openConfirmModal("Are you sure you want to save the changes?", async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/expenses/update/${expenseToEdit._id}/${userId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(expenseToEdit)
+        });
 
-    try {
-      const response = await fetch(`http://localhost:3000/expenses/update/${expenseToEdit._id}/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(expenseToEdit)
-      });
+        if (!response.ok) {
+          throw new Error("Failed to delete expense");
+        }
+        setExpenses(expenses.map((expense) => (expense._id === expenseToEdit._id ? expenseToEdit : expense)));
+        showToast("edited successfully!", "success")
+      } catch (error) {
+        showToast("Failed to edit. Please try again.", "error")
 
-      if (!response.ok) {
-        throw new Error("Failed to delete expense");
       }
-      setExpenses(expenses.map((expense) => (expense._id === expenseToEdit._id ? expenseToEdit : expense)));
-      showToast("edited successfully!", "success")
-    } catch (error) {
-      showToast("Failed to edit. Please try again.", "error")
-
-    }
+    })
 
     setEditExpenseModal(false);
     setExpenseToEdit(null);
@@ -229,15 +247,21 @@ const ExpenseList = () => {
   return (
     <div className='flex  min-h-screen'>
       <main className="flex-1 bg-white rounded-md  p-4 ml-4">
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          message={confirmModal.message}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
+        />
         <div>
-        {toasts.map(toast => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => removeToast(toast.id)}
-          />
-        ))}
+          {toasts.map(toast => (
+            <Toast
+              key={toast.id}
+              message={toast.message}
+              type={toast.type}
+              onClose={() => removeToast(toast.id)}
+            />
+          ))}
         </div>
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Expenses</h1>

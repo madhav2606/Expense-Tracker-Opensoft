@@ -4,6 +4,7 @@ import Avatar from 'react-avatar';
 import { useAuth } from '../Context/AuthContext';
 import AccessDenial from '../AuthRestrict/AccessDenial';
 import Toast from '../Message/Toast';
+import { ConfirmModal } from '../Message/ConfirmModal';
 
 const UserManage = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,6 +17,23 @@ const UserManage = () => {
     const { user } = useAuth();
     // const [isEditing, setisEditing] = useState(false)
     const [toasts, setToasts] = useState([]);
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        message: '',
+        onConfirm: () => { },
+    });
+
+    const openConfirmModal = (message, action) => {
+        setConfirmModal({
+            isOpen: true,
+            message,
+            onConfirm: () => {
+                action();
+                setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } });
+            }
+        });
+        setIsOpen(false)
+    };
 
     const showToast = (message, type) => {
         const id = Date.now();
@@ -63,70 +81,70 @@ const UserManage = () => {
     }, [searchQuery, allUsers]);
 
     const handleStatus = async (email) => {
-        const isConfirmed = window.confirm("Are you sure you want to change the status of this user?");
-        if (!isConfirmed) return;
-        try {
-            const response = await fetch('http://localhost:3000/changeStatus', {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    userid: user?._id
-                },
-                body: JSON.stringify({ email }),
-            });
+        openConfirmModal("Are you sure you want to change the status of this user?", async () => {
+            try {
+                const response = await fetch('http://localhost:3000/changeStatus', {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
+                    },
+                    body: JSON.stringify({ email }),
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                setFilteredUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user.email === email
+                            ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
+                            : user
+                    )
+                );
+                setIsOpen(false)
+                showToast("Status Changed successfully!", "success")
+            } catch (error) {
+                console.log("Error changing status:", error);
+                showToast("Failed to change. Please try again.", "error")
             }
-
-            setFilteredUsers(prevUsers =>
-                prevUsers.map(user =>
-                    user.email === email
-                        ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
-                        : user
-                )
-            );
-            setIsOpen(false)
-            showToast("Changed successfully!", "success")
-        } catch (error) {
-            console.log("Error changing status:", error);
-            showToast("Failed to change. Please try again.", "error")
-        }
+        })
     };
 
 
     const handleRole = async (email) => {
-        const isConfirmed = window.confirm(`Are you sure you want to change the role of this user?`);
-        if (!isConfirmed) return;
-        try {
-            const response = await fetch('http://localhost:3000/changeRole', {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    userid: user?._id
-                },
-                body: JSON.stringify({ email }),
-            });
+        openConfirmModal(`Are you sure you want to change the role of this user?`, async () => {
+            try {
+                const response = await fetch('http://localhost:3000/changeRole', {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
+                    },
+                    body: JSON.stringify({ email }),
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                setFilteredUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user.email === email
+                            ? { ...user, role: user.role === "Admin" ? "User" : "Admin" }
+                            : user
+                    )
+                );
+                setIsOpen(false)
+                showToast("Role changed successfully!", "success")
+            } catch (error) {
+                console.log("Error changing role:", error);
+                showToast("Failed to change role. Please try again.", "error")
             }
-
-            setFilteredUsers(prevUsers =>
-                prevUsers.map(user =>
-                    user.email === email
-                        ? { ...user, role: user.role === "Admin" ? "User" : "Admin" }
-                        : user
-                )
-            );
-            setIsOpen(false)
-            showToast("Role changed successfully!", "success")
-        } catch (error) {
-            console.log("Error changing role:", error);
-            showToast("Failed to change role. Please try again.", "error")
-        }
+        });
     };
 
     const handleEdit = (user) => {
@@ -136,61 +154,61 @@ const UserManage = () => {
     };
 
     const handleSaveEdit = async (id) => {
-        const isConfirmed = window.confirm("Are you sure you want to save the changes?");
-        if (!isConfirmed) return;
-        try {
-            const response = await fetch(`http://localhost:3000/updateUser/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    userid: user?._id
-                },
-                body: JSON.stringify({ name: editedName, email: editedEmail }),
-            });
+        openConfirmModal("Are you sure you want to save the changes?", async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/updateUser/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
+                    },
+                    body: JSON.stringify({ name: editedName, email: editedEmail }),
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                setFilteredUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user._id === id ? { ...user, name: editedName, email: editedEmail } : user
+                    )
+                );
+                setEditingUser(null);
+                setIsOpen(false)
+                showToast("Edited successfully!", "success")
+            } catch (error) {
+                console.log("Error updating user:", error);
+                showToast("Failed to Edit. Please try again.", "error")
             }
-
-            setFilteredUsers(prevUsers =>
-                prevUsers.map(user =>
-                    user._id === id ? { ...user, name: editedName, email: editedEmail } : user
-                )
-            );
-            setEditingUser(null);
-            setIsOpen(false)
-            showToast("Edited successfully!", "success")
-        } catch (error) {
-            console.log("Error updating user:", error);
-            showToast("Failed to Edit. Please try again.", "error")
-        }
+        });
     };
 
     const handleDelete = async (id) => {
-        const isConfirmed = window.confirm("Are you sure you want to delete this user?");
-        if (!isConfirmed) return;
-        try {
-            const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    userid: user?._id
+        openConfirmModal("Are you sure you want to delete this user?", async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        userid: user?._id
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                setFilteredUsers(filteredUsers.filter(user => user._id !== id));
+                setIsOpen(false)
+                showToast("User deleted successfully!", "success")
+
+            } catch (error) {
+                console.log("Error deleting user:", error);
+                showToast("Failed to delete . Please try again.", "error")
             }
-
-            setFilteredUsers(filteredUsers.filter(user => user._id !== id));
-            setIsOpen(false)
-            showToast("User deleted successfully!", "success")
-
-        } catch (error) {
-            console.log("Error deleting user:", error);
-            showToast("Failed to delete . Please try again.", "error")
-        }
+        });
     };
 
     if (user?.role !== "Admin") return <AccessDenial />;
@@ -198,6 +216,12 @@ const UserManage = () => {
     return (
         <div className='flex flex-col gap-8 mx-10 '>
             <h1 className='text-4xl mt-8 font-bold'>User Management</h1>
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                message={confirmModal.message}
+                onConfirm={confirmModal.onConfirm}
+                onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
+            />
             <div>
                 {toasts.map(toast => (
                     <Toast
