@@ -13,7 +13,6 @@ const UserManage = () => {
     const [editedName, setEditedName] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
     const { user } = useAuth();
-    // const [isEditing, setisEditing] = useState(false)
 
 
     useEffect(() => {
@@ -186,7 +185,7 @@ const UserManage = () => {
                     className='p-2 rounded-xl border w-2/5'
                 />
             </div>
-            <table className="min-w-full border-collapse overflow-hidden rounded-2xl shadow-lg">
+            <table className="min-w-full border-collapse  rounded-2xl shadow-lg">
                 <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
                     <tr className="text-left">
                         <th className="p-4 border-b border-gray-200 text-sm">Name</th>

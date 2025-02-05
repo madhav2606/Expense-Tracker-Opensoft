@@ -1,153 +1,133 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react"
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell
-} from 'recharts';
-import { useAuth } from '../Context/AuthContext';
-import InactiveAccount from '../AuthRestrict/InactiveAccount';
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+} from "recharts"
 
-const Dashboard = () => {
-  const [timeframe, setTimeframe] = useState('monthly');
-  const [filteredExpenseData, setFilteredExpenseData] = useState([]);
-  const { user } = useAuth();
+const SpendingAnalyticsDashboard = () => {
+  const [timeframe, setTimeframe] = useState("monthly")
 
-  const data = {
-    income: 1200,
-    expense: 300,
-    stocks: 500,
-    expenses: [
-      { name: 'Jan', value: 50 },
-      { name: 'Feb', value: 30 },
-      { name: 'Mar', value: 80 },
-      { name: 'Apr', value: 70 },
-      { name: 'May', value: 90 },
-      { name: 'Jun', value: 110 },
-      { name: 'Jul', value: 100 },
-      { name: 'Aug', value: 60 },
-      { name: 'Sep', value: 95 },
-      { name: 'Oct', value: 85 },
-      { name: 'Nov', value: 75 },
-      { name: 'Dec', value: 120 }
-    ],
-    weeklyExpenses: [
-      { name: 'Week 1', value: 20 },
-      { name: 'Week 2', value: 35 },
-      { name: 'Week 3', value: 50 },
-      { name: 'Week 4', value: 45 },
-      { name: 'Week 5', value: 60 },
-    ],
-    yearlyExpenses: [
-      { name: '2023', value: 900 },
-      { name: '2024', value: 1200 },
-    ],
-    categoryExpenseData: [
-      { name: 'Rent', value: 150, color: '#9b59b6' },
-      { name: 'Groceries', value: 80, color: '#f39c12' },
-      { name: 'Utilities', value: 50, color: '#3498db' },
-      { name: 'Entertainment', value: 20, color: '#e74c3c' },
-    ],
-    recentExpenses: [
-      { item: 'Coffee', amount: 5 },
-      { item: 'Electric Bill', amount: 60 },
-      { item: 'Groceries', amount: 40 },
-      { item: 'Gym Membership', amount: 30 },
-    ]
-  };
+  // Sample data
+  const monthlyExpenses = [
+    { month: "Jan", amount: 1200 },
+    { month: "Feb", amount: 1400 },
+    { month: "Mar", amount: 1100 },
+    { month: "Apr", amount: 1300 },
+    { month: "May", amount: 1500 },
+    { month: "Jun", amount: 1200 },
+  ]
 
+  const topCategories = [
+    { name: "Food", value: 500, color: "#FF6384" },
+    { name: "Housing", value: 800, color: "#36A2EB" },
+    { name: "Transportation", value: 300, color: "#FFCE56" },
+    { name: "Entertainment", value: 200, color: "#4BC0C0" },
+  ]
 
-  useEffect(() => {
-    let filteredData;
-    if (timeframe === 'monthly') {
-      filteredData = data.expenses;
-    } else if (timeframe === 'weekly') {
-      filteredData = data.weeklyExpenses;
-    } else {
-      filteredData = data.yearlyExpenses;
-    }
-    setFilteredExpenseData(filteredData);
-  }, [timeframe]);
+  const paymentMethods = [
+    { method: "Credit Card", amount: 1200 },
+    { method: "Debit Card", amount: 800 },
+    { method: "Cash", amount: 300 },
+    { method: "Digital Wallet", amount: 200 },
+  ]
 
+  const totalSpending = monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0)
+  const averageMonthlySpending = totalSpending / monthlyExpenses.length
 
-  const totalExpense = data.categoryExpenseData.reduce((sum, item) => sum + item.value, 0);
+  const getFinancialProfile = (average) => {
+    if (average < 1000) return { label: "Saver", color: "text-green-600" }
+    if (average < 1500) return { label: "Balanced", color: "text-blue-600" }
+    return { label: "Spender", color: "text-red-600" }
+  }
 
-  if (user?.status === "Inactive" && user?.role==="User") return <InactiveAccount />
+  const profile = getFinancialProfile(averageMonthlySpending)
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">Spending Analytics Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-purple-800 p-4 rounded-lg shadow-md text-center">
-          <h3 className="text-lg font-semibold text-white">Income</h3>
-          <p className="text-xl font-bold text-white">${data.income}</p>
-        </div>
-        <div className="bg-purple-800 p-4 rounded-lg shadow-md text-center">
-          <h3 className="text-lg font-semibold text-white">Expense</h3>
-          <p className="text-xl font-bold text-white">${data.expense}</p>
-        </div>
-        <div className="bg-purple-800 p-4 rounded-lg shadow-md text-center">
-          <h3 className="text-lg font-semibold text-white">Stocks</h3>
-          <p className="text-xl font-bold text-white">${data.stocks}</p>
+      {/* Financial Profile */}
+      <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Financial Profile</h2>
+        <div className="flex items-center">
+          <span className="text-4xl font-bold mr-4">{profile.label}</span>
+          <span className={`text-2xl ${profile.color}`}>${averageMonthlySpending.toFixed(2)} / month</span>
         </div>
       </div>
 
-
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Expense Overview</h3>
-        <div className="flex gap-3 mb-4">
-          <button className={`px-4 py-2 rounded-md cursor-pointer ${timeframe === 'weekly' ? 'bg-purple-800 text-white' : 'bg-gray-200  hover:bg-purple-300 hover:font-bold'}`} onClick={() => setTimeframe('weekly')}>Weekly</button>
-          <button className={`px-4 py-2 rounded-md cursor-pointer ${timeframe === 'monthly' ? 'bg-purple-800 text-white' : 'bg-gray-200  hover:bg-purple-300 hover:font-bold'}`} onClick={() => setTimeframe('monthly')}>Monthly</button>
-          <button className={`px-4 py-2 rounded-md cursor-pointer  ${timeframe === 'yearly' ? 'bg-purple-800 text-white' : 'bg-gray-200  hover:bg-purple-300 hover:font-bold'}`} onClick={() => setTimeframe('yearly')}>Yearly</button>
-        </div>
+      {/* Monthly Expense Trends */}
+      <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Monthly Expense Trends</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={filteredExpenseData}>
-            <XAxis dataKey="name" />
+          <LineChart data={monthlyExpenses}>
+            <XAxis dataKey="month" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
+            <Line type="monotone" dataKey="amount" stroke="#8884d8" activeDot={{ r: 8 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Recent Expenses</h3>
-          <ul>
-            {data.recentExpenses.map((expense, index) => (
-              <li key={index} className="flex justify-between border-b py-2">
-                <span className="text-gray-600">{expense.item}</span>
-                <span className="font-bold text-red-500">${expense.amount}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Category Expense</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={data.categoryExpenseData}
-                dataKey="value"
-                nameKey="name"
-                label={({ name, value }) => `${name}: ${(value / totalExpense * 100).toFixed(1)}%`}
-                stroke="#fff"
-                strokeWidth={2}
-              >
-                {data.categoryExpenseData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => [`${((value / totalExpense) * 100).toFixed(1)}%`, 'Percentage']} />
-            </PieChart>
-          </ResponsiveContainer>
+      {/* Top Spending Categories */}
+      <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Top Spending Categories</h2>
+        <div className="flex flex-wrap justify-between">
+          <div className="w-full md:w-1/2">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie data={topCategories} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  {topCategories.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="w-full md:w-1/2 mt-4 md:mt-0">
+            <ul className="space-y-2">
+              {topCategories.map((category, index) => (
+                <li key={index} className="flex justify-between items-center">
+                  <span className="text-gray-700">{category.name}</span>
+                  <span className="font-bold">${category.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
 
-export default Dashboard;
+      {/* Payment Method Breakdown */}
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Payment Method Breakdown</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={paymentMethods}>
+            <XAxis dataKey="method" />
+            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="amount" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
+
+export default SpendingAnalyticsDashboard
+
