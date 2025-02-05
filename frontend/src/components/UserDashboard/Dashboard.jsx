@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   LineChart,
   Line,
@@ -17,32 +17,72 @@ import {
 
 const SpendingAnalyticsDashboard = () => {
   const [timeframe, setTimeframe] = useState("monthly")
+  const [expenses , setExpenses] = useState([]);
 
-  // Sample data
-  const monthlyExpenses = [
-    { month: "Jan", amount: 1200 },
-    { month: "Feb", amount: 1400 },
-    { month: "Mar", amount: 1100 },
-    { month: "Apr", amount: 1300 },
-    { month: "May", amount: 1500 },
-    { month: "Jun", amount: 1200 },
-  ]
+   useEffect(() => {
+      const fetchExpenses = async (userId, token) => {
+        try {
+          const response = await fetch(`http://localhost:3000/expenses/get/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to fetch expenses");
+          }
+          const data = await response.json();
+          setExpenses(data);
+        } catch (error) {
+          console.log(error.message)
+        }
+      };
+  
+      const user = JSON.parse(localStorage.getItem("user"))
+      const token = localStorage.getItem("token")
+      if (user._id && token) {
+        fetchExpenses(user._id, token);
+      }
+    }, []);
+  
 
-  const topCategories = [
-    { name: "Food", value: 500, color: "#FF6384" },
-    { name: "Housing", value: 800, color: "#36A2EB" },
-    { name: "Transportation", value: 300, color: "#FFCE56" },
-    { name: "Entertainment", value: 200, color: "#4BC0C0" },
-  ]
+  const monthlyExpensesMap = expenses.reduce((acc, expense) => {
+    const month = new Date(expense.date).toLocaleString("default", { month: "short" });
+    acc[month] = (acc[month] || 0) + Number(expense.amount);
+    console.log(acc[month])
+    return acc;
+  }, {});
+  
+  const monthlyExpenses = Object.keys(monthlyExpensesMap).map(month => ({
+    month,
+    amount: monthlyExpensesMap[month],
+  }));
+  
 
-  const paymentMethods = [
-    { method: "Credit Card", amount: 1200 },
-    { method: "Debit Card", amount: 800 },
-    { method: "Cash", amount: 300 },
-    { method: "Digital Wallet", amount: 200 },
-  ]
+  const categoriesMap = expenses.reduce((acc, expense) => {
+    acc[expense.category] = (acc[expense.category] || 0) + Number(expense.amount);
+    return acc;
+  }, {});
+  
+  const topCategories = Object.keys(categoriesMap).map((category, index) => ({
+    name: category,
+    value: categoriesMap[category],
+    color: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"][index % 5],
+  }));
+  
+
+  const paymentMethodsMap = expenses.reduce((acc, expense) => {
+    acc[expense.paymentMethod] = (acc[expense.paymentMethod] || 0) + Number(expense.amount);
+    return acc;
+  }, {});
+  
+  const paymentMethods = Object.keys(paymentMethodsMap).map(method => ({
+    method,
+    amount: paymentMethodsMap[method],
+  }));
+  
 
   const totalSpending = monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0)
+  // console.log(totalSpending)
   const averageMonthlySpending = totalSpending / monthlyExpenses.length
 
   const getFinancialProfile = (average) => {
@@ -66,7 +106,7 @@ const SpendingAnalyticsDashboard = () => {
         </div>
       </div>
 
-      {/* Monthly Expense Trends */}
+      
       <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Monthly Expense Trends</h2>
         <ResponsiveContainer width="100%" height={300}>
@@ -81,7 +121,7 @@ const SpendingAnalyticsDashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Top Spending Categories */}
+      
       <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Top Spending Categories</h2>
         <div className="flex flex-wrap justify-between">
@@ -111,10 +151,10 @@ const SpendingAnalyticsDashboard = () => {
         </div>
       </div>
 
-      {/* Payment Method Breakdown */}
+    
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Payment Method Breakdown</h2>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer className="w-full h-full">
           <BarChart data={paymentMethods}>
             <XAxis dataKey="method" />
             <YAxis />
