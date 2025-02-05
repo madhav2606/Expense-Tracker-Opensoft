@@ -4,6 +4,7 @@ import Modal from './Modal';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import InactiveAccount from '../AuthRestrict/InactiveAccount';
+import Toast from '../Message/Toast';
 
 const ExpenseList = () => {
 
@@ -19,6 +20,17 @@ const ExpenseList = () => {
   const [sortBy, setSortBy] = useState("");
   const [isAscending, setIsAscending] = useState(true);
   const { user } = useAuth();
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = (message, type) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+  
 
   const [newExpense, setNewExpense] = useState(
     { amount: "", description: "", date: "", paymentMethod: "", category: "" }
@@ -98,13 +110,15 @@ const ExpenseList = () => {
         setExpenses([...expenses, { ...addedExpense }]);
         setAddExpenseModal(false);
         setNewExpense({ amount: "", description: "", date: "", paymentMethod: "", category: "" });
+        showToast("Expense Added successfully!", "success")
+        
       } else {
         console.log("Error adding expense:", response.data.message);
         alert("Failed to add expense. Please try again.");
       }
     } catch (error) {
       console.log("Error adding expense:", error.message);
-      alert("An error occurred while adding the expense. Please try again.");
+      showToast("Failed to add expense. Please try again.", "error")
     }
   };
 
@@ -143,10 +157,12 @@ const ExpenseList = () => {
       }
 
       setExpenses(prev => prev.filter(expense => expense._id !== id));
+      showToast("Expense deleted successfully!", "success")
 
     } catch (error) {
       console.error("Error deleting expense:", error.message);
       alert("An error occurred while deleting the expense. Please try again.");
+      showToast("Failed to delete expense. Please try again.", "error")
     }
   };
 
@@ -173,7 +189,9 @@ const ExpenseList = () => {
         throw new Error("Failed to delete expense");
       }
       setExpenses(expenses.map((expense) => (expense._id === expenseToEdit._id ? expenseToEdit : expense)));
+      showToast("edited successfully!", "success")
     } catch (error) {
+      showToast("Failed to edit. Please try again.", "error")
 
     }
 
@@ -211,6 +229,16 @@ const ExpenseList = () => {
   return (
     <div className='flex  min-h-screen'>
       <main className="flex-1 bg-white rounded-md  p-4 ml-4">
+        <div>
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+        </div>
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Expenses</h1>
           <button onClick={() => setAddExpenseModal(true)} className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500 cursor-pointer">

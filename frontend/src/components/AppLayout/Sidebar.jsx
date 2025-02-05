@@ -18,7 +18,7 @@ const Sidebar = () => {
   const [selected, setSelected] = useState('Admin');
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
-  const {logout,user} =useAuth();
+  const {logout,user,showToast,removeToast,toasts,setToasts} =useAuth();
   const handleLogout = async (req, res) => {
     logout();
   }

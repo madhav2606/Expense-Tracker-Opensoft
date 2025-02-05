@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Toast from "../Message/Toast";
 
 const AuthContext = createContext();
 
@@ -12,6 +13,17 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const [toasts, setToasts] = useState([]);
+
+    const showToast = (message, type) => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
+
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -88,10 +100,14 @@ export const AuthProvider = ({ children }) => {
 
                 setIsAuthenticated(true);
                 setUser(user);
+                
                 navigate("/");
+                showToast("Signed In successfully!", "success")
             }
         } catch (error) {
             console.error("Sign-in error:", error.response?.data?.message);
+            showToast(error.response?.data?.message||"Sign in error. Please try again.", "error")
+
         }
     };
 
@@ -104,11 +120,12 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (response.status === 201) {
-                console.log("Successfully signed up");
+                showToast("Successfully signed up","success");
                 navigate("/signin");
             }
         } catch (error) {
             console.error("Sign-up error:", error.response?.data?.message);
+            showToast(error.response?.data?.message||"Sign up error. Please try again.", "error")
         }
     };
 
@@ -132,16 +149,27 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("user");
             setIsAuthenticated(false);
             setUser(null);
-            console.log("Signed out");
+            showToast("Signed out successfully ","success");
             navigate("/signin");
         } catch (error) {
             console.error("Logout error:", error.message);
+            showToast(error.message||"Logout error. Please try again.", "error")
         }
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp, logout, setUser }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp, logout, setUser,showToast,removeToast,toasts,setToasts }}>
             {children}
+            <div className="fixed top-4 right-4 space-y-4">
+                {toasts.map(toast => (
+                    <Toast
+                        key={toast.id}
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => removeToast(toast.id)}
+                    />
+                ))}
+            </div>
         </AuthContext.Provider>
     );
 };

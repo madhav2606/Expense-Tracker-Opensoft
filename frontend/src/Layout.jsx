@@ -6,6 +6,8 @@ import Navbar from "./components/AppLayout/Navbar";
 import SignInPage from "./components/Authentication/SignInPage";
 import SignUpPage from "./components/Authentication/SignUpPage";
 import App from "./components/AppLayout/App";
+import Toast from "./components/Message/Toast";
+import { useAuth } from "./components/Context/AuthContext";
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);

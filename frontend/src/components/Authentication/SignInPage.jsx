@@ -5,6 +5,7 @@ import { Eye, EyeClosed, KeyRound, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../Context/AuthContext";
+import Toast from "../Message/Toast";
 
 
 
@@ -12,15 +13,17 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [togglePassword, setTogglePassword] = useState(false);
-  const { signIn } = useAuth()
-  const navigate =useNavigate()
+  const { signIn} = useAuth()
+  const navigate = useNavigate()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    signIn(email,password)
+    signIn(email, password)
   };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen items-center justify-center bg-white-100">
+      
       <img
         src={SignInImg}
         alt="Illustration"

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import Avatar from 'react-avatar';
 import { useAuth } from '../Context/AuthContext';
 import AccessDenial from '../AuthRestrict/AccessDenial';
+import Toast from '../Message/Toast';
 
 const UserManage = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,18 @@ const UserManage = () => {
     const [editedName, setEditedName] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
     const { user } = useAuth();
+    // const [isEditing, setisEditing] = useState(false)
+    const [toasts, setToasts] = useState([]);
+
+    const showToast = (message, type) => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
+
 
 
     useEffect(() => {
@@ -75,8 +88,10 @@ const UserManage = () => {
                 )
             );
             setIsOpen(false)
+            showToast("Changed successfully!", "success")
         } catch (error) {
             console.log("Error changing status:", error);
+            showToast("Failed to change. Please try again.", "error")
         }
     };
 
@@ -107,8 +122,10 @@ const UserManage = () => {
                 )
             );
             setIsOpen(false)
+            showToast("Role changed successfully!", "success")
         } catch (error) {
             console.log("Error changing role:", error);
+            showToast("Failed to change role. Please try again.", "error")
         }
     };
 
@@ -143,8 +160,10 @@ const UserManage = () => {
             );
             setEditingUser(null);
             setIsOpen(false)
+            showToast("Edited successfully!", "success")
         } catch (error) {
             console.log("Error updating user:", error);
+            showToast("Failed to Edit. Please try again.", "error")
         }
     };
 
@@ -166,8 +185,11 @@ const UserManage = () => {
 
             setFilteredUsers(filteredUsers.filter(user => user._id !== id));
             setIsOpen(false)
+            showToast("User deleted successfully!", "success")
+
         } catch (error) {
             console.log("Error deleting user:", error);
+            showToast("Failed to delete . Please try again.", "error")
         }
     };
 
@@ -176,6 +198,16 @@ const UserManage = () => {
     return (
         <div className='flex flex-col gap-8 mx-10 '>
             <h1 className='text-4xl mt-8 font-bold'>User Management</h1>
+            <div>
+                {toasts.map(toast => (
+                    <Toast
+                        key={toast.id}
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => removeToast(toast.id)}
+                    />
+                ))}
+            </div>
             <div className='flex items-center space-x-5'>
                 <input
                     type="text"
