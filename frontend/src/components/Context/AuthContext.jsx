@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             try {
-                const response = await fetch("http://localhost:3000/verify", {
+                const response = await fetch("http://4.186.56.130:3000/verify", {
                     method: "GET",
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
             if (!storedUser || !storedUser._id) return;
 
             try {
-                const response = await fetch(`http://localhost:3000/users/${storedUser._id}`, {
+                const response = await fetch(`http://4.186.56.130:3000/users/${storedUser._id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     const signIn = async (email, password) => {
         try {
-            const response = await axios.post("http://localhost:3000/signin", { email, password });
+            const response = await axios.post("http://4.186.56.130:3000/signin", { email, password });
 
             if (response.status === 200) {
                 const { token, user } = response.data;
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
 
     const signUp = async (name, email, password) => {
         try {
-            const response = await axios.post("http://localhost:3000/signup", {
+            const response = await axios.post("http://4.186.56.130:3000/signup", {
                 name,
                 email,
                 password,
@@ -141,7 +141,7 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
-            await axios.post("http://localhost:3000/logout", { userId }, {
+            await axios.post("http://4.186.56.130:3000/logout", { userId }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

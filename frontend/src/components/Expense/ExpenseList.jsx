@@ -115,7 +115,7 @@ const ExpenseList = () => {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"))
-      const response = await axios.post(`http://localhost:3000/expenses/add/${user._id}`, newExpense,
+      const response = await axios.post(`http://4.186.56.130:3000/expenses/add/${user._id}`, newExpense,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -161,7 +161,7 @@ const ExpenseList = () => {
     openConfirmModal('Are you sure you want to delete this expense?', async () => {
 
       try {
-        const response = await fetch(`http://localhost:3000/expenses/delete/${id}/${userId}`, {
+        const response = await fetch(`http://4.186.56.130:3000/expenses/delete/${id}/${userId}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -193,7 +193,7 @@ const ExpenseList = () => {
     }
     openConfirmModal("Are you sure you want to save the changes?", async () => {
       try {
-        const response = await fetch(`http://localhost:3000/expenses/update/${expenseToEdit._id}/${userId}`, {
+        const response = await fetch(`http://4.186.56.130:3000/expenses/update/${expenseToEdit._id}/${userId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -220,7 +220,7 @@ const ExpenseList = () => {
   useEffect(() => {
     const fetchExpenses = async (userId, token) => {
       try {
-        const response = await fetch(`http://localhost:3000/expenses/get/${userId}`, {
+        const response = await fetch(`http://4.186.56.130:3000/expenses/get/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

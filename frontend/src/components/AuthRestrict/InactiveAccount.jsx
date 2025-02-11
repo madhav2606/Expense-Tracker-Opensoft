@@ -18,7 +18,7 @@ const InactiveAccount = () => {
 
     try {
       const email = user?.email;
-      const response = await fetch("http://localhost:3000/changeStatus", {
+      const response = await fetch("http://4.186.56.130:3000/changeStatus", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -22,7 +22,7 @@ const SpendingAnalyticsDashboard = () => {
    useEffect(() => {
       const fetchExpenses = async (userId, token) => {
         try {
-          const response = await fetch(`http://localhost:3000/expenses/get/${userId}`, {
+          const response = await fetch(`http://4.186.56.130:3000/expenses/get/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
