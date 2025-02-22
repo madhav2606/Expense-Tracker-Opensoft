@@ -24,6 +24,14 @@ const BillDetails = () => {
     message: '',
     onConfirm: () => { },
   });
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [currentBill, setCurrentBill] = useState(null);
+
+  // Open the update modal and set the selected bill
+  const openUpdateModal = (bill) => {
+    setCurrentBill(bill);
+    setIsUpdateModalOpen(true);
+  };
 
   const openConfirmModal = (message, action) => {
     setConfirmModal({
@@ -127,25 +135,12 @@ const BillDetails = () => {
       setSelectedParticipants(res.data.bill.participants);
       setIsModalOpen(false);
       showToast(res.data.message, 'success');
+      getBillBalances();
     } catch (error) {
       console.error("Error adding bill:", error);
       showToast(error.response.data.message, 'error');
     }
   };
-
-  const editBill = async () => {
-    try {
-      await axios.put(`http://localhost:3000/updateBill/${currentBill._id}`, {
-        description: billDescription,
-        amount: billAmount,
-        payers,
-        status: "Unpaid",
-        participants: selectedParticipants,
-      });
-    } catch (error) {
-      console.error("Error updating bill:", error);
-    }
-  }
 
   const deleteBill = async (billId) => {
     openConfirmModal("Are you sure you want to delete this bill?", async () => {
@@ -159,9 +154,23 @@ const BillDetails = () => {
     });
   }
 
+  // Update bill details
+  const updateBill = async () => {
+    try {
+      await axios.put(`http://localhost:3000/updateBill/${currentBill._id}`, currentBill);
+      setIsUpdateModalOpen(false);
+      fetchBills(); // Refresh the bill list after updating
+      showToast("Bill updated successfully!", "success");
+      getBillBalances();
+    } catch (error) {
+      console.error("Error updating bill:", error);
+      showToast("Failed to update bill", "error");
+    }
+  };
+
   const getBillBalances = async () => {
     try {
-     const user=JSON.parse(localStorage.getItem('user'))
+      const user = JSON.parse(localStorage.getItem('user'))
       const res = await axios.get(`http://localhost:3000/getBalances/${groupId}?userId=${user?._id}`);
       setBalances(res.data);
       console.log(res)
@@ -176,18 +185,18 @@ const BillDetails = () => {
       await axios.put(`http://localhost:3000/updateBill/${billId}`, {
         status: "Paid",
       });
-  
+
       // Refresh bills and balances
       fetchBills();
       getBillBalances();
-      
+
       showToast("Bill settled successfully!", "success");
     } catch (error) {
       console.error("Error settling bill:", error);
       showToast("Failed to settle bill", "error");
     }
   };
-  
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 p-8">
@@ -228,7 +237,7 @@ const BillDetails = () => {
                 <span className="text-base font-medium">Back</span>
               </button>
             </div>
-            {balances?.net!=0 && <div
+            {balances?.net != 0 && <div
               className={`text-2xl font-semibold ${balances.net >= 0 ? 'text-green-700' : 'text-red-700'
                 } tracking-tight`}
             >
@@ -245,49 +254,67 @@ const BillDetails = () => {
           </button>
 
           {/* Bill List */}
-          <div className="bg-gray-100 rounded-2xl p-6 mt-6">
-            <h3 className="text-lg font-semibold mb-2 text-purple-700">Bills</h3>
+          <div className="bg-white rounded-3xl p-8 mt-8 shadow-xl max-h-96 overflow-auto">
+            <h3 className="text-2xl font-semibold mb-6 text-indigo-700 tracking-tight">Bills</h3>
             {bills.length === 0 ? (
-              <p className="text-gray-500">No Bills yet.</p>
+              <div className="text-center py-6">
+                <p className="text-gray-500 text-lg">No bills yet.</p>
+              </div>
             ) : (
-              bills.map((bill) => (
-                <div
-                  key={bill._id}
-                  className="bg-white rounded-lg p-4 mb-3 hover:shadow-md transition-shadow duration-300 text-gray-800"
-                >
-                  <p className="text-lg font-semibold">{bill.description} - ₹{bill.amount}</p>
-                  <div className="flex justify-between items-center mt-2">
-                    <div>
-                      <p className="text-sm text-gray-600">
-                        Paid by: {bill?.payers?.map((payer) => `${payer.userId.name} (₹${payer.amountPaid})`).join(", ")}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Participants: {bill?.participants?.map((p) => p.name).join(", ")}
-                      </p>
-                      <p className={`text-sm font-semibold ${bill.status === "Paid" ? "text-green-600" : "text-red-600"}`}>
-                        Status: {bill.status}
-                      </p>
+              <ul className="space-y-4">
+                {bills.map((bill) => (
+                  <li
+                    key={bill._id}
+                    className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <p className="text-xl font-semibold text-gray-800 tracking-tight">{bill.description}</p>
+                        <p className="text-lg font-medium text-gray-700">₹{bill.amount}</p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${bill.status === 'Paid'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                          }`}
+                      >
+                        {bill.status}
+                      </span>
                     </div>
-                    <div className="space-x-3">
-                      {/* Settle Up Button (Only shows if bill is Unpaid) */}
-                      {bill.status !== "Paid" && (
+                    <div className="text-sm text-gray-600 space-y-2">
+                      <p>
+                        Paid by:{' '}
+                        {bill?.payers
+                          ?.map((payer) => `${payer.userId.name} (₹${payer.amountPaid})`)
+                          .join(', ')}
+                      </p>
+                      <p>Participants: {bill?.participants?.map((p) => p.name).join(', ')}</p>
+                    </div>
+                    <div className="mt-6 flex justify-end space-x-4">
+                      {bill.status !== 'Paid' && (
                         <button
                           onClick={() => settleUpBill(bill._id)}
-                          className="bg-green-600 p-2 rounded-xl text-white hover:bg-green-500 hover:cursor-pointer"
+                          className="bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded-lg transition-colors font-medium"
                         >
                           Settle Up
                         </button>
                       )}
-                      <button onClick={() => editBill()} className="hover:bg-purple-700 bg-purple-800 p-2 rounded-xl text-white hover:cursor-pointer">
-                        <Pencil />
+                      <button
+                        onClick={() => openUpdateModal(bill)}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-lg transition-colors"
+                      >
+                        <Pencil className="w-5 h-5" />
                       </button>
-                      <button onClick={() => deleteBill(bill._id)} className="bg-red-600 p-2 rounded-xl text-white hover:bg-red-500 hover:cursor-pointer">
-                        <Trash />
+                      <button
+                        onClick={() => deleteBill(bill._id)}
+                        className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-lg transition-colors"
+                      >
+                        <Trash className="w-5 h-5" />
                       </button>
                     </div>
-                  </div>
-                </div>
-              ))
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>
@@ -343,6 +370,100 @@ const BillDetails = () => {
           </div>
         </div>
       )}
+
+
+      {isUpdateModalOpen && currentBill && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-purple-700">Update Bill</h3>
+              <button onClick={() => setIsUpdateModalOpen(false)}>
+                <X className="w-6 h-6 text-gray-600 hover:text-gray-900" />
+              </button>
+            </div>
+
+            {/* Update Description */}
+            <input
+              type="text"
+              placeholder="Description"
+              value={currentBill.description}
+              onChange={(e) => setCurrentBill({ ...currentBill, description: e.target.value })}
+              className="w-full p-3 border rounded-lg bg-gray-100 mb-3"
+            />
+
+            {/* Update Total Amount */}
+            <input
+              type="number"
+              placeholder="Total Amount"
+              value={currentBill.amount}
+              onChange={(e) => setCurrentBill({ ...currentBill, amount: parseFloat(e.target.value) || 0 })}
+              className="w-full p-3 border rounded-lg bg-gray-100 mb-3"
+            />
+
+            {/* Update Payers */}
+            <h3 className="text-lg font-semibold mb-2 text-purple-700">Who Paid?</h3>
+            {groupMembers.map((member) => {
+              const payerIndex = currentBill.payers.findIndex((p) => p.userId._id === member._id);
+              const payer = payerIndex !== -1 ? currentBill.payers[payerIndex] : null;
+
+              return (
+                <div key={member._id} className="flex items-center justify-between mb-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!payer}
+                      onChange={() => {
+                        let updatedPayers = [...currentBill.payers];
+                        if (payer) {
+                          updatedPayers.splice(payerIndex, 1); // Remove payer
+                        } else {
+                          updatedPayers.push({ userId: member, amountPaid: 0 }); // Add new payer
+                        }
+                        setCurrentBill({ ...currentBill, payers: updatedPayers });
+                      }}
+                      className="h-4 w-4"
+                    />
+                    <span>{member.name}</span>
+                  </label>
+                  <input
+                    type="number"
+                    className="w-20 p-2 border rounded-lg"
+                    placeholder="₹"
+                    value={payer?.amountPaid || ""}
+                    disabled={!payer}
+                    onChange={(e) => {
+                      let updatedPayers = [...currentBill.payers];
+                      updatedPayers[payerIndex] = { ...payer, amountPaid: parseFloat(e.target.value) || 0 };
+                      setCurrentBill({ ...currentBill, payers: updatedPayers });
+                    }}
+                  />
+                </div>
+              );
+            })}
+
+            {/* Status Toggle */}
+            <h3 className="text-lg font-semibold mb-2 text-purple-700">Bill Status</h3>
+            <select
+              value={currentBill.status || "Unpaid"}
+              onChange={(e) => setCurrentBill({ ...currentBill, status: e.target.value })}
+              className="w-full p-3 border rounded-lg bg-gray-100 mb-3"
+            >
+              <option value="Unpaid">Unpaid</option>
+              <option value="Paid">Paid</option>
+            </select>
+
+            {/* Update Bill Button */}
+            <button
+              onClick={updateBill}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg transition"
+            >
+              Update Bill
+            </button>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 };

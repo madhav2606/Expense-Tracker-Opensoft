@@ -123,8 +123,10 @@ export const getBalances = async (req, res) => {
             return res.status(404).json({ message: "Group not found" });
         }
 
-        // Fetch all bills in the group
-        const bills = await Bill.find({ group: groupId }).populate("payers.userId participants", "name");
+        // Fetch all bills in the group (excluding already paid bills)
+        const bills = await Bill.find({ group: groupId, status: { $ne: "Paid" } })
+            .populate("payers.userId participants", "name");
+
         // Initialize balances object
         let balances = {};
 
@@ -135,32 +137,19 @@ export const getBalances = async (req, res) => {
 
         // Process each bill
         bills.forEach(bill => {
-            if(bill.status!=="Paid"){
             const totalAmount = bill.amount;
             const numParticipants = bill.participants.length;
-            const sharePerPerson = totalAmount / numParticipants;
+            const sharePerPerson = totalAmount / numParticipants; // Split equally among all participants
+
+            // Each participant owes an equal share
+            bill.participants.forEach(participant => {
+                balances[participant._id].owes += sharePerPerson;
+            });
 
             // Each payer's contribution is added to their "receives" balance
             bill.payers.forEach(payer => {
                 balances[payer.userId._id].receives += payer.amountPaid;
             });
-
-            // Each participant owes their share
-            bill.participants.forEach(participant => {
-                let participantId = participant._id.toString();
-                let participantOwes = sharePerPerson;
-
-                // Reduce owed amount if participant is also a payer
-                const payerShare = bill.payers.find(payer => payer.userId._id.toString() === participantId);
-                if (payerShare) {
-                    participantOwes -= payerShare.amountPaid;
-                }
-
-                if (participantOwes > 0) {
-                    balances[participantId].owes += participantOwes;
-                }
-            });
-        }
         });
 
         // Calculate net balance (Receives - Owes)
@@ -169,11 +158,13 @@ export const getBalances = async (req, res) => {
         });
 
         // Return only the requested user's balance
-        const userBalance = balances[userId];
-        
+        const userBalance = balances[userId] || { name: "Unknown", owes: 0, receives: 0, net: 0 };
+
         res.status(200).json(userBalance);
     } catch (error) {
         res.status(500).json({ message: "Error calculating balance", error: error.message });
     }
 };
+
+
 
