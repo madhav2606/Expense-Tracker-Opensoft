@@ -13,7 +13,7 @@ const ActivityMonitor = () => {
     useEffect(() => {
         const fetchActivity = async () => {
             try {
-                const response = await fetch("http://4.186.56.130:3000/getActivity",{
+                const response = await fetch("http://localhost:3000/getActivity",{
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

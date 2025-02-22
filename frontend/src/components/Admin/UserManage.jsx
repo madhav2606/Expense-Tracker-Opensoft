@@ -49,7 +49,7 @@ const UserManage = () => {
     useEffect(() => {
         const getUsers = async () => {
             try {
-                const response = await fetch('http://4.186.56.130:3000/getUsers', {
+                const response = await fetch('http://localhost:3000/getUsers', {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -83,7 +83,7 @@ const UserManage = () => {
     const handleStatus = async (email) => {
         openConfirmModal("Are you sure you want to change the status of this user?", async () => {
             try {
-                const response = await fetch('http://4.186.56.130:3000/changeStatus', {
+                const response = await fetch('http://localhost:3000/changeStatus', {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -117,7 +117,7 @@ const UserManage = () => {
     const handleRole = async (email) => {
         openConfirmModal(`Are you sure you want to change the role of this user?`, async () => {
             try {
-                const response = await fetch('http://4.186.56.130:3000/changeRole', {
+                const response = await fetch('http://localhost:3000/changeRole', {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -156,7 +156,7 @@ const UserManage = () => {
     const handleSaveEdit = async (id) => {
         openConfirmModal("Are you sure you want to save the changes?", async () => {
             try {
-                const response = await fetch(`http://4.186.56.130:3000/updateUser/${id}`, {
+                const response = await fetch(`http://localhost:3000/updateUser/${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -188,7 +188,7 @@ const UserManage = () => {
     const handleDelete = async (id) => {
         openConfirmModal("Are you sure you want to delete this user?", async () => {
             try {
-                const response = await fetch(`http://4.186.56.130:3000/deleteUser/${id}`, {
+                const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
                     method: "DELETE",
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,

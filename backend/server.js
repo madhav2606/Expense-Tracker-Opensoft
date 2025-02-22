@@ -4,6 +4,8 @@ import authenticationRouter from './src/routers/authentication.router.js';
 import expenseRouter from './src/routers/expense.router.js';
 import userRouter from './src/routers/user.router.js'
 import activityRouter from './src/routers/activity.router.js'
+import groupRouter from './src/routers/group.router.js'
+import billRouter from './src/routers/bills.router.js'
 import { connectDB } from "./src/db/index.js";
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -30,8 +32,8 @@ app.use('/', authenticationRouter);
 app.use('/', expenseRouter);
 app.use('/', userRouter)
 app.use('/', activityRouter)
-
-
+app.use('/',groupRouter)
+app.use('/',billRouter)
 
 
 app.get('/health', async(req, res) => {

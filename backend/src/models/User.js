@@ -31,6 +31,12 @@ const UserSchema = new mongoose.Schema({
       ref: 'Expense', 
     },
   ],
+  groups: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Group', 
+    },
+  ]
 },{timestamps:true});
 
 export const User = mongoose.model('User', UserSchema);

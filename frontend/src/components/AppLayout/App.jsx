@@ -11,6 +11,7 @@ import UserManage from "../Admin/UserManage"
 import ActivityMonitor from "../Admin/ActivityMonitor"
 import SystemHealth from "../Admin/SystemHealth"
 import { useAuth } from "../Context/AuthContext"
+import BillDetails from "../Groups/BillDetails"
 
 function App() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ function App() {
           <Route path="/expenses" element={<ExpenseList />} />
           <Route path="/budget" element={<BudgetGoals />} />
           <Route path="/groups" element={<GroupBill />} />
+          <Route path="/groups/:groupId" element={<BillDetails />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />

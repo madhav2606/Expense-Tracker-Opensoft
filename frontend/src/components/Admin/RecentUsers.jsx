@@ -9,7 +9,7 @@ const RecentUsers = () => {
     useEffect(() => {
         const getUsers = async () => {
             try {
-                const response = await fetch('http://4.186.56.130:3000/getUsers',{
+                const response = await fetch('http://localhost:3000/getUsers',{
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
