@@ -263,8 +263,8 @@ const ExpenseList = () => {
             />
           ))}
         </div>
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Expenses</h1>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+          <h1 className="text-2xl font-bold md:mb-0 mb-2">Expenses</h1>
           <button onClick={() => setAddExpenseModal(true)} className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500 cursor-pointer">
             Add New Expense
           </button>
@@ -303,7 +303,7 @@ const ExpenseList = () => {
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full">
           <table className="table-auto w-full border border-gray-200 rounded-xl  shadow-xl bg-white overflow-hidden">
             {/* Table Head */}
             <thead className="bg-yellow-400 border-b border-gray-300">
