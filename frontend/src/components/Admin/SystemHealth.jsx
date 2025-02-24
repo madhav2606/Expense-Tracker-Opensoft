@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ChartPie, CircleCheckBig, Clock, Cpu, Database, MemoryStick } from "lucide-react";
+import { ChartPie, CircleCheckBig, Clock, Cpu, Database } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
 import AccessDenial from "../AuthRestrict/AccessDenial";
 
@@ -8,7 +8,8 @@ const SystemHealth = () => {
     const [healthData, setHealthData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const {user}=useAuth();
+    const { user } = useAuth();
+
     useEffect(() => {
         const fetchHealthData = async () => {
             try {
@@ -23,68 +24,79 @@ const SystemHealth = () => {
 
         fetchHealthData();
         const interval = setInterval(fetchHealthData, 10000);
-
         return () => clearInterval(interval);
     }, []);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p className="text-red-500">{error}</p>;
+    if (user?.role !== "Admin") return <AccessDenial />;
+    if (loading) return <div className="flex justify-center items-center h-screen text-lg">Loading...</div>;
+    if (error) return <p className="text-red-500 text-center">{error}</p>;
 
-    const formatMemory = (memory) => {
-        return (memory / (1024 * 1024)).toFixed(2)
-    }
-
-    if(user?.role!=="Admin")return <AccessDenial/>;
+    const formatMemory = (memory) => (memory / (1024 * 1024)).toFixed(2);
 
     return (
-        <div className="p-6 border border-gray-400 rounded-lg shadow-lg m-5 max-w-screen">
-            <h2 className="text-2xl font-bold flex items-center gap-4">
-                <CircleCheckBig className="text-green-400" /> System Health
-            </h2>
-            <h4 className="text-sm font-bold mt-1 text-gray-400 mb-6">
-                Real-time system performance metrics
-            </h4>
+        <div className="max-w-5xl mx-auto p-6 rounded-lg shadow-lg bg-white">
 
-            <ul className="space-y-3 grid grid-cols-3 grid-rows-1 space-x-5">
-                <li className="text-gray-700 bg-gray-100 p-5 rounded-xl font-bold flex gap-5 h-18">
-                    <ChartPie /> Status: {healthData.status}
-                </li>
-                <li className="text-gray-700 bg-gray-100 p-5 rounded-xl font-bold flex gap-5 h-18">
-                    <Clock /> Uptime: {(healthData.uptime / 3600).toFixed(2)} hours
-                </li>
-                <li className="text-gray-700 bg-gray-100 p-5 rounded-xl font-bold flex gap-5 h-18">
-                    <Cpu /> CPU Usage: {healthData.cpuUsage.toFixed(2)}%
-                </li>
-            </ul>
+            <div className="flex items-center gap-3 mb-4">
+                <CircleCheckBig className="text-green-500 w-7 h-7" />
+                <h2 className="text-2xl font-semibold">System Health</h2>
+            </div>
+            <p className="text-gray-500 mb-6">Real-time system performance metrics</p>
 
-            <div className="bg-gray-100 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-2 ">Memory Usage</h3>
-                <p className="text-xl font-bold mb-2 text-gray-800">
-                    {formatMemory(healthData?.freeMemory || 0)} / {formatMemory(healthData?.totalMemory || 0)} MB
+        
+            <div className="grid gap-6 md:grid-cols-3">
+              
+                <div className="p-4 bg-gray-100 rounded-lg flex items-center gap-4">
+                    <ChartPie className="text-blue-500 w-6 h-6" />
+                    <span className="text-gray-800 font-medium">Status: {healthData.status}</span>
+                </div>
+
+                
+                <div className="p-4 bg-gray-100 rounded-lg flex items-center gap-4">
+                    <Clock className="text-indigo-500 w-6 h-6" />
+                    <span className="text-gray-800 font-medium">Uptime: {(healthData.uptime / 3600).toFixed(2)} hrs</span>
+                </div>
+
+                <div className="p-4 bg-gray-100 rounded-lg flex items-center gap-4">
+                    <Cpu className="text-red-500 w-6 h-6" />
+                    <span className="text-gray-800 font-medium">CPU: {healthData.cpuUsage.toFixed(2)}%</span>
+                </div>
+            </div>
+
+           
+            <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                <h3 className="text-lg font-semibold mb-2">Memory Usage</h3>
+                <p className="text-xl font-bold text-gray-800 mb-2">
+                    {formatMemory(healthData.freeMemory)} / {formatMemory(healthData.totalMemory)} MB
                 </p>
-                <div className="w-full bg-gray-300 rounded-full h-2.5">
+                <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
                     <div
-                        className="bg-green-500 h-2.5 rounded-full transition-all duration-300 ease-in-out"
+                        className="bg-green-500 h-full transition-all"
                         style={{
-                            width: `${(((healthData?.totalMemory || 0) - (healthData?.freeMemory || 0)) / (healthData?.totalMemory || 1)) * 100}%`,
+                            width: `${
+                                (((healthData.totalMemory || 0) - (healthData.freeMemory || 0)) /
+                                    (healthData.totalMemory || 1)) *
+                                100
+                            }%`,
                         }}
                     ></div>
                 </div>
             </div>
 
-            <div className="mt-6 bg-gray-100 p-5 rounded-xl">
-                <div className="flex items-center gap-5 font-semibold mb-2">
-                    <Database /> Database Query Time
+           
+            <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                <div className="flex items-center gap-4 font-semibold mb-2">
+                    <Database className="text-purple-500 w-6 h-6" />
+                    Database Query Time
                 </div>
-                <div className="w-full bg-gray-300 rounded-full h-2.5 overflow-hidden">
-                    <div 
-                        className={`h-full rounded-full ${healthData.dbQueryTime > 300 ? 'bg-red-500' : 'bg-green-500'}`} 
-                        style={{ width: `${Math.min(healthData.dbQueryTime / 5, 100)}%` }}>
-                    </div>
+                <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
+                    <div
+                        className={`h-full transition-all ${
+                            healthData.dbQueryTime > 300 ? "bg-red-500" : "bg-green-500"
+                        }`}
+                        style={{ width: `${Math.min(healthData.dbQueryTime / 5, 100)}%` }}
+                    ></div>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
-                    {healthData.dbQueryTime}ms
-                </p>
+                <p className="text-sm text-gray-500 mt-1">{healthData.dbQueryTime}ms</p>
             </div>
         </div>
     );

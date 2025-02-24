@@ -214,132 +214,154 @@ const UserManage = () => {
     if (user?.role !== "Admin") return <AccessDenial />;
 
     return (
-        <div className='flex flex-col gap-8 mx-10 '>
-            <h1 className='text-4xl mt-8 font-bold'>User Management</h1>
-            <ConfirmModal
-                isOpen={confirmModal.isOpen}
-                message={confirmModal.message}
-                onConfirm={confirmModal.onConfirm}
-                onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
-            />
-            <div>
-                {toasts.map(toast => (
-                    <Toast
-                        key={toast.id}
-                        message={toast.message}
-                        type={toast.type}
-                        onClose={() => removeToast(toast.id)}
-                    />
-                ))}
-            </div>
-            <div className='flex items-center space-x-5'>
-                <input
+        <div className="flex flex-col gap-6 px-4 md:px-10">
+  <h1 className="text-3xl md:text-4xl mt-6 font-bold text-gray-800">
+    User Management
+  </h1>
+
+  <ConfirmModal
+    isOpen={confirmModal.isOpen}
+    message={confirmModal.message}
+    onConfirm={confirmModal.onConfirm}
+    onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => {} })}
+  />
+
+  
+  <div className="fixed top-4 right-4 space-y-2 z-50">
+    {toasts.map((toast) => (
+      <Toast
+        key={toast.id}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => removeToast(toast.id)}
+      />
+    ))}
+  </div>
+
+  
+  <div className="flex items-center w-full">
+    <input
+      type="text"
+      placeholder="Search users..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="p-3 w-full max-w-md  rounded-lg shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+    />
+  </div>
+
+ 
+  <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+    <table className="min-w-full border-collapse">
+      <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
+        <tr>
+          <th className="p-4 text-left">Name</th>
+          <th className="p-4 text-left">Email</th>
+          <th className="p-4 text-left">Role</th>
+          <th className="p-4 text-left">Status</th>
+          <th className="p-4 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user, index) => (
+            <tr
+              key={index}
+              className="border-b hover:bg-gray-50 transition duration-200"
+            >
+              <td className="p-4 flex gap-4 items-center">
+                <Avatar round={true} name={user.name} size="40" />
+                {editingUser === user._id ? (
+                  <input
                     type="text"
-                    placeholder='Search users...'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='p-2 rounded-xl border w-2/5'
-                />
-            </div>
-            <table className="min-w-full border-collapse  rounded-2xl shadow-lg">
-                <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
-                    <tr className="text-left">
-                        <th className="p-4 border-b border-gray-200 text-sm">Name</th>
-                        <th className="p-4 border-b border-gray-200 text-sm">Email</th>
-                        <th className="p-4 border-b border-gray-200 text-sm">Role</th>
-                        <th className="p-4 border-b border-gray-200 text-sm">Status</th>
-                        <th className="p-4 border-b border-gray-200 text-sm">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredUsers.length > 0 ? (
-                        filteredUsers.map((user, index) => (
-                            <tr key={index} className="relative hover:bg-gray-50">
-                                <td className="p-4 border-b border-gray-200 flex gap-4">
-                                    <Avatar round={true} name={user.name} size="40" />
-                                    {editingUser === user._id ? (
-                                        <input
-                                            type="text"
-                                            value={editedName}
-                                            onChange={(e) => setEditedName(e.target.value)}
-                                            className="border rounded p-2"
-                                        />
-                                    ) : (
-                                        user.name
-                                    )}
-                                </td>
-                                <td className="p-4 border-b border-gray-200">
-                                    {editingUser === user._id ? (
-                                        <input
-                                            type="email"
-                                            value={editedEmail}
-                                            onChange={(e) => setEditedEmail(e.target.value)}
-                                            className="border rounded p-2"
-                                        />
-                                    ) : (
-                                        user.email
-                                    )}
-                                </td>
-                                <td className="p-4 border-b border-gray-200">{user.role}</td>
-                                <td className="p-4 border-b border-gray-200"><span className={`px-3 py-1 rounded-full text-sm font-medium ${user.status === "Active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                                    {user.status}
-                                </span></td>
-                                <td
-                                    className="p-4 border-b border-gray-200 hover:cursor-pointer"
-                                    onClick={() => setIsOpen(isOpen === index ? null : index)}
-                                >
-                                    <MoreHorizontal />
-                                </td>
-                                {isOpen === index && (
-                                    <td>
-                                        <ul className="absolute right-10 top-14 bg-purple-800 text-white p-2 z-50 rounded-xl shadow-md">
-                                            <li
-                                                className="p-2 hover:bg-purple-600 cursor-pointer"
-                                                onClick={() => {
-                                                    if (editingUser == null) {
-                                                        handleEdit(user)
-                                                    }
-                                                    else {
-                                                        handleSaveEdit(editingUser)
-                                                    }
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="border rounded-md p-2 w-full"
+                  />
+                ) : (
+                  <span className="text-gray-800 font-medium">{user.name}</span>
+                )}
+              </td>
+              <td className="p-4 text-gray-600">
+                {editingUser === user._id ? (
+                  <input
+                    type="email"
+                    value={editedEmail}
+                    onChange={(e) => setEditedEmail(e.target.value)}
+                    className="border rounded-md p-2 w-full"
+                  />
+                ) : (
+                  user.email
+                )}
+              </td>
+              <td className="p-4 text-gray-700">{user.role}</td>
+              <td className="p-4">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    user.status === 'Active'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-red-100 text-red-700'
+                  }`}
+                >
+                  {user.status}
+                </span>
+              </td>
+              <td className="p-4 relative">
+                <button
+                  className="p-2 rounded-md hover:bg-gray-200"
+                  onClick={() => setIsOpen(isOpen === index ? null : index)}
+                >
+                  <MoreHorizontal />
+                </button>
 
-                                                }
-                                                }
-                                            >
-                                                {editingUser != null ? "Save User" : "Edit User"}
-                                            </li>
-                                            <li
-                                                className="p-2 hover:bg-purple-600 cursor-pointer"
-                                                onClick={() => handleRole(user.email)}
-                                            >
-                                                Change Role
-                                            </li>
-                                            <li
-                                                className="p-2 hover:bg-purple-600 cursor-pointer"
-                                                onClick={() => handleStatus(user.email)}
-                                            >
-                                                {user.status === "Active" ? "Deactivate User" : "Activate User"}
-                                            </li>
-                                            <li
-                                                className="p-2 hover:bg-purple-600 cursor-pointer"
-                                                onClick={() => handleDelete(user._id)}
-                                            >
-                                                Delete User
-                                            </li>
-                                        </ul>
-                                    </td>
-                                )}
+                {isOpen === index && (
+                  <ul className="absolute right-0 top-10 bg-purple-800 text-white p-2 z-50 rounded-lg shadow-md w-40">
+                    <li
+                      className="p-2 hover:bg-purple-600 cursor-pointer"
+                      onClick={() => {
+                        if (editingUser == null) {
+                          handleEdit(user);
+                        } else {
+                          handleSaveEdit(editingUser);
+                        }
+                      }}
+                    >
+                      {editingUser != null ? 'Save User' : 'Edit User'}
+                    </li>
+                    <li
+                      className="p-2 hover:bg-purple-600 cursor-pointer"
+                      onClick={() => handleRole(user.email)}
+                    >
+                      Change Role
+                    </li>
+                    <li
+                      className="p-2 hover:bg-purple-600 cursor-pointer"
+                      onClick={() => handleStatus(user.email)}
+                    >
+                      {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                    </li>
+                    <li
+                      className="p-2 hover:bg-red-500 cursor-pointer"
+                      onClick={() => handleDelete(user._id)}
+                    >
+                      Delete User
+                    </li>
+                  </ul>
+                )}
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td className="p-4 text-center text-gray-500" colSpan="5">
+              No users found
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
 
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td className="p-4 text-center" colSpan="5">No users found</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        </div>
     );
 };
 

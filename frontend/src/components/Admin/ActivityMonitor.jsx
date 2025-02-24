@@ -50,22 +50,22 @@ const ActivityMonitor = () => {
     if (user?.role !== "Admin") return <AccessDenial />;
 
     return (
-        <div className="max-w-6xl mx-auto p-8">
+        <div className=" p-8 overflow-auto">
             <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">Activity Monitor</h1>
 
-            {/* Search Bar */}
-            <div className="flex justify-center mb-6">
+            
+            <div className=" mb-6">
                 <input
                     type="text"
                     placeholder="Search activities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="p-3 rounded-lg border border-gray-300 w-1/2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="p-3 rounded-lg border border-gray-300 w-1/2 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-800"
                 />
             </div>
 
-            {/* Activity Table */}
-            <div className="overflow-hidden rounded-xl shadow-lg">
+           
+            <div className="overflow-auto h-98 w-full rounded-xl shadow-lg">
                 <table className="min-w-full bg-white rounded-lg overflow-auto">
                     <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
                         <tr>
