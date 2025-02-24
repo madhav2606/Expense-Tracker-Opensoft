@@ -18,8 +18,8 @@ const Layout = () => {
 
     return (
         <div className="flex">
-            <div className={`h-screen ${isSidebarOpen && "w-[30%]"}`}>
-                {isSidebarOpen && <Sidebar />}
+            <div className={`h-screen ${isSidebarOpen ?"w-[30%]":"w-0"}  transition-all duration-500 ease-in-out`}>
+                {isSidebarOpen && <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
             </div>
             <div className="w-full border border-l-1 border-gray-400">
                 <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />

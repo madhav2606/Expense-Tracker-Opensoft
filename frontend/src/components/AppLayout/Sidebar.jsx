@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   CircleDollarSign,
   HandCoins,
@@ -7,110 +7,121 @@ import {
   Settings,
   ShieldCheck,
   Users,
-  Wallet
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../Context/AuthContext';
+  Wallet,
+  ChevronDown,
+  ChevronRight,
+  Menu,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
-const Sidebar = () => {
-  const [selected, setSelected] = useState('Admin');
+const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+  const [selected, setSelected] = useState("Dashboard");
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
-  const {logout,user,showToast,removeToast,toasts,setToasts} =useAuth();
-  const handleLogout = async (req, res) => {
+  const { logout, user } = useAuth();
+
+  const handleLogout = () => {
     logout();
-  }
+  };
 
   const menuItems = [
-    {
-      id: "Admin",
-      icon: <ShieldCheck />,
-      label: "Admin",
-      path: "/admin",
-      children: [
-        { id: "Admin Dashboard", label: "Dashboard", path: "/admin" },
-        { id: "User Management", label: "User Management", path: "/admin/users" },
-        { id: "Activity Monitor", label: "Activity Monitor", path: "/admin/activity" },
-        { id: "System Health and Performance", label: "System Health", path: "/admin/health" }
-      ],
-    },
-    { id: "Dashboard", icon: <LayoutDashboard />, label: "Dashboard", path: '/dashboard' },
-    { id: "Expense", icon: <HandCoins />, label: "Expenses", path: '/expenses' },
-    { id: "Group", icon: <Users />, label: "Groups", path: '/groups' },
-    { id: "Budget", icon: <Wallet />, label: "Budgets & Goals", path: '/budget' },
-    { id: "Setting", icon: <Settings />, label: "Settings", path: '/settings' },
+    { id: "Dashboard", icon: <LayoutDashboard />, label: "Dashboard", path: "/dashboard" },
+    { id: "Expense", icon: <HandCoins />, label: "Expenses", path: "/expenses" },
+    { id: "Group", icon: <Users />, label: "Groups", path: "/groups" },
+    { id: "Budget", icon: <Wallet />, label: "Budgets & Goals", path: "/budget" },
+    { id: "Setting", icon: <Settings />, label: "Settings", path: "/settings" },
+  ];
+
+  const adminItems = [
+    { id: "Admin Dashboard", label: "Dashboard", path: "/admin" },
+    { id: "User Management", label: "User Management", path: "/admin/users" },
+    { id: "Activity Monitor", label: "Activity Monitor", path: "/admin/activity" },
+    { id: "System Health and Performance", label: "System Health", path: "/admin/health" },
   ];
 
   return (
-    <div className='flex flex-col p-4 justify-between h-screen w-72'>
-      <h1 className='flex items-center space-x-1 mx-auto'>
-        <CircleDollarSign className='text-purple-800 pt-0.5 w-8 h-8' />
-        <p className='text-purple-800 text-3xl font-bold'>SPEND</p>
-        <p className='text-3xl font-bold'>Sense</p>
-      </h1>
+    <div
+      className={`h-screen bg-white border-r border-gray-300 transition-all duration-500
+      ${isSidebarOpen ? "w-79" : "w-0 overflow-hidden"} md:relative fixed z-50`}
+    >
+      {/* Toggle Button */}
+      <button
+        className="p-3 absolute right-[-12px] top-5 bg-gray-200 rounded-full shadow-md"
+        onClick={toggleSidebar}
+      >
+        <Menu className="w-5 h-5 text-gray-600" />
+      </button>
 
-      <ul className='mt-10 space-y-3'>
-        {menuItems.map((item, idx) => (
-          <div key={idx}>
-            {item.id !== "Admin" ? (
-              <Link to={item.path}>
-                <li
-                  onClick={() => { setSelected(item.id); setAdminOpen(false) }}
-                  className={`text-lg flex items-center gap-2 p-3 
-                  ${selected === item.id && 'bg-purple-800 text-white font-bold'} 
-                  rounded-2xl hover:cursor-pointer 
-                  ${selected !== item.id && 'hover:bg-purple-300 hover:font-bold'} mt-2`}
-                >
-                  {item.icon} {item.label}
-                </li>
-              </Link>
-            ) : (
-              user?.role=="Admin" && <div>
-                <Link to="/admin">
-                  <li
-                    onClick={() => { setAdminOpen(!adminOpen); setSelected("Admin Dashboard") }}
-                    className={`text-lg flex items-center justify-between gap-2 p-3 
-                  ${adminOpen && 'bg-purple-800 text-white font-bold'} 
-                  rounded-2xl hover:cursor-pointer 
-                  ${!adminOpen && 'hover:bg-purple-300 hover:font-bold'} mt-2`}
-                  >
-                    <span className='flex items-center gap-2'>{item.icon} {item.label}</span>
-                  </li>
-                </Link>
-                {adminOpen && (
-                  <ul className="ml-8 mt-2 space-y-2">
-                    {item.children.map((child, idx) => (
-                      <Link to={child.path} key={idx}>
-                        <li
-                          onClick={() => setSelected(child.id)}
-                          className={`text-md p-2 pl-5 rounded-lg 
-                          ${selected === child.id ? 'bg-purple-700 text-white font-semibold' : 'hover:bg-purple-300 hover:font-bold'}`}
-                        >
-                          {child.label}
-                        </li>
-                      </Link>
-                    ))}
-                  </ul>
-                )}
-              </div>
+      {/* Logo */}
+      <div className="flex items-center justify-center py-4 space-x-2">
+        <CircleDollarSign className="text-purple-800 w-8 h-8" />
+        {isSidebarOpen && <p className="text-purple-800 text-2xl font-bold">SPEND <span className="text-black">Sense</span></p>}
+      </div>
+
+      {/* Menu Items */}
+      <ul className="mt-6 space-y-2 px-3">
+        {/* Admin Panel */}
+        {user?.role === "Admin" && (
+          <div>
+            <button
+              onClick={() => setAdminOpen(!adminOpen)}
+              className={`flex items-center justify-between w-full p-3 rounded-lg transition-all 
+              ${adminOpen ? "bg-purple-800 text-white font-semibold" : "hover:bg-gray-200"}`}
+            >
+              <span className="flex items-center gap-2">
+                <ShieldCheck />
+                {isSidebarOpen && "Admin"}
+              </span>
+              {isSidebarOpen && (adminOpen ? <ChevronDown /> : <ChevronRight />)}
+            </button>
+
+            {adminOpen && (
+              <ul className="ml-5 mt-2 space-y-2">
+                {adminItems.map((child, idx) => (
+                  <Link to={child.path} key={idx}>
+                    <li
+                      onClick={() => setSelected(child.id)}
+                      className={`p-2 rounded-lg transition-all 
+                      ${selected === child.id ? "bg-purple-700 text-white" : "hover:bg-gray-200"}`}
+                    >
+                      {isSidebarOpen && child.label}
+                    </li>
+                  </Link>
+                ))}
+              </ul>
             )}
           </div>
+        )}
+
+        {/* General Menu */}
+        {menuItems.map((item, idx) => (
+          <Link to={item.path} key={idx}>
+            <li
+              onClick={() => setSelected(item.id)}
+              className={`flex items-center gap-2 p-3 rounded-lg transition-all 
+              ${selected === item.id ? "bg-purple-800 text-white font-semibold" : "hover:bg-gray-200"}`}
+            >
+              {item.icon}
+              {isSidebarOpen && item.label}
+            </li>
+          </Link>
         ))}
       </ul>
 
-      <div className='mt-auto'>
-        <li
+      {/* Logout */}
+      <div className="mt-auto px-3">
+        <button
           onClick={handleLogout}
-          className='hover:cursor-pointer flex items-center gap-2 text-lg p-3 
-          hover:bg-purple-300 hover:font-bold rounded-2xl'
+          className="flex items-center gap-2 w-full p-3 rounded-lg text-red-600 hover:bg-red-100 transition-all"
         >
-          <LogOut /> Logout
-        </li>
+          <LogOut />
+          {isSidebarOpen && "Logout"}
+        </button>
       </div>
     </div>
   );
-}
+};
 
 export default Sidebar;
