@@ -1,7 +1,7 @@
 import { Eye, Menu, Pencil, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 
-const MobileActionMenu = ({ expense }) => {
+const MobileActionMenu = ({ expense ,handleDeleteExpense,handleViewExpense,handleEditExpense}) => {
     const [showActions, setShowActions] = useState(false);
 
     return (

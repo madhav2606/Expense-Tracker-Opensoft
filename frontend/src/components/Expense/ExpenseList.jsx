@@ -366,7 +366,7 @@ const ExpenseList = () => {
                       <p className="text-sm text-gray-500">{formatDate(expense.date)}</p>
                       <p className="text-lg font-semibold text-gray-900">${expense.amount}</p>
                     </div>
-                    <MobileActionMenu expense={expense} />
+                    <MobileActionMenu expense={expense} handleDeleteExpense={handleDeleteExpense} handleEditExpense={handleEditExpense} />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center">
