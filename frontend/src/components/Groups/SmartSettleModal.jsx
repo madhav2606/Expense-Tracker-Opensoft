@@ -60,7 +60,7 @@ const SmartSettleModal = ({ billId, fetchBills, getBillBalances, ToggleSettleUpM
             const data = await response.json()
             if (response.ok) {
                 setSettleBill(data.settlements || [])
-                console.log(data)
+                // console.log(data)
             } else {
                 setError(data.message || "Failed to fetch settlement data")
                 console.error("Error fetching smart settle data:", data.message)
