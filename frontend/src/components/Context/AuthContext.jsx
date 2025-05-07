@@ -136,7 +136,7 @@ export const AuthProvider = ({ children }) => {
             const userId = storedUser ? JSON.parse(storedUser)._id : null;
 
             if (!token || !userId) {
-                alert("You are not signed in");
+                showToast("You're not Signed in", "error")
                 navigate("/signin");
                 return;
             }

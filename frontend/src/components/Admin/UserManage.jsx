@@ -74,7 +74,7 @@ const UserManage = () => {
       } catch (error) {
         console.error("Error fetching users:", error);
         showToast("Failed to fetch users", "error");
-      }finally{
+      } finally {
         setLoading(false);
       }
     };
@@ -157,7 +157,7 @@ const UserManage = () => {
         );
         showToast("Status changed successfully!", "success");
       } catch (error) {
-        console.log("Error changing status:", error);
+        console.error("Error changing status:", error);
         showToast("Failed to change status. Please try again.", "error");
       }
     });
@@ -190,7 +190,7 @@ const UserManage = () => {
         );
         showToast("Role changed successfully!", "success");
       } catch (error) {
-        console.log("Error changing role:", error);
+        console.error("Error changing role:", error);
         showToast("Failed to change role. Please try again.", "error");
       }
     });
@@ -230,7 +230,7 @@ const UserManage = () => {
         setEditingUser(null);
         showToast("User updated successfully!", "success");
       } catch (error) {
-        console.log("Error updating user:", error);
+        ("Error updating user:", error);
         showToast("Failed to update user. Please try again.", "error");
       }
     });
@@ -255,7 +255,7 @@ const UserManage = () => {
         setAllUsers(prevUsers => prevUsers.filter(user => user._id !== id));
         showToast("User deleted successfully!", "success");
       } catch (error) {
-        console.log("Error deleting user:", error);
+        console.error("Error deleting user:", error);
         showToast("Failed to delete user. Please try again.", "error");
       }
     });
@@ -289,20 +289,20 @@ const UserManage = () => {
 
   if (user?.role !== "Admin") return <AccessDenial />;
   if (loading) {
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
-            <p className="mt-4 text-lg text-gray-700">Loading Platform Users...</p>
-          </div>
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+          <p className="mt-4 text-lg text-gray-700">Loading Platform Users...</p>
         </div>
-      )
-    }
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto w-full">
-       
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
             User Management
@@ -471,18 +471,18 @@ const UserManage = () => {
                       </td>
                       <td className="p-4">
                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.role === 'Admin'
-                            ? 'bg-purple-100 text-purple-700'
-                            : user.role === 'Manager'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-gray-100 text-gray-700'
+                          ? 'bg-purple-100 text-purple-700'
+                          : user.role === 'Manager'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-700'
                           }`}>
                           {user.role}
                         </span>
                       </td>
                       <td className="p-4">
                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.status === 'Active'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
                           }`}>
                           {user.status}
                         </span>
@@ -608,8 +608,8 @@ const UserManage = () => {
                         key={i}
                         onClick={() => paginate(pageNum)}
                         className={`w-10 h-10 rounded-md ${currentPage === pageNum
-                            ? 'bg-purple-800 text-white'
-                            : 'text-gray-700 hover:bg-gray-200'
+                          ? 'bg-purple-800 text-white'
+                          : 'text-gray-700 hover:bg-gray-200'
                           }`}
                       >
                         {pageNum}

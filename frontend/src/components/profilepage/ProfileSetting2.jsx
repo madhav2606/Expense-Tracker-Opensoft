@@ -35,7 +35,7 @@ const ProfileSetting2 = () => {
       const fetchProfileData = async () => {
         try {
           const userData = JSON.parse(localStorage.getItem('user'));
-          console.log(userData);
+          (userData);
           setUser({
             name: userData?.name,
             Joindate: userData?.createdAt,

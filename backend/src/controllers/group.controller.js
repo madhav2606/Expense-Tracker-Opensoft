@@ -8,7 +8,7 @@ export const createGroup = async (req, res) => {
     const { name } = req.body;
     try {
         const inviteCode = nanoid(11);
-        console.log(inviteCode)
+        (inviteCode)
 
         const group = await Group.create({
             name,
@@ -17,7 +17,7 @@ export const createGroup = async (req, res) => {
             users: [req.params.userId]
         });
 
-        console.log(group)
+        (group)
         await User.findByIdAndUpdate(req.params.userId, { $push: { groups: group._id } });
 
         res.status(201).json({ group, inviteCode }); // Return invite code in response

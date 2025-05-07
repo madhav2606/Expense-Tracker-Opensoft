@@ -4,20 +4,27 @@ import SignUpImg from "./signUPimg.png";
 import { Eye, EyeClosed, KeyRound, Mail, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import Toast from "../Message/Toast";
 
 const SignUpPage = () => {
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [togglePassword, setTogglePassword] = useState(false);
   const navigate = useNavigate();
   const { signUp } = useAuth();
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = (message, type) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      showToast("Passwords do not match", "error");
       return;
     }
     signUp(name, email, password);
@@ -25,6 +32,16 @@ const SignUpPage = () => {
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-center min-h-screen bg-white">
+      <div>
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
       <img
         src={SignUpImg}
         alt="Illustration"

@@ -57,7 +57,6 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    console.log(currentPath);
     const foundItemUser = menuItems.find(item => item.path.includes(currentPath));
     const foundItemAdmin = adminItems.find(item => item.path.includes(currentPath));
     if (foundItemUser) {

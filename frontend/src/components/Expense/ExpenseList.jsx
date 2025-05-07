@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Pencil, Trash2, Eye, X, Calendar, DollarSign, Tag, CreditCard, FileText } from 'lucide-react'
+import { Pencil, Trash2, Eye, X, Calendar, DollarSign, Tag, CreditCard, FileText, Search, ChevronUp, ChevronDown, Plus, Menu, Loader } from 'lucide-react'
 import Modal from './Modal';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import InactiveAccount from '../AuthRestrict/InactiveAccount';
 import Toast from '../Message/Toast';
 import { ConfirmModal } from '../Message/ConfirmModal';
+import MobileActionMenu from './MobileActionMenu';
 
 const ExpenseList = () => {
   const [expenses, setExpenses] = useState([]);
@@ -19,6 +20,8 @@ const ExpenseList = () => {
   const [isAscending, setIsAscending] = useState(true);
   const { user } = useAuth();
   const [toasts, setToasts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [mobileView, setMobileView] = useState(window.innerWidth < 768);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     message: '',
@@ -66,7 +69,6 @@ const ExpenseList = () => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
-
   const [newExpense, setNewExpense] = useState(
     { amount: "", description: "", date: "", paymentMethod: "", category: "" }
   );
@@ -75,14 +77,13 @@ const ExpenseList = () => {
     (expense) =>
       expense.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      expense.paymentMethod.toLocaleLowerCase().includes(searchQuery.toLowerCase())
+      expense.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const formatDate = (date) => {
     const d = new Date(date);
     return d.toLocaleDateString();
   }
-
 
   const sortedExpenses = [...filteredExpenses].sort((a, b) => {
     if (sortBy === "date") {
@@ -111,7 +112,6 @@ const ExpenseList = () => {
     }
   };
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (editExpenseModal) {
@@ -121,15 +121,14 @@ const ExpenseList = () => {
     }
   };
 
-
   const handleAddExpense = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("you are not signed in");
+      showToast("You're not Signed in", "error")
       navigate('/signin');
       return;
     }
-    console.log(newExpense);
+    (newExpense);
 
     try {
       const user = JSON.parse(localStorage.getItem("user"))
@@ -148,11 +147,9 @@ const ExpenseList = () => {
         showToast("Expense Added successfully!", "success")
 
       } else {
-        console.log("Error adding expense:", response.data.message);
-        alert("Failed to add expense. Please try again.");
+        showToast("Failed to add expense. Please try again.", "error")
       }
     } catch (error) {
-      console.log("Error adding expense:", error.message);
       showToast("Failed to add expense. Please try again.", "error")
     }
   };
@@ -171,7 +168,7 @@ const ExpenseList = () => {
     const token = localStorage.getItem("token");
     const userId = JSON.parse(localStorage.getItem("user"))._id;
     if (!token) {
-      alert("You are not signed in");
+      showToast("You're not Signed in", "error")
       navigate('/signin');
       return;
     }
@@ -195,7 +192,6 @@ const ExpenseList = () => {
 
       } catch (error) {
         console.error("Error deleting expense:", error.message);
-        alert("An error occurred while deleting the expense. Please try again.");
         showToast("Failed to delete expense. Please try again.", "error")
       }
     });
@@ -205,7 +201,7 @@ const ExpenseList = () => {
     const token = localStorage.getItem("token");
     const userId = JSON.parse(localStorage.getItem("user"))._id;
     if (!token) {
-      alert("you are not signed in");
+      showToast("You're not Signed in", "error")
       navigate('/signin');
       return;
     }
@@ -235,6 +231,16 @@ const ExpenseList = () => {
     setExpenseToEdit(null);
   };
 
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setMobileView(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchExpenses = async (userId, token) => {
       try {
@@ -244,34 +250,46 @@ const ExpenseList = () => {
           },
         });
         if (!response.ok) {
-          throw new Error("Failed to fetch expenses");
+          showToast("Failed to Fetch Expenses", "error")
         }
         const data = await response.json();
         setExpenses(data);
       } catch (error) {
-        console.log(error.message)
+        showToast("Failed to Fetch Expenses", "error")
+      }finally {
+        setLoading(false);
       }
     };
 
     const user = JSON.parse(localStorage.getItem("user"))
     const token = localStorage.getItem("token")
-    if (user._id && token) {
+    if (user?._id && token) {
       fetchExpenses(user._id, token);
     }
   }, []);
 
 
   if (user?.status === "Inactive" && user?.role === "User") return <InactiveAccount />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+          <p className="mt-4 text-lg text-gray-700">Loading Expenses...</p>
+        </div>
+      </div>
+    )
+  }
   return (
-    <div className='flex  min-h-screen'>
-      <main className="flex-1 bg-white rounded-md  p-4 ml-4">
+    <div className='flex min-h-screen bg-gray-50'>
+      <main className="flex-1 p-4 md:p-6 mx-2 md:mx-4 my-2 md:my-4 bg-white rounded-lg shadow-lg">
         <ConfirmModal
           isOpen={confirmModal.isOpen}
           message={confirmModal.message}
           onConfirm={confirmModal.onConfirm}
           onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
         />
-        <div>
+        <div className="fixed top-4 right-4 z-50">
           {toasts.map(toast => (
             <Toast
               key={toast.id}
@@ -281,104 +299,180 @@ const ExpenseList = () => {
             />
           ))}
         </div>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-          <h1 className="text-2xl font-bold md:mb-0 mb-2">Expenses</h1>
-          <button onClick={() => setAddExpenseModal(true)} className="bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500 cursor-pointer">
-            Add New Expense
+
+        {/* Header with Title and Add Button */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">Expense Tracker</h1>
+          <button
+            onClick={() => setAddExpenseModal(true)}
+            className="flex items-center justify-center gap-2 bg-yellow-400 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-lg shadow-md hover:bg-yellow-500 transition-all duration-200 font-medium"
+          >
+            <Plus size={18} />
+            <span className="hidden sm:inline">Add New Expense</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
 
-
-        <div className="mb-4">
+        {/* Search Bar */}
+        <div className="mb-4 md:mb-6 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
           <input
             type="text"
-            placeholder="Search by category/description/payment method..."
+            placeholder={mobileView ? "Search..." : "Search by category, description or payment method..."}
             value={searchQuery}
             onChange={handleSearch}
-            className="w-full p-2 border rounded"
+            className="block w-full pl-10 pr-3 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent shadow-sm"
           />
         </div>
 
-
-        <div className="flex justify-end mb-4 space-x-4">
+        {/* Sorting Controls */}
+        <div className="flex justify-end mb-4 md:mb-6 space-x-2 md:space-x-3">
           <button
             onClick={() => handleSort("date")}
-            className={`px-4 py-2 rounded-md shadow ${sortBy === "date"
-              ? "bg-yellow-500 text-white"
-              : "bg-gray-200 hover:bg-gray-300"
+            className={`flex items-center justify-center gap-1 px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm transition-all text-sm md:text-base ${sortBy === "date"
+              ? "bg-yellow-400 text-white"
+              : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
           >
-            Sort by Date {sortBy === "date" ? (isAscending ? "↑" : "↓") : ""}
+            Date
+            {sortBy === "date" && (
+              isAscending ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+            )}
           </button>
           <button
             onClick={() => handleSort("amount")}
-            className={`px-4 py-2 rounded-md shadow ${sortBy === "amount"
-              ? "bg-yellow-500 text-white"
-              : "bg-gray-200 hover:bg-gray-300"
+            className={`flex items-center justify-center gap-1 px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm transition-all text-sm md:text-base ${sortBy === "amount"
+              ? "bg-yellow-400 text-white"
+              : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
           >
-            Sort by Amount {sortBy === "amount" ? (isAscending ? "↑" : "↓") : ""}
+            Amount
+            {sortBy === "amount" && (
+              isAscending ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+            )}
           </button>
         </div>
 
-        <div className="overflow-x-auto w-full">
-          <table className="table-auto w-full border border-gray-200 rounded-xl  shadow-xl bg-white overflow-hidden">
-            {/* Table Head */}
-            <thead className="bg-yellow-400 border-b border-gray-300">
-              <tr className="text-gray-700 text-left">
-                <th className="px-6 py-3">Date</th>
-                <th className="px-6 py-3">Amount</th>
-                <th className="px-6 py-3">Category</th>
-                <th className="px-6 py-3">Payment Method</th>
-                <th className="px-6 py-3">Description</th>
-                <th className="px-6 py-3 text-center">Actions</th>
-              </tr>
-            </thead>
+        {/* Mobile Card View */}
+        {mobileView && (
+          <div className="space-y-4 mb-4">
+            {sortedExpenses.length > 0 ? (
+              sortedExpenses.map((expense, index) => (
+                <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <p className="text-sm text-gray-500">{formatDate(expense.date)}</p>
+                      <p className="text-lg font-semibold text-gray-900">${expense.amount}</p>
+                    </div>
+                    <MobileActionMenu expense={expense} />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <Tag size={16} className="text-gray-500 mr-2" />
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        {expense.category}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <CreditCard size={16} className="text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-700">{expense.paymentMethod}</span>
+                    </div>
+                    <div className="flex items-start">
+                      <FileText size={16} className="text-gray-500 mr-2 mt-0.5" />
+                      <span className="text-sm text-gray-700">{expense.description}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 bg-white border border-gray-200 rounded-lg">
+                <p className="text-gray-500">No expenses found. Add a new expense to get started.</p>
+              </div>
+            )}
+          </div>
+        )}
 
-            {/* Table Body */}
-            <tbody>
-              {sortedExpenses.map((expense, index) => (
-                <tr
-                  key={index}
-                  className="odd:bg-white even:bg-gray-50 hover:bg-yellow-100 transition-all duration-200 border-b border-gray-200"
-                >
-                  <td className="px-6 py-4">{formatDate(expense.date)}</td>
-                  <td className="px-6 py-4 font-semibold text-gray-800">${expense.amount}</td>
-                  <td className="px-6 py-4">{expense.category}</td>
-                  <td className="px-6 py-4">{expense.paymentMethod}</td>
-                  <td className="px-6 py-4">{expense.description}</td>
-                  <td className="px-6 py-4 text-center space-x-2">
-                    <button
-                      onClick={() => handleEditExpense(expense)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-all"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteExpense(expense._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-all"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleViewExpense(expense)}
-                      className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-all"
-                    >
-                      <Eye size={16} />
-                    </button>
-                  </td>
+        {/* Desktop Table View */}
+        {!mobileView && (
+          <div className="overflow-x-auto w-full rounded-lg border border-gray-200 shadow-md">
+            <table className="min-w-full divide-y divide-gray-200">
+              {/* Table Head */}
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th scope="col" className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th scope="col" className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                  <th scope="col" className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
+                  <th scope="col" className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                  <th scope="col" className="px-4 md:px-6 py-3 md:py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              {/* Table Body */}
+              <tbody className="bg-white divide-y divide-gray-200">
+                {sortedExpenses.length > 0 ? (
+                  sortedExpenses.map((expense, index) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-yellow-50 transition-colors duration-150"
+                    >
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(expense.date)}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">${expense.amount}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm text-gray-700">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          {expense.category}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm text-gray-700">{expense.paymentMethod}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-sm text-gray-700 max-w-xs truncate">{expense.description}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium text-center">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            onClick={() => handleViewExpense(expense)}
+                            className="p-1.5 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
+                            title="View"
+                          >
+                            <Eye size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleEditExpense(expense)}
+                            className="p-1.5 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteExpense(expense._id)}
+                            className="p-1.5 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="px-4 md:px-6 py-8 md:py-12 text-center text-gray-500">
+                      No expenses found. Add a new expense to get started.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </main>
 
+      {/* Add Expense Modal */}
       {addExpenseModal && (
         <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
-            <div className="flex justify-between items-center bg-yellow-400 text-white px-6 py-4">
-              <h2 className="text-2xl font-bold">Add New Expense</h2>
+            <div className="flex justify-between items-center bg-yellow-400 text-white px-4 md:px-6 py-3 md:py-4">
+              <h2 className="text-xl md:text-2xl font-bold">Add New Expense</h2>
               <button
                 onClick={() => setAddExpenseModal(false)}
                 className="text-white hover:text-gray-200 transition-colors"
@@ -387,13 +481,13 @@ const ExpenseList = () => {
                 <X size={24} />
               </button>
             </div>
-            <form className="p-6 space-y-4">
+            <form className="p-4 md:p-6 space-y-4">
               <div className="space-y-2">
                 <label htmlFor="date" className="block text-sm font-medium text-gray-700">
                   Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3   top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
                     type="date"
                     id="date"
@@ -485,18 +579,18 @@ const ExpenseList = () => {
                 </div>
               </div>
             </form>
-            <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-2">
+            <div className="bg-gray-50 px-4 md:px-6 py-3 md:py-4 flex justify-end space-x-2">
               <button
                 type="button"
                 onClick={() => setAddExpenseModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="px-3 md:px-4 py-1.5 md:py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleAddExpense}
-                className="px-4 py-2 bg-yellow-400 text-white rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-yellow-400 text-white rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
               >
                 Add Expense
               </button>
@@ -505,70 +599,71 @@ const ExpenseList = () => {
         </div>
       )}
 
+      {/* View Expense Modal */}
       {viewExpenseModal && selectedExpense && (
-        <div className="fixed inset-0  bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
             <div className="flex justify-between items-center bg-yellow-400 text-white px-6 py-4">
-              <h2 className="text-2xl font-bold">Expense Details</h2>
+              <h2 className="text-xl font-semibold">Expense Details</h2>
               <button
                 onClick={() => setViewExpenseModal(false)}
-                className="text-white hover:text-gray-200 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors p-1 rounded-full hover:bg-yellow-500"
                 aria-label="Close modal"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-center space-x-4">
                 <div className="bg-yellow-100 p-3 rounded-full">
-                  <Calendar className="text-yellow-600 w-6 h-6" />
+                  <Calendar className="text-yellow-600" size={20} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Date</p>
-                  <p className="font-semibold">{formatDate(selectedExpense.date)}</p>
+                  <p className="text-sm text-gray-500 font-medium">Date</p>
+                  <p className="font-semibold text-gray-800">{formatDate(selectedExpense.date)}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="bg-green-100 p-3 rounded-full">
-                  <DollarSign className="text-green-600 w-6 h-6" />
+                  <DollarSign className="text-green-600" size={20} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Amount</p>
-                  <p className="font-semibold">${selectedExpense.amount}</p>
+                  <p className="text-sm text-gray-500 font-medium">Amount</p>
+                  <p className="font-semibold text-gray-800">${selectedExpense.amount}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="bg-blue-100 p-3 rounded-full">
-                  <Tag className="text-blue-600 w-6 h-6" />
+                  <Tag className="text-blue-600" size={20} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Category</p>
-                  <p className="font-semibold">{selectedExpense.category}</p>
+                  <p className="text-sm text-gray-500 font-medium">Category</p>
+                  <p className="font-semibold text-gray-800">{selectedExpense.category}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="bg-purple-100 p-3 rounded-full">
-                  <CreditCard className="text-purple-600 w-6 h-6" />
+                  <CreditCard className="text-purple-600" size={20} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Payment Method</p>
-                  <p className="font-semibold">{selectedExpense.paymentMethod}</p>
+                  <p className="text-sm text-gray-500 font-medium">Payment Method</p>
+                  <p className="font-semibold text-gray-800">{selectedExpense.paymentMethod}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
                 <div className="bg-red-100 p-3 rounded-full">
-                  <FileText className="text-red-600 w-6 h-6" />
+                  <FileText className="text-red-600" size={20} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Description</p>
-                  <p className="font-semibold">{selectedExpense.description}</p>
+                  <p className="text-sm text-gray-500 font-medium">Description</p>
+                  <p className="font-semibold text-gray-800">{selectedExpense.description}</p>
                 </div>
               </div>
             </div>
             <div className="bg-gray-50 px-6 py-4">
               <button
                 onClick={() => setViewExpenseModal(false)}
-                className="w-full bg-yellow-400 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-500 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+                className="w-full bg-yellow-400 text-white px-4 py-2.5 rounded-lg shadow-sm hover:bg-yellow-500 transition-colors font-medium"
               >
                 Close
               </button>
@@ -577,6 +672,7 @@ const ExpenseList = () => {
         </div>
       )}
 
+      {/* Edit Expense Modal */}
       {editExpenseModal && expenseToEdit && (
         <Modal
           title="Edit Expense"
@@ -586,7 +682,6 @@ const ExpenseList = () => {
           handleInputChange={handleInputChange}
         />
       )}
-
     </div>
   )
 }

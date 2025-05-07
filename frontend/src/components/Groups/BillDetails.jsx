@@ -108,14 +108,14 @@ const BillDetails = () => {
   // Add a new bill
   const addBill = async () => {
     if (!billDescription || !billAmount || payers.length === 0) {
-      alert("Please fill all fields, select at least one payer and participant.");
+      showToast("Please fill all fields, select at least one payer and participant.","warning");
       return;
     }
 
     // Validate total amount paid
     const totalPaid = payers.reduce((sum, payer) => sum + payer.amountPaid, 0);
     if (totalPaid !== parseFloat(billAmount)) {
-      alert("Total paid amount does not match the bill amount.");
+      showToast("Total paid amount does not match the bill amount.","warning");
       return;
     }
 
@@ -173,7 +173,7 @@ const BillDetails = () => {
       const user = JSON.parse(localStorage.getItem('user'))
       const res = await axios.get(`http://localhost:3000/getBalances/${groupId}?userId=${user?._id}`);
       setBalances(res.data);
-      console.log(res)
+      (res)
 
     } catch (error) {
       console.error("Error fetching bill balances:", error);
