@@ -1,4 +1,4 @@
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import Avatar from 'react-avatar';
 import { useAuth } from '../Context/AuthContext';
@@ -7,362 +7,638 @@ import Toast from '../Message/Toast';
 import { ConfirmModal } from '../Message/ConfirmModal';
 
 const UserManage = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState([]);
-    const [allUsers, setAllUsers] = useState([]);
-    const [editingUser, setEditingUser] = useState(null);
-    const [editedName, setEditedName] = useState('');
-    const [editedEmail, setEditedEmail] = useState('');
-    const { user } = useAuth();
-    // const [isEditing, setisEditing] = useState(false)
-    const [toasts, setToasts] = useState([]);
-    const [confirmModal, setConfirmModal] = useState({
-        isOpen: false,
-        message: '',
-        onConfirm: () => { },
+  const [isOpen, setIsOpen] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editedName, setEditedName] = useState('');
+  const [editedEmail, setEditedEmail] = useState('');
+  const { user } = useAuth();
+  const [toasts, setToasts] = useState([]);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    message: '',
+    onConfirm: () => { },
+  });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(5);
+  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'ascending' });
+  const [filterRole, setFilterRole] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const openConfirmModal = (message, action) => {
+    setConfirmModal({
+      isOpen: true,
+      message,
+      onConfirm: () => {
+        action();
+        setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } });
+      }
     });
+    setIsOpen(null);
+  };
 
-    const openConfirmModal = (message, action) => {
-        setConfirmModal({
-            isOpen: true,
-            message,
-            onConfirm: () => {
-                action();
-                setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } });
-            }
+  const showToast = (message, type) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  // Fetch users data
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/getUsers', {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            userid: user?._id
+          },
         });
-        setIsOpen(false)
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAllUsers(data);
+        setFilteredUsers(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        showToast("Failed to fetch users", "error");
+      }
     };
 
-    const showToast = (message, type) => {
-        const id = Date.now();
-        setToasts(prev => [...prev, { id, message, type }]);
-    };
+    getUsers();
+  }, [user]);
 
-    const removeToast = (id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    };
+  // Filter users based on search query and filters
+  useEffect(() => {
+    let result = allUsers;
 
+    // Apply search filter
+    if (searchQuery) {
+      result = result.filter(user =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
 
+    // Apply role filter
+    if (filterRole !== 'All') {
+      result = result.filter(user => user.role === filterRole);
+    }
 
-    useEffect(() => {
-        const getUsers = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/getUsers', {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        userid: user?._id
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                setFilteredUsers(data);
-                setAllUsers(data)
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            }
-        };
+    // Apply status filter
+    if (filterStatus !== 'All') {
+      result = result.filter(user => user.status === filterStatus);
+    }
 
-        getUsers();
-    }, []);
+    // Apply sorting
+    if (sortConfig.key) {
+      result = [...result].sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
 
-    useEffect(() => {
-        setFilteredUsers(
-            allUsers?.filter(user =>
-                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().includes(searchQuery.toLowerCase())
-            )
+    setFilteredUsers(result);
+    setCurrentPage(1); // Reset to first page on filter change
+  }, [searchQuery, allUsers, filterRole, filterStatus, sortConfig]);
+
+  // Request sort function
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Handle status change
+  const handleStatus = async (email) => {
+    openConfirmModal("Are you sure you want to change the status of this user?", async () => {
+      try {
+        const response = await fetch('http://localhost:3000/changeStatus', {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            userid: user?._id
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        setAllUsers(prevUsers =>
+          prevUsers.map(user =>
+            user.email === email
+              ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
+              : user
+          )
         );
-    }, [searchQuery, allUsers]);
+        showToast("Status changed successfully!", "success");
+      } catch (error) {
+        console.log("Error changing status:", error);
+        showToast("Failed to change status. Please try again.", "error");
+      }
+    });
+  };
 
-    const handleStatus = async (email) => {
-        openConfirmModal("Are you sure you want to change the status of this user?", async () => {
-            try {
-                const response = await fetch('http://localhost:3000/changeStatus', {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        userid: user?._id
-                    },
-                    body: JSON.stringify({ email }),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                setFilteredUsers(prevUsers =>
-                    prevUsers.map(user =>
-                        user.email === email
-                            ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
-                            : user
-                    )
-                );
-                setIsOpen(false)
-                showToast("Status Changed successfully!", "success")
-            } catch (error) {
-                console.log("Error changing status:", error);
-                showToast("Failed to change. Please try again.", "error")
-            }
-        })
-    };
-
-
-    const handleRole = async (email) => {
-        openConfirmModal(`Are you sure you want to change the role of this user?`, async () => {
-            try {
-                const response = await fetch('http://localhost:3000/changeRole', {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        userid: user?._id
-                    },
-                    body: JSON.stringify({ email }),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                setFilteredUsers(prevUsers =>
-                    prevUsers.map(user =>
-                        user.email === email
-                            ? { ...user, role: user.role === "Admin" ? "User" : "Admin" }
-                            : user
-                    )
-                );
-                setIsOpen(false)
-                showToast("Role changed successfully!", "success")
-            } catch (error) {
-                console.log("Error changing role:", error);
-                showToast("Failed to change role. Please try again.", "error")
-            }
+  // Handle role change
+  const handleRole = async (email) => {
+    openConfirmModal(`Are you sure you want to change the role of this user?`, async () => {
+      try {
+        const response = await fetch('http://localhost:3000/changeRole', {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            userid: user?._id
+          },
+          body: JSON.stringify({ email }),
         });
-    };
 
-    const handleEdit = (user) => {
-        setEditingUser(user._id);
-        setEditedName(user.name);
-        setEditedEmail(user.email);
-    };
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-    const handleSaveEdit = async (id) => {
-        openConfirmModal("Are you sure you want to save the changes?", async () => {
-            try {
-                const response = await fetch(`http://localhost:3000/updateUser/${id}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        userid: user?._id
-                    },
-                    body: JSON.stringify({ name: editedName, email: editedEmail }),
-                });
+        setAllUsers(prevUsers =>
+          prevUsers.map(user =>
+            user.email === email
+              ? { ...user, role: user.role === "Admin" ? "User" : "Admin" }
+              : user
+          )
+        );
+        showToast("Role changed successfully!", "success");
+      } catch (error) {
+        console.log("Error changing role:", error);
+        showToast("Failed to change role. Please try again.", "error");
+      }
+    });
+  };
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+  // Handle edit user
+  const handleEdit = (user) => {
+    setEditingUser(user._id);
+    setEditedName(user.name);
+    setEditedEmail(user.email);
+    setIsOpen(null);
+  };
 
-                setFilteredUsers(prevUsers =>
-                    prevUsers.map(user =>
-                        user._id === id ? { ...user, name: editedName, email: editedEmail } : user
-                    )
-                );
-                setEditingUser(null);
-                setIsOpen(false)
-                showToast("Edited successfully!", "success")
-            } catch (error) {
-                console.log("Error updating user:", error);
-                showToast("Failed to Edit. Please try again.", "error")
-            }
+  // Handle save edit
+  const handleSaveEdit = async (id) => {
+    openConfirmModal("Are you sure you want to save the changes?", async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/updateUser/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            userid: user?._id
+          },
+          body: JSON.stringify({ name: editedName, email: editedEmail }),
         });
-    };
 
-    const handleDelete = async (id) => {
-        openConfirmModal("Are you sure you want to delete this user?", async () => {
-            try {
-                const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        userid: user?._id
-                    }
-                });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+        setAllUsers(prevUsers =>
+          prevUsers.map(user =>
+            user._id === id ? { ...user, name: editedName, email: editedEmail } : user
+          )
+        );
+        setEditingUser(null);
+        showToast("User updated successfully!", "success");
+      } catch (error) {
+        console.log("Error updating user:", error);
+        showToast("Failed to update user. Please try again.", "error");
+      }
+    });
+  };
 
-                setFilteredUsers(filteredUsers.filter(user => user._id !== id));
-                setIsOpen(false)
-                showToast("User deleted successfully!", "success")
-
-            } catch (error) {
-                console.log("Error deleting user:", error);
-                showToast("Failed to delete . Please try again.", "error")
-            }
+  // Handle delete user
+  const handleDelete = async (id) => {
+    openConfirmModal("Are you sure you want to delete this user?", async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/deleteUser/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            userid: user?._id
+          }
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        setAllUsers(prevUsers => prevUsers.filter(user => user._id !== id));
+        showToast("User deleted successfully!", "success");
+      } catch (error) {
+        console.log("Error deleting user:", error);
+        showToast("Failed to delete user. Please try again.", "error");
+      }
+    });
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.dropdown-container')) {
+        setIsOpen(null);
+      }
+      if (!e.target.closest('.filter-container')) {
+        setIsFilterOpen(false);
+      }
     };
 
-    if (user?.role !== "Admin") return <AccessDenial />;
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
-    return (
-        <div className="flex flex-col gap-6 px-4 md:px-10">
-  <h1 className="text-3xl md:text-4xl mt-6 font-bold text-gray-800">
-    User Management
-  </h1>
+  // Pagination calculations
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  <ConfirmModal
-    isOpen={confirmModal.isOpen}
-    message={confirmModal.message}
-    onConfirm={confirmModal.onConfirm}
-    onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => {} })}
-  />
+  // Pagination functions
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
-  
-  <div className="fixed top-4 right-4 space-y-2 z-50">
-    {toasts.map((toast) => (
-      <Toast
-        key={toast.id}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => removeToast(toast.id)}
-      />
-    ))}
-  </div>
+  // Access control
+  if (user?.role !== "Admin") return <AccessDenial />;
 
-  
-  <div className="flex items-center w-full">
-    <input
-      type="text"
-      placeholder="Search users..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="p-3 w-full max-w-md  rounded-lg shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
-    />
-  </div>
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto w-full">
+       
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+            User Management
+          </h1>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-auto">
+              <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+              />
+            </div>
+            <div className="relative filter-container">
+              <button
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="px-4 py-2 bg-purple-800 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700 transition-colors shadow-sm"
+              >
+                <Filter size={18} />
+                <span>Filter</span>
+              </button>
 
- 
-  <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-    <table className="min-w-full border-collapse">
-      <thead className="bg-purple-800 text-white uppercase text-sm tracking-wider">
-        <tr>
-          <th className="p-4 text-left">Name</th>
-          <th className="p-4 text-left">Email</th>
-          <th className="p-4 text-left">Role</th>
-          <th className="p-4 text-left">Status</th>
-          <th className="p-4 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filteredUsers.length > 0 ? (
-          filteredUsers.map((user, index) => (
-            <tr
-              key={index}
-              className="border-b hover:bg-gray-50 transition duration-200"
-            >
-              <td className="p-4 flex gap-4 items-center">
-                <Avatar round={true} name={user.name} size="40" />
-                {editingUser === user._id ? (
-                  <input
-                    type="text"
-                    value={editedName}
-                    onChange={(e) => setEditedName(e.target.value)}
-                    className="border rounded-md p-2 w-full"
-                  />
-                ) : (
-                  <span className="text-gray-800 font-medium">{user.name}</span>
-                )}
-              </td>
-              <td className="p-4 text-gray-600">
-                {editingUser === user._id ? (
-                  <input
-                    type="email"
-                    value={editedEmail}
-                    onChange={(e) => setEditedEmail(e.target.value)}
-                    className="border rounded-md p-2 w-full"
-                  />
-                ) : (
-                  user.email
-                )}
-              </td>
-              <td className="p-4 text-gray-700">{user.role}</td>
-              <td className="p-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    user.status === 'Active'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
-                  }`}
-                >
-                  {user.status}
-                </span>
-              </td>
-              <td className="p-4 relative">
-                <button
-                  className="p-2 rounded-md hover:bg-gray-200"
-                  onClick={() => setIsOpen(isOpen === index ? null : index)}
-                >
-                  <MoreHorizontal />
-                </button>
-
-                {isOpen === index && (
-                  <ul className="absolute right-0 top-10 bg-purple-800 text-white p-2 z-50 rounded-lg shadow-md w-40">
-                    <li
-                      className="p-2 hover:bg-purple-600 cursor-pointer"
+              {isFilterOpen && (
+                <div className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg z-50 p-4 w-60 border border-gray-200">
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select
+                      value={filterRole}
+                      onChange={(e) => setFilterRole(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="All">All Roles</option>
+                      <option value="Admin">Admin</option>
+                      <option value="User">User</option>
+                      <option value="Manager">Manager</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="All">All Status</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div className="flex justify-between">
+                    <button
                       onClick={() => {
-                        if (editingUser == null) {
-                          handleEdit(user);
-                        } else {
-                          handleSaveEdit(editingUser);
-                        }
+                        setFilterRole('All');
+                        setFilterStatus('All');
                       }}
+                      className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
                     >
-                      {editingUser != null ? 'Save User' : 'Edit User'}
-                    </li>
-                    <li
-                      className="p-2 hover:bg-purple-600 cursor-pointer"
-                      onClick={() => handleRole(user.email)}
+                      Reset
+                    </button>
+                    <button
+                      onClick={() => setIsFilterOpen(false)}
+                      className="px-3 py-1 text-sm bg-purple-800 text-white hover:bg-purple-700 rounded-md transition-colors"
                     >
-                      Change Role
-                    </li>
-                    <li
-                      className="p-2 hover:bg-purple-600 cursor-pointer"
-                      onClick={() => handleStatus(user.email)}
-                    >
-                      {user.status === 'Active' ? 'Deactivate' : 'Activate'}
-                    </li>
-                    <li
-                      className="p-2 hover:bg-red-500 cursor-pointer"
-                      onClick={() => handleDelete(user._id)}
-                    >
-                      Delete User
-                    </li>
-                  </ul>
-                )}
-              </td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td className="p-4 text-center text-gray-500" colSpan="5">
-              No users found
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-    );
+        {/* Table Section */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-purple-800 text-white">
+                <tr>
+                  <th
+                    className="p-4 text-left text-sm font-medium uppercase tracking-wider cursor-pointer"
+                    onClick={() => requestSort('name')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Name</span>
+                      {sortConfig.key === 'name' && (
+                        <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="p-4 text-left text-sm font-medium uppercase tracking-wider cursor-pointer"
+                    onClick={() => requestSort('email')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Email</span>
+                      {sortConfig.key === 'email' && (
+                        <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="p-4 text-left text-sm font-medium uppercase tracking-wider cursor-pointer"
+                    onClick={() => requestSort('role')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Role</span>
+                      {sortConfig.key === 'role' && (
+                        <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="p-4 text-left text-sm font-medium uppercase tracking-wider cursor-pointer"
+                    onClick={() => requestSort('status')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Status</span>
+                      {sortConfig.key === 'status' && (
+                        <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                      )}
+                    </div>
+                  </th>
+                  <th className="p-4 text-left text-sm font-medium uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentUsers.length > 0 ? (
+                  currentUsers.map((user, index) => (
+                    <tr
+                      key={user._id}
+                      className="hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <Avatar
+                            round={true}
+                            name={user.name}
+                            size="40"
+                            textSizeRatio={2.5}
+                          />
+                          {editingUser === user._id ? (
+                            <input
+                              type="text"
+                              value={editedName}
+                              onChange={(e) => setEditedName(e.target.value)}
+                              className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          ) : (
+                            <span className="text-gray-800 font-medium">{user.name}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-4 text-gray-600">
+                        {editingUser === user._id ? (
+                          <input
+                            type="email"
+                            value={editedEmail}
+                            onChange={(e) => setEditedEmail(e.target.value)}
+                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                        ) : (
+                          user.email
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.role === 'Admin'
+                            ? 'bg-purple-100 text-purple-700'
+                            : user.role === 'Manager'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.status === 'Active'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
+                          }`}>
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="p-4 relative dropdown-container">
+                        <button
+                          className="p-2 rounded-md hover:bg-gray-200 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsOpen(isOpen === index ? null : index);
+                          }}
+                        >
+                          <MoreHorizontal size={20} />
+                        </button>
+
+                        {isOpen === index && (
+                          <ul className="absolute right-0 top-12 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden w-40">
+                            <li
+                              className="p-3 hover:bg-purple-50 cursor-pointer text-gray-700 flex items-center border-b border-gray-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (editingUser === null) {
+                                  handleEdit(user);
+                                } else {
+                                  handleSaveEdit(editingUser);
+                                }
+                              }}
+                            >
+                              {editingUser === user._id ? 'Save User' : 'Edit User'}
+                            </li>
+                            <li
+                              className="p-3 hover:bg-purple-50 cursor-pointer text-gray-700 flex items-center border-b border-gray-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRole(user.email);
+                              }}
+                            >
+                              Change Role
+                            </li>
+                            <li
+                              className="p-3 hover:bg-purple-50 cursor-pointer text-gray-700 flex items-center border-b border-gray-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatus(user.email);
+                              }}
+                            >
+                              {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                            </li>
+                            <li
+                              className="p-3 hover:bg-red-50 cursor-pointer text-red-600 flex items-center"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(user._id);
+                              }}
+                            >
+                              Delete User
+                            </li>
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="p-6 text-center text-gray-500" colSpan="5">
+                      No users found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          {filteredUsers.length > 0 && (
+            <div className="px-4 py-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="text-sm text-gray-700">
+                Showing <span className="font-medium">{indexOfFirstUser + 1}</span> to{" "}
+                <span className="font-medium">
+                  {Math.min(indexOfLastUser, filteredUsers.length)}
+                </span>{" "}
+                of <span className="font-medium">{filteredUsers.length}</span> users
+              </div>
+
+              <div className="flex items-center gap-2">
+                <select
+                  value={usersPerPage}
+                  onChange={(e) => {
+                    setUsersPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value={5}>5 per page</option>
+                  <option value={10}>10 per page</option>
+                  <option value={25}>25 per page</option>
+                  <option value={50}>50 per page</option>
+                </select>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => paginate(pageNum)}
+                        className={`w-10 h-10 rounded-md ${currentPage === pageNum
+                            ? 'bg-purple-800 text-white'
+                            : 'text-gray-700 hover:bg-gray-200'
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Toasts */}
+      <div className="fixed top-4 right-4 space-y-2 z-50">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
+      />
+    </div>
+  );
 };
 
 export default UserManage;
