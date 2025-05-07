@@ -16,18 +16,25 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors());
-
-app.get("/", (req, res) => res.send("Hello"));
+app.use(cors({
+    origin: process.env.FRONTEND_URL || '*',
+    credentials: true
+}));
 
 app.use(session({
-    secret: 'yourSecretKey',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: { 
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        secure: true,
+        httpOnly: true,
+        sameSite:'none' 
+    }
 }));
 
 const port = process.env.PORT;
+app.get("/", (req, res) => res.send("API is running..."));
 app.use('/', authenticationRouter);
 app.use('/', expenseRouter);
 app.use('/', userRouter)
