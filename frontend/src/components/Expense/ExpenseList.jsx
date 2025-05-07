@@ -366,7 +366,7 @@ const ExpenseList = () => {
                       <p className="text-sm text-gray-500">{formatDate(expense.date)}</p>
                       <p className="text-lg font-semibold text-gray-900">${expense.amount}</p>
                     </div>
-                    <MobileActionMenu expense={expense} handleDeleteExpense={handleDeleteExpense} handleEditExpense={handleEditExpense} />
+                    <MobileActionMenu expense={expense} handleDeleteExpense={handleDeleteExpense} handleEditExpense={handleEditExpense} handleViewExpense={handleViewExpense} />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center">
@@ -601,7 +601,7 @@ const ExpenseList = () => {
 
       {/* View Expense Modal */}
       {viewExpenseModal && selectedExpense && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
             <div className="flex justify-between items-center bg-yellow-400 text-white px-6 py-4">
               <h2 className="text-xl font-semibold">Expense Details</h2>
