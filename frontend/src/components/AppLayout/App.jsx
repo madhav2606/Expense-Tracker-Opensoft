@@ -28,7 +28,7 @@ function App() {
           <Route path="/groups" element={<GroupBill />} />
           <Route path="/groups/:groupId" element={<BillDetails />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ChartPie, CircleCheckBig, Clock, Cpu, Database } from "lucide-react";
+import { ChartPie, CircleCheckBig, Clock, Cpu, Database, Loader } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
 import AccessDenial from "../AuthRestrict/AccessDenial";
 
@@ -28,8 +28,16 @@ const SystemHealth = () => {
     }, []);
 
     if (user?.role !== "Admin") return <AccessDenial />;
-    if (loading) return <div className="flex justify-center items-center h-screen text-lg">Loading...</div>;
-    if (error) return <p className="text-red-500 text-center">{error}</p>;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+                    <p className="mt-4 text-lg text-gray-700">Loading System Health...</p>
+                </div>
+            </div>
+        )
+    }
 
     const formatMemory = (memory) => (memory / (1024 * 1024)).toFixed(2);
 
@@ -42,15 +50,15 @@ const SystemHealth = () => {
             </div>
             <p className="text-gray-500 mb-6">Real-time system performance metrics</p>
 
-        
+
             <div className="grid gap-6 md:grid-cols-3">
-              
+
                 <div className="p-4 bg-gray-100 rounded-lg flex items-center gap-4">
                     <ChartPie className="text-blue-500 w-6 h-6" />
                     <span className="text-gray-800 font-medium">Status: {healthData.status}</span>
                 </div>
 
-                
+
                 <div className="p-4 bg-gray-100 rounded-lg flex items-center gap-4">
                     <Clock className="text-indigo-500 w-6 h-6" />
                     <span className="text-gray-800 font-medium">Uptime: {(healthData.uptime / 3600).toFixed(2)} hrs</span>
@@ -62,7 +70,7 @@ const SystemHealth = () => {
                 </div>
             </div>
 
-           
+
             <div className="mt-6 p-4 bg-gray-100 rounded-lg">
                 <h3 className="text-lg font-semibold mb-2">Memory Usage</h3>
                 <p className="text-xl font-bold text-gray-800 mb-2">
@@ -72,17 +80,16 @@ const SystemHealth = () => {
                     <div
                         className="bg-green-500 h-full transition-all"
                         style={{
-                            width: `${
-                                (((healthData.totalMemory || 0) - (healthData.freeMemory || 0)) /
+                            width: `${(((healthData.totalMemory || 0) - (healthData.freeMemory || 0)) /
                                     (healthData.totalMemory || 1)) *
                                 100
-                            }%`,
+                                }%`,
                         }}
                     ></div>
                 </div>
             </div>
 
-           
+
             <div className="mt-6 p-4 bg-gray-100 rounded-lg">
                 <div className="flex items-center gap-4 font-semibold mb-2">
                     <Database className="text-purple-500 w-6 h-6" />
@@ -90,9 +97,8 @@ const SystemHealth = () => {
                 </div>
                 <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
                     <div
-                        className={`h-full transition-all ${
-                            healthData.dbQueryTime > 300 ? "bg-red-500" : "bg-green-500"
-                        }`}
+                        className={`h-full transition-all ${healthData.dbQueryTime > 300 ? "bg-red-500" : "bg-green-500"
+                            }`}
                         style={{ width: `${Math.min(healthData.dbQueryTime / 5, 100)}%` }}
                     ></div>
                 </div>

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Filter, MoreHorizontal, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Filter, Loader, MoreHorizontal, Search } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import Avatar from 'react-avatar';
 import { useAuth } from '../Context/AuthContext';
@@ -14,10 +14,12 @@ const ActivityMonitor = () => {
     const [sortConfig, setSortConfig] = useState({ key: 'timestamp', direction: 'descending' });
     const [filterAction, setFilterAction] = useState('All');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchActivity = async () => {
             try {
+                setLoading(true);
                 const response = await fetch("http://localhost:3000/getActivity", {
                     method: "GET",
                     headers: {
@@ -29,11 +31,13 @@ const ActivityMonitor = () => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                setLoading(false);
                 const activities = await response.json();
                 setAllUsers(activities);
                 setFilteredUsers(activities);
             } catch (error) {
                 console.error("Error fetching activities", error);
+                setLoading(false);
             }
         };
         fetchActivity();
@@ -134,6 +138,16 @@ const ActivityMonitor = () => {
     };
 
     if (user?.role !== "Admin") return <AccessDenial />;
+    if (loading) {
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center">
+              <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+              <p className="mt-4 text-lg text-gray-700">Loading Platform Activities...</p>
+            </div>
+          </div>
+        )
+      }
 
     return (
         <div className='flex flex-col gap-6 p-6 bg-gray-50 min-h-screen'>
@@ -246,7 +260,7 @@ const ActivityMonitor = () => {
                                 <span className="font-medium">
                                     {Math.min(indexOfLastUser, filteredUsers.length)}
                                 </span>{" "}
-                                of <span className="font-medium">{filteredUsers.length}</span> users
+                                of <span className="font-medium">{filteredUsers.length}</span> activities
                             </div>
 
                             <div className="flex items-center gap-2">

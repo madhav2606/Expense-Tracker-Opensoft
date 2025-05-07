@@ -1,4 +1,4 @@
-import { MoreHorizontal, ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react'
+import { MoreHorizontal, ChevronLeft, ChevronRight, Search, Filter, Loader } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import Avatar from 'react-avatar';
 import { useAuth } from '../Context/AuthContext';
@@ -15,6 +15,7 @@ const UserManage = () => {
   const [editedName, setEditedName] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState([]);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
@@ -55,6 +56,7 @@ const UserManage = () => {
   useEffect(() => {
     const getUsers = async () => {
       try {
+        setLoading(true);
         const response = await fetch('http://localhost:3000/getUsers', {
           method: "GET",
           headers: {
@@ -72,6 +74,8 @@ const UserManage = () => {
       } catch (error) {
         console.error("Error fetching users:", error);
         showToast("Failed to fetch users", "error");
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -283,8 +287,17 @@ const UserManage = () => {
   const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
-  // Access control
   if (user?.role !== "Admin") return <AccessDenial />;
+  if (loading) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+            <p className="mt-4 text-lg text-gray-700">Loading Platform Users...</p>
+          </div>
+        </div>
+      )
+    }
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-gray-50 min-h-screen">

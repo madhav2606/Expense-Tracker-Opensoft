@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, Activity, BarChart2, Shield, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { Users, Activity, BarChart2, Shield, TrendingDownIcon, TrendingUpIcon, Loader } from "lucide-react";
 import UserActivity from "./UserActivity";
 import RecentUsers from "./RecentUsers";
 import CountUp from "react-countup";
@@ -18,10 +18,12 @@ const AdminDash = () => {
     });
 
     const { user } = useAuth();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
+                setLoading(true);
                 const response = await fetch("http://localhost:3000/dashboardStats", {
                     method: "GET",
                     headers: {
@@ -33,10 +35,12 @@ const AdminDash = () => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                setLoading(false);
                 const data = await response.json();
                 setStats(data);
             } catch (error) {
                 console.error("Error fetching stats:", error);
+                setLoading(false);
             }
         };
 
@@ -75,6 +79,16 @@ const AdminDash = () => {
     ];
 
     if (user?.role !== "Admin") return <AccessDenial />;
+    if (loading) {
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center">
+              <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+              <p className="mt-4 text-lg text-gray-700">Loading Platform insights...</p>
+            </div>
+          </div>
+        )
+      }
 
     return (
         <div className="bg-gray-50 min-h-screen p-6 sm:p-10">

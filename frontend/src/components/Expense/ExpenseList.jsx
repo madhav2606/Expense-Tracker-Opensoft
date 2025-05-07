@@ -8,10 +8,7 @@ import Toast from '../Message/Toast';
 import { ConfirmModal } from '../Message/ConfirmModal';
 
 const ExpenseList = () => {
-
-
   const [expenses, setExpenses] = useState([]);
-
   const [addExpenseModal, setAddExpenseModal] = useState(false);
   const [viewExpenseModal, setViewExpenseModal] = useState(false);
   const [editExpenseModal, setEditExpenseModal] = useState(false);
@@ -38,6 +35,27 @@ const ExpenseList = () => {
       }
     });
   };
+
+  const categories = [
+    "Food",
+    "Shopping",
+    "Housing",
+    "Transportation",
+    "Entertainment",
+    "Utilities",
+    "Healthcare",
+    "Education",
+    "Travel",
+    "Other"
+  ];
+
+  const paymentMethods = [
+    "Credit Card",
+    "Debit Card",
+    "Cash",
+    "Online Transfer",
+    "Mobile Wallet"
+  ];
 
   const showToast = (message, type) => {
     const id = Date.now();
@@ -139,12 +157,12 @@ const ExpenseList = () => {
     }
   };
 
-  function handleEditExpense(expense) {
+  const handleEditExpense = (expense) => {
     setExpenseToEdit(expense);
     setEditExpenseModal(true);
   }
 
-  function handleViewExpense(expense) {
+  const handleViewExpense = (expense) => {
     setSelectedExpense(expense);
     setViewExpenseModal(true);
   }
@@ -409,34 +427,46 @@ const ExpenseList = () => {
                 </label>
                 <div className="relative">
                   <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="text"
+                  <select
                     id="category"
                     name="category"
-                    placeholder="Category"
                     value={newExpense.category}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
+
               <div className="space-y-2">
                 <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700">
                   Payment Method
                 </label>
                 <div className="relative">
                   <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="text"
+                  <select
                     id="paymentMethod"
                     name="paymentMethod"
-                    placeholder="Payment Method"
                     value={newExpense.paymentMethod}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
+                  >
+                    <option value="">Select Payment Method</option>
+                    {paymentMethods.map((method) => (
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
+
               <div className="space-y-2">
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                   Description
