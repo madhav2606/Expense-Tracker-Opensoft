@@ -13,7 +13,7 @@ const SystemHealth = () => {
     useEffect(() => {
         const fetchHealthData = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/health");
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/health`);
                 setHealthData(response.data);
             } catch (err) {
                 setError("Failed to fetch system health data.");

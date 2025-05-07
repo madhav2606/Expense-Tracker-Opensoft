@@ -57,7 +57,7 @@ const GroupBill = () => {
     setIsLoading(true);
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const res = await axios.get(`http://localhost:3000/getGroups/${user?._id}`);
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getGroups/${user?._id}`);
       setGroups(res.data);
     } catch (error) {
       console.error("Error fetching groups:", error);
@@ -71,7 +71,7 @@ const GroupBill = () => {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"))._id;
-      const res = await axios.post(`http://localhost:3000/createGroup/${user}`, { name: groupName });
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/createGroup/${user}`, { name: groupName });
       setGroups([...groups, res.data.group]);
       setGroupName("");
       setIsModalOpen(false);
@@ -87,7 +87,7 @@ const GroupBill = () => {
 
     try {
       const userId = JSON.parse(localStorage.getItem("user"))._id;
-      const res = await axios.post("http://localhost:3000/joinGroup", { inviteCode, userId });
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/joinGroup`, { inviteCode, userId });
       setGroups([...groups, res.data.group]);
       setInviteCode("");
       setIsJoinModalOpen(false);
@@ -107,7 +107,7 @@ const GroupBill = () => {
   const deleteGroup = async (groupId) => {
     openConfirmModal("Are you sure you want to delete this group?", async () => {
       try {
-        const res = await fetch(`http://localhost:3000/deleteGroup/${groupId}`, {
+        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/deleteGroup/${groupId}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",

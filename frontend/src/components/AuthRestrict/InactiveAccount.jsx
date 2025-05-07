@@ -18,7 +18,7 @@ const InactiveAccount = () => {
 
     try {
       const email = user?.email;
-      const response = await fetch("http://localhost:3000/changeStatus", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/changeStatus`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

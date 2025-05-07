@@ -24,7 +24,7 @@ const AdminDash = () => {
         const fetchStats = async () => {
             try {
                 setLoading(true);
-                const response = await fetch("http://localhost:3000/dashboardStats", {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/dashboardStats`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

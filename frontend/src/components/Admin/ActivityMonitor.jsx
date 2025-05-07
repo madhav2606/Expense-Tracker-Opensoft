@@ -20,7 +20,7 @@ const ActivityMonitor = () => {
         const fetchActivity = async () => {
             try {
                 setLoading(true);
-                const response = await fetch("http://localhost:3000/getActivity", {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getActivity`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

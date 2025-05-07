@@ -30,7 +30,7 @@ const SpendingAnalyticsDashboard = () => {
     const fetchExpenses = async (userId, token) => {
       setLoading(true)
       try {
-        const response = await fetch(`http://localhost:3000/expenses/get/${userId}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/expenses/get/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

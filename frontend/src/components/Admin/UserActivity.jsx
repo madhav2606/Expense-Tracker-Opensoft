@@ -20,7 +20,7 @@ const UserActivity = () => {
     useEffect(() => {
         const fetchUserStats = async () => {
             try {
-                const response = await fetch("http://localhost:3000/activityChart", {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/activityChart`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
