@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     const signIn = async (email, password) => {
         try {
-            const response = await axios.post(`${process.env.VITE_BACKEND_URL}/signin`, { email, password });
+            const response = await axios.post(`${process.env.VITE_BACKEND_URL}/signin`, { email, password },{withCredentials:true});
 
             if (response.status === 200) {
                 const { token, user } = response.data;
@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
                 name,
                 email,
                 password,
-            });
+            },{withCredentials:true});
 
             if (response.status === 201) {
                 showToast("Successfully signed up","success");
