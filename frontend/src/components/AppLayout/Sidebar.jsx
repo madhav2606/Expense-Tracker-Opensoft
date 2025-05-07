@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   CircleDollarSign,
   HandCoins,
@@ -21,7 +21,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const location= useLocation();
+  const location = useLocation();
+  const isMobile = window.innerWidth < 768;
+
 
   const handleLogout = () => {
     logout();
@@ -44,13 +46,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
   const changeFocusUser = (id) => {
     setSelected(id);
-    setAdminOpen(false); 
-    // if (isSidebarOpen) {
-    //   toggleSidebar();
-    // }
+    setAdminOpen(false);
+    if (isMobile && isSidebarOpen) {
+      toggleSidebar();
+    }
   };
 
-  const ToggleAdminOpen=() => {
+  const ToggleAdminOpen = () => {
     setAdminOpen(!adminOpen);
     setSelected("");
   }
@@ -61,14 +63,14 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     const foundItemAdmin = adminItems.find(item => item.path.includes(currentPath));
     if (foundItemUser) {
       setSelected(foundItemUser.id);
-    } else if(foundItemAdmin){
+    } else if (foundItemAdmin) {
       setAdminOpen(true);
       setSelected(foundItemAdmin.id);
-    }else {
+    } else {
       setSelected("Dashboard");
     }
   }, [])
-  
+
 
 
   return (
@@ -112,7 +114,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                 {adminItems.map((child, idx) => (
                   <Link to={child.path} key={idx}>
                     <li
-                      onClick={() => setSelected(child.id)}
+                      onClick={() => {
+                        setSelected(child.id);
+                        if (isMobile && isSidebarOpen) toggleSidebar();
+                      }}
                       className={`p-2 rounded-lg transition-all my-1
                       ${selected === child.id ? "bg-purple-700 text-white" : "hover:bg-purple-300"}`}
                     >
