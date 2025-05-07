@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import {
   CircleDollarSign,
   HandCoins,
@@ -12,15 +12,16 @@ import {
   ChevronRight,
   Menu,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
-  const [selected, setSelected] = useState("Dashboard");
+  const [selected, setSelected] = useState("");
   const [adminOpen, setAdminOpen] = useState(false);
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const location= useLocation();
 
   const handleLogout = () => {
     logout();
@@ -40,6 +41,36 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     { id: "Activity Monitor", label: "Activity Monitor", path: "/admin/activity" },
     { id: "System Health and Performance", label: "System Health", path: "/admin/health" },
   ];
+
+  const changeFocusUser = (id) => {
+    setSelected(id);
+    setAdminOpen(false); 
+    // if (isSidebarOpen) {
+    //   toggleSidebar();
+    // }
+  };
+
+  const ToggleAdminOpen=() => {
+    setAdminOpen(!adminOpen);
+    setSelected("");
+  }
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    console.log(currentPath);
+    const foundItemUser = menuItems.find(item => item.path.includes(currentPath));
+    const foundItemAdmin = adminItems.find(item => item.path.includes(currentPath));
+    if (foundItemUser) {
+      setSelected(foundItemUser.id);
+    } else if(foundItemAdmin){
+      setAdminOpen(true);
+      setSelected(foundItemAdmin.id);
+    }else {
+      setSelected("Dashboard");
+    }
+  }, [])
+  
+
 
   return (
     <div
@@ -66,9 +97,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         {user?.role === "Admin" && (
           <div>
             <button
-              onClick={() => setAdminOpen(!adminOpen)}
+              onClick={() => ToggleAdminOpen()}
               className={`flex items-center justify-between w-full p-3 rounded-lg transition-all 
-              ${adminOpen ? "bg-purple-800 text-white font-semibold" : "hover:bg-gray-200"}`}
+              ${adminOpen ? "bg-purple-800 text-white font-semibold" : "hover:bg-purple-300"}`}
             >
               <span className="flex items-center gap-2">
                 <ShieldCheck />
@@ -78,13 +109,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             </button>
 
             {adminOpen && (
-              <ul className="ml-5 mt-2 space-y-2">
+              <ul className="ml-5 mt-2 space-y-3">
                 {adminItems.map((child, idx) => (
                   <Link to={child.path} key={idx}>
                     <li
                       onClick={() => setSelected(child.id)}
-                      className={`p-2 rounded-lg transition-all 
-                      ${selected === child.id ? "bg-purple-700 text-white" : "hover:bg-gray-200"}`}
+                      className={`p-2 rounded-lg transition-all my-1
+                      ${selected === child.id ? "bg-purple-700 text-white" : "hover:bg-purple-300"}`}
                     >
                       {isSidebarOpen && child.label}
                     </li>
@@ -99,9 +130,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         {menuItems.map((item, idx) => (
           <Link to={item.path} key={idx}>
             <li
-              onClick={() => setSelected(item.id)}
-              className={`flex items-center gap-2 p-3 rounded-lg transition-all 
-              ${selected === item.id ? "bg-purple-800 text-white font-semibold" : "hover:bg-gray-200"}`}
+              onClick={() => changeFocusUser(item.id)}
+              className={`flex items-center gap-2 p-3 rounded-lg transition-all my-1
+              ${selected === item.id ? "bg-purple-800 text-white font-semibold" : "hover:bg-purple-300"}`}
             >
               {item.icon}
               {isSidebarOpen && item.label}
