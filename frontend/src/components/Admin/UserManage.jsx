@@ -57,7 +57,7 @@ const UserManage = () => {
     const getUsers = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/getUsers`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/getUsers`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const UserManage = () => {
   const handleStatus = async (email) => {
     openConfirmModal("Are you sure you want to change the status of this user?", async () => {
       try {
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/changeStatus`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/changeStatus`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -167,7 +167,7 @@ const UserManage = () => {
   const handleRole = async (email) => {
     openConfirmModal(`Are you sure you want to change the role of this user?`, async () => {
       try {
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/changeRole`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/changeRole`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -208,7 +208,7 @@ const UserManage = () => {
   const handleSaveEdit = async (id) => {
     openConfirmModal("Are you sure you want to save the changes?", async () => {
       try {
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/updateUser/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/updateUser/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -240,7 +240,7 @@ const UserManage = () => {
   const handleDelete = async (id) => {
     openConfirmModal("Are you sure you want to delete this user?", async () => {
       try {
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/deleteUser/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/deleteUser/${id}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -73,7 +73,7 @@ const BillDetails = () => {
   // Fetch bills for the group
   const fetchBills = async () => {
     try {
-      const res = await axios.get(`${process.env.VITE_BACKEND_URL}/getBills/${groupId}`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/getBills/${groupId}`);
       setBills(res.data || []);
     } catch (error) {
       console.error("Error fetching bills:", error);
@@ -84,7 +84,7 @@ const BillDetails = () => {
   // Fetch group members
   const fetchGroupMembers = async () => {
     try {
-      const res = await axios.get(`${process.env.VITE_BACKEND_URL}/getGroup/${groupId}`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/getGroup/${groupId}`);
       setGroupMembers(res.data.users || []);
     } catch (error) {
       console.error("Error fetching group members:", error);
@@ -130,7 +130,7 @@ const BillDetails = () => {
     }
 
     try {
-      const res = await axios.post(`${process.env.VITE_BACKEND_URL}/createBill`, {
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/createBill`, {
         group: groupId,
         description: billDescription,
         amount: billAmount,
@@ -155,7 +155,7 @@ const BillDetails = () => {
   const deleteBill = async (billId) => {
     openConfirmModal("Are you sure you want to delete this bill?", async () => {
       try {
-        let res = await axios.delete(`${process.env.VITE_BACKEND_URL}/deleteBill/${billId}`);
+        let res = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/deleteBill/${billId}`);
         fetchBills();
         showToast(res.data.message, 'success');
         getBillBalances();
@@ -168,7 +168,7 @@ const BillDetails = () => {
   // Update bill details
   const updateBill = async () => {
     try {
-      await axios.put(`${process.env.VITE_BACKEND_URL}/updateBill/${currentBill._id}`, currentBill);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/updateBill/${currentBill._id}`, currentBill);
       setIsUpdateModalOpen(false);
       fetchBills(); // Refresh the bill list after updating
       showToast("Bill updated successfully!", "success");
@@ -182,7 +182,7 @@ const BillDetails = () => {
   const getBillBalances = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
-      const res = await axios.get(`${process.env.VITE_BACKEND_URL}/getBalances/${groupId}?userId=${user?._id}`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/getBalances/${groupId}?userId=${user?._id}`);
       setBalances(res.data);
     } catch (error) {
       console.error("Error fetching bill balances:", error);

@@ -20,7 +20,7 @@ const UserActivity = () => {
     useEffect(() => {
         const fetchUserStats = async () => {
             try {
-                const response = await fetch(`${process.env.VITE_BACKEND_URL}/activityChart`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/activityChart`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             try {
-                const response = await fetch(`${process.env.VITE_BACKEND_URL}/verify`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/verify`, {
                     method: "GET",
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
             if (!storedUser || !storedUser._id) return;
 
             try {
-                const response = await fetch(`${process.env.VITE_BACKEND_URL}/users/${storedUser._id}`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${storedUser._id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     const signIn = async (email, password) => {
         try {
-            const response = await axios.post(`${process.env.VITE_BACKEND_URL}/signin`, { email, password },{withCredentials:true});
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/signin`, { email, password },{withCredentials:true});
 
             if (response.status === 200) {
                 const { token, user } = response.data;
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
 
     const signUp = async (name, email, password) => {
         try {
-            const response = await axios.post(`${process.env.VITE_BACKEND_URL}/signup`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/signup`, {
                 name,
                 email,
                 password,
@@ -141,7 +141,7 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
-            await axios.post(`${process.env.VITE_BACKEND_URL}/logout`, { userId }, {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/logout`, { userId }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

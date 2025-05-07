@@ -20,7 +20,7 @@ const ActivityMonitor = () => {
         const fetchActivity = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${process.env.VITE_BACKEND_URL}/getActivity`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/getActivity`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

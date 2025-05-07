@@ -23,7 +23,7 @@ const SmartSettleModal = ({ billId, fetchBills, getBillBalances, ToggleSettleUpM
 
     const settleUpBill = async (billId) => {
         try {
-            const res = await fetch(`${process.env.VITE_BACKEND_URL}/updateBill/${billId}`, {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/updateBill/${billId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -51,7 +51,7 @@ const SmartSettleModal = ({ billId, fetchBills, getBillBalances, ToggleSettleUpM
         try {
             setLoading(true)
             setError(null)
-            const response = await fetch(`${process.env.VITE_BACKEND_URL}/getSmartBillSettle/${billId}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/getSmartBillSettle/${billId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

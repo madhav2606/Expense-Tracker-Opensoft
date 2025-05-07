@@ -18,7 +18,7 @@ const InactiveAccount = () => {
 
     try {
       const email = user?.email;
-      const response = await fetch(`${process.env.VITE_BACKEND_URL}/changeStatus`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/changeStatus`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -30,7 +30,7 @@ const SpendingAnalyticsDashboard = () => {
     const fetchExpenses = async (userId, token) => {
       setLoading(true)
       try {
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/expenses/get/${userId}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/expenses/get/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

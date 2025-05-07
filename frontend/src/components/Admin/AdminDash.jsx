@@ -24,7 +24,7 @@ const AdminDash = () => {
         const fetchStats = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${process.env.VITE_BACKEND_URL}/dashboardStats`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/dashboardStats`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
