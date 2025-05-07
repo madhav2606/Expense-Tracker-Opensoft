@@ -14,7 +14,7 @@ const RecentUsers = () => {
         const getUsers = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getUsers`, {
+                const response = await fetch(`${process.env.VITE_BACKEND_URL}/getUsers`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
