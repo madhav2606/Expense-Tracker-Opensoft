@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Eye, EyeOff, KeyRound, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
-import signInImg from './illustration.jpg';
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
