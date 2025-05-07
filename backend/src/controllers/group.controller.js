@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Group } from "../models/Group.js";
 import { User } from "../models/User.js";
 import { nanoid } from "nanoid";
+import { Bill } from "../models/Bill.js";
 
 // "/createGroup/:userId"
 export const createGroup = async (req, res) => {
@@ -117,5 +118,7 @@ export const getGroupById = async (req, res) => {
         res.status(500).json({ message: "Error fetching group", error: error.message });
     }
 }
+
+
 
 

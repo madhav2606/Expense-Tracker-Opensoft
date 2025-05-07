@@ -260,7 +260,7 @@ const GroupBill = () => {
                       >
                         <span>View Bills</span>
                       </button>
-                      <button className="ml-3 text-red-500 hover:text-red-700 transition-colors" onClick={() => deleteGroup(group._id)}>
+                      <button className="ml-3 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer" onClick={() => deleteGroup(group._id)}>
                         <span><Trash2 /></span>
                       </button>
                     </div>

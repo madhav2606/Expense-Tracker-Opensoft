@@ -166,5 +166,82 @@ export const getBalances = async (req, res) => {
     }
 };
 
+// "/getSmartSettleUp/:billId" - Fetch smart settlement details for a bill
+export const getSmartSettleUp = async (req, res) => {
+    try {
+        const { billId } = req.params;
+
+        const bill = await Bill.findById(billId)
+            .populate("payers.userId", "name")
+            .populate("participants", "name");
+
+        if (!bill) {
+            return res.status(404).json({ message: "Bill not found" });
+        }
+
+        const share = bill.amount / bill.participants.length;
+
+
+        const balances = {};
+
+        bill.participants.forEach(p => {
+            balances[p._id] = { name: p.name, net: -share };
+        });
+
+        bill.payers.forEach(payer => {
+            const id = payer.userId._id;
+            if (!balances[id]) {
+                balances[id] = { name: payer.userId.name, net: 0 };
+            }
+            balances[id].net += payer.amountPaid;
+        });
+
+        const netBalances = Object.entries(balances)
+            .map(([id, data]) => ({
+                id,
+                name: data.name,
+                amount: parseFloat(data.net.toFixed(2))
+            }))
+            .filter(person => Math.abs(person.amount) > 0.01);
+
+        let debtors = netBalances.filter(p => p.amount < 0).sort((a, b) => a.amount - b.amount);
+        let creditors = netBalances.filter(p => p.amount > 0).sort((a, b) => b.amount - a.amount);
+
+        const settlements = [];
+        let i = 0, j = 0;
+
+        while (i < debtors.length && j < creditors.length) {
+            const debtor = debtors[i];
+            const creditor = creditors[j];
+
+            const amount = Math.min(-debtor.amount, creditor.amount);
+            settlements.push({
+                from: debtor.name,
+                to: creditor.name,
+                amount: amount.toFixed(2)
+            });
+
+            debtor.amount += amount;
+            creditor.amount -= amount;
+
+            if (Math.abs(debtor.amount) < 0.01) i++;
+            if (Math.abs(creditor.amount) < 0.01) j++;
+        }
+
+        res.status(200).json({
+            message: "Smart settle-up completed successfully",
+            settlements
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: "Error performing smart settle-up",
+            error: err.message
+        });
+    }
+};
+
+
+
 
 

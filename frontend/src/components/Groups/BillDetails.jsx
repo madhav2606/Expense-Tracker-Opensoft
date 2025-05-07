@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Toast from "../Message/Toast";
 import { ConfirmModal } from "../Message/ConfirmModal";
+import SmartSettleModal from "./SmartSettleModal";
 
 const BillDetails = () => {
   const { groupId } = useParams();
@@ -36,7 +37,6 @@ const BillDetails = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [currentBill, setCurrentBill] = useState(null);
   const [isSmartSettleModalOpen, setIsSmartSettleModalOpen] = useState(false);
-  const [smartSettleSuggestions, setSmartSettleSuggestions] = useState([]);
 
   // Open the update modal and set the selected bill
   const openUpdateModal = (bill) => {
@@ -189,51 +189,11 @@ const BillDetails = () => {
     }
   };
 
-  const settleUpBill = async (billId) => {
-    try {
-      await axios.put(`http://localhost:3000/updateBill/${billId}`, {
-        status: "Paid",
-      });
-
-      // Refresh bills and balances
-      fetchBills();
-      getBillBalances();
-
-      showToast("Bill settled successfully!", "success");
-    } catch (error) {
-      console.error("Error settling bill:", error);
-      showToast("Failed to settle bill", "error");
-    }
+  const ToggleSettleUpModal = async (bill) => {
+    setCurrentBill(bill)
+    setIsSmartSettleModalOpen(!isSmartSettleModalOpen);
   };
 
-  // Smart settle functionality
-  const generateSmartSettleSuggestions = () => {
-    // Get only unpaid bills
-    const unpaidBills = bills.filter(bill => bill.status !== 'Paid');
-    
-    if (unpaidBills.length === 0) {
-      showToast("No unpaid bills to settle", "info");
-      return;
-    }
-    
-    // Create suggestions based on who owes who
-    const suggestions = [];
-    
-    // Simple algorithm: Suggest settling bills where the current user is a participant
-    // This is a placeholder - in a real app, you'd use more sophisticated algorithms
-    unpaidBills.forEach(bill => {
-      suggestions.push({
-        billId: bill._id,
-        description: bill.description,
-        amount: bill.amount,
-        priority: Math.random() > 0.5 ? 'High' : 'Medium', // Just for demonstration
-        reason: "Based on your payment patterns and group history"
-      });
-    });
-    
-    setSmartSettleSuggestions(suggestions);
-    setIsSmartSettleModalOpen(true);
-  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
@@ -305,12 +265,6 @@ const BillDetails = () => {
                 >
                   <PlusCircle className="w-5 h-5" /> <span>Add Bill</span>
                 </button>
-                <button
-                  onClick={generateSmartSettleSuggestions}
-                  className="bg-blue-800 hover:bg-blue-900 text-white py-2 px-4 rounded-lg transition flex items-center space-x-2"
-                >
-                  <Calculator className="w-5 h-5" /> <span>Smart Settle</span>
-                </button>
               </div>
             </div>
           </div>
@@ -364,11 +318,11 @@ const BillDetails = () => {
                       <div className="flex space-x-2 self-end md:self-center">
                         {bill.status !== 'Paid' && (
                           <button
-                            onClick={() => settleUpBill(bill._id)}
+                            onClick={() => ToggleSettleUpModal(bill)}
                             className="bg-green-600 hover:bg-green-500 text-white py-2 px-3 rounded-lg transition-colors font-medium flex items-center space-x-1"
                           >
                             <CreditCard className="w-4 h-4" />
-                            <span>Settle</span>
+                            <span>Smart SettleUp</span>
                           </button>
                         )}
                         <button
@@ -565,6 +519,10 @@ const BillDetails = () => {
           </div>
         </div>
       )}
+
+      {
+         isSmartSettleModalOpen && <SmartSettleModal fetchBills={fetchBills} getBillBalances={getBillBalances} ToggleSettleUpModal={ToggleSettleUpModal} billId={currentBill._id} />
+      }
 
     </div>
   );

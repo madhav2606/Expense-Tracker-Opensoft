@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createGroup, deleteGroup, getGroupById, getGroups, joinGroup } from "../controllers/group.controller.js";
+import { createGroup, deleteGroup, getGroupById, getGroups, getOverallSmartSettlements, joinGroup } from "../controllers/group.controller.js";
 
 const router= Router();
 
