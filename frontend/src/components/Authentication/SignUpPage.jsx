@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, KeyRound, Mail, User } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader, Mail, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import Toast from "../Message/Toast";
@@ -13,7 +13,7 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp,loading } = useAuth();
   const [toasts, setToasts] = useState([]);
 
   const showToast = (message, type) => {
@@ -33,6 +33,17 @@ const SignUpPage = () => {
     }
     signUp(name, email, password);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+          <p className="mt-4 text-lg text-gray-700">Signing Up...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
@@ -57,8 +68,8 @@ const SignUpPage = () => {
           <p className="text-white text-lg mb-8">
             Start your journey to financial freedom today
           </p>
-          
-          
+
+
           <div className="mt-12 hidden lg:block">
             <p className="text-white text-sm">
               "Creating an account was the first step to getting my finances in order."
@@ -231,7 +242,7 @@ const SignUpPage = () => {
               </Link>
             </p>
           </div>
-          
+
           <div className="text-center mt-6">
             <p className="text-xs text-gray-500">
               By creating an account, you agree to our Terms of Service and Privacy Policy

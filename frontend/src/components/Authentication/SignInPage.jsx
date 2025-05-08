@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, KeyRound, Mail } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
@@ -9,13 +9,25 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn,loading } = useAuth();
+ 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     signIn(email, password);
   };
+
+  if (loading) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+            <p className="mt-4 text-lg text-gray-700">Signing in...</p>
+          </div>
+        </div>
+      )
+    }
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">

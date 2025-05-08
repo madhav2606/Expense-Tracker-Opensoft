@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [toasts, setToasts] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const showToast = (message, type) => {
         const id = Date.now();
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         };
 
         verifyToken();
-    }, []); 
+    }, []);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -91,7 +92,8 @@ export const AuthProvider = ({ children }) => {
 
     const signIn = async (email, password) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/signin`, { email, password },{withCredentials:true});
+            setLoading(true);
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/signin`, { email, password }, { withCredentials: true });
 
             if (response.status === 200) {
                 const { token, user } = response.data;
@@ -100,32 +102,37 @@ export const AuthProvider = ({ children }) => {
 
                 setIsAuthenticated(true);
                 setUser(user);
-                
+
                 navigate("/");
                 showToast("Signed In successfully!", "success")
             }
         } catch (error) {
             console.error("Sign-in error:", error.response?.data?.message);
-            showToast(error.response?.data?.message||"Sign in error. Please try again.", "error")
+            showToast(error.response?.data?.message || "Sign in error. Please try again.", "error")
 
+        }finally {
+            setLoading(false);
         }
     };
 
     const signUp = async (name, email, password) => {
         try {
+            setLoading(true);
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/signup`, {
                 name,
                 email,
                 password,
-            },{withCredentials:true});
+            }, { withCredentials: true });
 
             if (response.status === 201) {
-                showToast("Successfully signed up","success");
+                showToast("Successfully signed up", "success");
                 navigate("/signin");
             }
         } catch (error) {
             console.error("Sign-up error:", error.response?.data?.message);
-            showToast(error.response?.data?.message||"Sign up error. Please try again.", "error")
+            showToast(error.response?.data?.message || "Sign up error. Please try again.", "error")
+        }finally {
+            setLoading(false);
         }
     };
 
@@ -149,16 +156,16 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("user");
             setIsAuthenticated(false);
             setUser(null);
-            showToast("Signed out successfully ","success");
+            showToast("Signed out successfully ", "success");
             navigate("/signin");
         } catch (error) {
             console.error("Logout error:", error.message);
-            showToast(error.message||"Logout error. Please try again.", "error")
+            showToast(error.message || "Logout error. Please try again.", "error")
         }
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp, logout, setUser,showToast,removeToast,toasts,setToasts }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp, logout, setUser, showToast, removeToast, toasts, setToasts,loading }}>
             {children}
             <div className="fixed top-4 right-4 space-y-4">
                 {toasts.map(toast => (
