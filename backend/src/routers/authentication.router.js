@@ -5,6 +5,7 @@ import {
   logoutUser,
   registerUser,
   resetPassword,
+  updatePassword,
   verify,
 } from "../controllers/authentication.controller.js";
 
@@ -17,7 +18,7 @@ router.route("/logout").post(checkForUserAuthentication, logoutUser);
 router.route("/verify").get(verify)
 router.route("/forgotPassword").post(forgotPassword);
 router.route("/resetPassword").post(resetPassword);
-
+router.route("/updatePassword").post(checkForUserAuthentication,updatePassword);
 
 
 export default router;

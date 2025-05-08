@@ -123,11 +123,11 @@ const Navbar = ({ isOpen, toggleSidebar }) => {
           {showProfileDropdown && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 border border-gray-200">
               <div className="py-1">
-                <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <Link to="/profile" onClick={()=>setShowProfileDropdown(false)} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <CircleUserRound className="w-4 h-4 mr-3 text-gray-600" />
                   <span>Profile</span>
                 </Link>
-                <Link to="/settings" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <Link to="/settings" onClick={()=>setShowProfileDropdown(false)} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <Settings className="w-4 h-4 mr-3 text-gray-600" />
                   <span>Settings</span>
                 </Link>
