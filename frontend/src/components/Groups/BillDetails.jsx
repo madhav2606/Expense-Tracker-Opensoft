@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { 
-  ArrowLeft, 
-  PlusCircle, 
-  FileText, 
-  X, 
-  Pencil, 
-  Trash, 
+import {
+  ArrowLeft,
+  PlusCircle,
+  FileText,
+  X,
+  Pencil,
+  Trash,
   CreditCard,
   Calculator
 } from "lucide-react";
@@ -32,7 +32,7 @@ const BillDetails = () => {
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     message: '',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [currentBill, setCurrentBill] = useState(null);
@@ -50,7 +50,7 @@ const BillDetails = () => {
       message,
       onConfirm: () => {
         action();
-        setConfirmModal({ isOpen: false, message: '', onConfirm: () => {} });
+        setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } });
       }
     });
   };
@@ -194,7 +194,6 @@ const BillDetails = () => {
     setIsSmartSettleModalOpen(!isSmartSettleModalOpen);
   };
 
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -204,13 +203,13 @@ const BillDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         <ConfirmModal
           isOpen={confirmModal.isOpen}
           message={confirmModal.message}
           onConfirm={confirmModal.onConfirm}
-          onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => {} })}
+          onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
         />
         <div>
           {toasts.map(toast => (
@@ -222,13 +221,13 @@ const BillDetails = () => {
             />
           ))}
         </div>
-        
+
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
+        <div className="bg-gradient-to-r from-purple-700 to-purple-900 p-6 text-white">
           <div className="flex items-center justify-between">
             <button
               onClick={() => navigate(-1)}
-              className="inline-flex items-center space-x-2 bg-blue-700 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors"
+              className="inline-flex items-center space-x-2 bg-purple-800 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Back</span>
@@ -243,15 +242,14 @@ const BillDetails = () => {
 
         <div className="p-6">
           {/* Balance Summary */}
-          <div className="mb-6 p-6 rounded-xl bg-gradient-to-br from-blue-50 to-white shadow-md">
+          <div className="mb-6 p-6 rounded-xl bg-gradient-to-br from-purple-50 to-white shadow-md">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
-                <h2 className="text-lg font-semibold text-blue-800 mb-2">Balance Summary</h2>
+                <h2 className="text-lg font-semibold text-purple-800 mb-2">Balance Summary</h2>
                 {balances?.net !== undefined && (
                   <div
-                    className={`text-2xl font-semibold ${
-                      balances.net >= 0 ? 'text-green-600' : 'text-red-600'
-                    } tracking-tight`}
+                    className={`text-2xl font-semibold ${balances.net >= 0 ? 'text-yellow-600' : 'text-red-600'
+                      } tracking-tight`}
                   >
                     {balances.net >= 0 ? 'You are owed' : 'You owe'}{' '}
                     <span className="font-bold">{formatCurrency(Math.abs(balances.net))}</span>
@@ -261,7 +259,7 @@ const BillDetails = () => {
               <div className="flex space-x-3">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition flex items-center space-x-2"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-purple-900 py-2 px-4 rounded-lg transition flex items-center space-x-2 font-medium"
                 >
                   <PlusCircle className="w-5 h-5" /> <span>Add Bill</span>
                 </button>
@@ -270,38 +268,37 @@ const BillDetails = () => {
           </div>
 
           {/* Bill List */}
-          <div className="bg-white rounded-xl border border-blue-100 shadow-lg overflow-hidden">
-            <div className="p-4 bg-blue-50 border-b border-blue-100">
-              <h3 className="text-xl font-semibold text-blue-800">Your Bills</h3>
+          <div className="bg-white rounded-xl border border-purple-100 shadow-lg overflow-hidden">
+            <div className="p-4 bg-purple-50 border-b border-purple-100">
+              <h3 className="text-xl font-semibold text-purple-800">Your Bills</h3>
             </div>
-            
+
             {bills.length === 0 ? (
               <div className="text-center py-16 px-4">
-                <FileText className="w-16 h-16 mx-auto text-blue-200 mb-4" />
+                <FileText className="w-16 h-16 mx-auto text-purple-200 mb-4" />
                 <p className="text-gray-500 text-lg">No bills yet. Add your first bill!</p>
               </div>
             ) : (
-              <ul className="divide-y divide-blue-100">
+              <ul className="divide-y divide-purple-100">
                 {bills.map((bill) => (
                   <li
                     key={bill._id}
-                    className="p-4 hover:bg-blue-50 transition-colors duration-200"
+                    className="p-4 hover:bg-purple-50 transition-colors duration-200"
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex-grow">
                         <div className="flex items-center mb-2">
-                          <p className="text-lg font-semibold text-blue-800">{bill.description}</p>
+                          <p className="text-lg font-semibold text-purple-800">{bill.description}</p>
                           <span
-                            className={`ml-3 px-3 py-1 rounded-full text-xs font-medium ${
-                              bill.status === 'Paid'
-                                ? 'bg-green-100 text-green-700'
+                            className={`ml-3 px-3 py-1 rounded-full text-xs font-medium ${bill.status === 'Paid'
+                                ? 'bg-yellow-100 text-yellow-700'
                                 : 'bg-red-100 text-red-700'
-                            }`}
+                              }`}
                           >
                             {bill.status}
                           </span>
                         </div>
-                        <p className="text-lg font-medium text-blue-700">{formatCurrency(bill.amount)}</p>
+                        <p className="text-lg font-medium text-purple-700">{formatCurrency(bill.amount)}</p>
                         <div className="text-sm text-gray-600 mt-2">
                           <p>
                             <span className="font-medium">Paid by:</span>{' '}
@@ -319,7 +316,7 @@ const BillDetails = () => {
                         {bill.status !== 'Paid' && (
                           <button
                             onClick={() => ToggleSettleUpModal(bill)}
-                            className="bg-green-600 hover:bg-green-500 text-white py-2 px-3 rounded-lg transition-colors font-medium flex items-center space-x-1"
+                            className="bg-yellow-500 hover:bg-yellow-400 text-purple-900 py-2 px-3 rounded-lg transition-colors font-medium flex items-center space-x-1"
                           >
                             <CreditCard className="w-4 h-4" />
                             <span>Smart SettleUp</span>
@@ -327,7 +324,7 @@ const BillDetails = () => {
                         )}
                         <button
                           onClick={() => openUpdateModal(bill)}
-                          className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors"
+                          className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-lg transition-colors"
                           title="Edit"
                         >
                           <Pencil className="w-4 h-4" />
@@ -351,10 +348,10 @@ const BillDetails = () => {
 
       {/* Add Bill Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-blue-800">Add New Bill</h3>
+              <h3 className="text-xl font-semibold text-purple-800">Add New Bill</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">
                 <X className="w-6 h-6" />
               </button>
@@ -368,10 +365,10 @@ const BillDetails = () => {
                   placeholder="What was this expense for?"
                   value={billDescription}
                   onChange={(e) => setBillDescription(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
                 <input
@@ -379,7 +376,7 @@ const BillDetails = () => {
                   placeholder="₹0.00"
                   value={billAmount}
                   onChange={(e) => setBillAmount(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
               </div>
 
@@ -387,12 +384,12 @@ const BillDetails = () => {
                 <h3 className="text-sm font-medium text-gray-700 mb-3">Who Paid?</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto p-2">
                   {groupMembers.map((member) => (
-                    <div key={member._id} className="flex items-center justify-between bg-blue-50 p-2 rounded-lg">
+                    <div key={member._id} className="flex items-center justify-between bg-purple-50 p-2 rounded-lg">
                       <label className="flex items-center space-x-2 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          onChange={() => togglePayer(member._id)} 
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                        <input
+                          type="checkbox"
+                          onChange={() => togglePayer(member._id)}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500"
                         />
                         <span>{member.name}</span>
                       </label>
@@ -409,9 +406,9 @@ const BillDetails = () => {
               </div>
             </div>
 
-            <button 
-              onClick={addBill} 
-              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition font-medium"
+            <button
+              onClick={addBill}
+              className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-purple-900 py-3 rounded-lg transition font-medium"
             >
               Add Bill
             </button>
@@ -421,10 +418,10 @@ const BillDetails = () => {
 
       {/* Update Bill Modal */}
       {isUpdateModalOpen && currentBill && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-blue-800">Update Bill</h3>
+              <h3 className="text-xl font-semibold text-purple-800">Update Bill</h3>
               <button onClick={() => setIsUpdateModalOpen(false)} className="text-gray-500 hover:text-gray-700">
                 <X className="w-6 h-6" />
               </button>
@@ -438,10 +435,10 @@ const BillDetails = () => {
                   placeholder="What was this expense for?"
                   value={currentBill.description}
                   onChange={(e) => setCurrentBill({ ...currentBill, description: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
                 <input
@@ -449,7 +446,7 @@ const BillDetails = () => {
                   placeholder="₹0.00"
                   value={currentBill.amount}
                   onChange={(e) => setCurrentBill({ ...currentBill, amount: parseFloat(e.target.value) || 0 })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
               </div>
 
@@ -461,7 +458,7 @@ const BillDetails = () => {
                     const payer = payerIndex !== -1 ? currentBill.payers[payerIndex] : null;
 
                     return (
-                      <div key={member._id} className="flex items-center justify-between bg-blue-50 p-2 rounded-lg">
+                      <div key={member._id} className="flex items-center justify-between bg-purple-50 p-2 rounded-lg">
                         <label className="flex items-center space-x-2 cursor-pointer">
                           <input
                             type="checkbox"
@@ -475,7 +472,7 @@ const BillDetails = () => {
                               }
                               setCurrentBill({ ...currentBill, payers: updatedPayers });
                             }}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500"
                           />
                           <span>{member.name}</span>
                         </label>
@@ -502,7 +499,7 @@ const BillDetails = () => {
                 <select
                   value={currentBill.status || "Unpaid"}
                   onChange={(e) => setCurrentBill({ ...currentBill, status: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 >
                   <option value="Unpaid">Unpaid</option>
                   <option value="Paid">Paid</option>
@@ -512,7 +509,7 @@ const BillDetails = () => {
 
             <button
               onClick={updateBill}
-              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition font-medium"
+              className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-purple-900 py-3 rounded-lg transition font-medium"
             >
               Update Bill
             </button>
@@ -521,7 +518,7 @@ const BillDetails = () => {
       )}
 
       {
-         isSmartSettleModalOpen && <SmartSettleModal fetchBills={fetchBills} getBillBalances={getBillBalances} ToggleSettleUpModal={ToggleSettleUpModal} billId={currentBill._id} />
+        isSmartSettleModalOpen && <SmartSettleModal fetchBills={fetchBills} getBillBalances={getBillBalances} ToggleSettleUpModal={ToggleSettleUpModal} billId={currentBill._id} />
       }
 
     </div>

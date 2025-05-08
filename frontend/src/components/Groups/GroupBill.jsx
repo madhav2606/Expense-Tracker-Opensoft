@@ -9,7 +9,6 @@ import {
   Users,
   KeyRound,
   UserPlus,
-  Search,
   RefreshCw,
   Loader,
   Trash2
@@ -47,6 +46,10 @@ const GroupBill = () => {
   const showToast = (message, type) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
   useEffect(() => {
@@ -128,24 +131,24 @@ const GroupBill = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-purple-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 animate-spin text-purple-600 mx-auto" />
-          <p className="mt-4 text-lg text-gray-700">Loading Split Expense Manager...</p>
+          <p className="mt-4 text-lg text-purple-700">Loading Split Expense Manager...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-200 p-4 md:p-8">
       <ConfirmModal
         isOpen={confirmModal.isOpen}
         message={confirmModal.message}
         onConfirm={confirmModal.onConfirm}
         onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: () => { } })}
       />
-      <div>
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
@@ -156,24 +159,24 @@ const GroupBill = () => {
         ))}
       </div>
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">
-          <h1 className="text-3xl font-bold tracking-tight">Split Expense Manager</h1>
-          <p className="mt-2 text-blue-100">Create and manage shared expenses with friends and family</p>
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-6 md:p-8 text-white">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Split Expense Manager</h1>
+          <p className="mt-2 text-purple-100">Create and manage shared expenses with friends and family</p>
         </div>
 
-        <div className="p-6 md:p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-            <div className="flex gap-3 w-full sm:w-auto">
+        <div className="p-4 md:p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 md:mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-sm"
+                className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-sm"
               >
                 <Plus className="w-5 h-5" />
                 <span>Create Group</span>
               </button>
               <button
                 onClick={() => setIsJoinModalOpen(true)}
-                className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-sm"
+                className="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-sm mt-3 sm:mt-0"
               >
                 <UserPlus className="w-5 h-5" />
                 <span>Join Group</span>
@@ -182,21 +185,21 @@ const GroupBill = () => {
 
             <button
               onClick={fetchGroups}
-              className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 font-medium py-2 px-4 rounded-lg transition-all duration-200"
+              className="flex items-center justify-center gap-2 text-purple-600 hover:text-purple-800 font-medium py-2 px-4 rounded-lg transition-all duration-200"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               <span>Refresh</span>
             </button>
           </div>
 
-          <div className="bg-slate-50 rounded-xl p-6 shadow-sm">
+          <div className="bg-purple-50 rounded-xl p-4 md:p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
+              <h2 className="text-lg md:text-xl font-semibold text-purple-800 flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-600" />
                 <span>Your Groups</span>
               </h2>
               {groups.length > 0 && (
-                <div className="text-sm text-slate-500 font-medium">
+                <div className="text-sm text-purple-500 font-medium">
                   {groups.length} {groups.length === 1 ? 'group' : 'groups'}
                 </div>
               )}
@@ -205,43 +208,43 @@ const GroupBill = () => {
             {isLoading ? (
               <div className="py-8 flex justify-center">
                 <div className="animate-pulse flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-slate-200 mb-3"></div>
-                  <div className="h-4 w-24 bg-slate-200 rounded"></div>
+                  <div className="w-12 h-12 rounded-full bg-purple-200 mb-3"></div>
+                  <div className="h-4 w-24 bg-purple-200 rounded"></div>
                 </div>
               </div>
             ) : groups.length === 0 ? (
               <div className="py-10 text-center">
-                <div className="inline-flex items-center justify-center p-4 rounded-full bg-slate-100 mb-4">
-                  <Users className="w-8 h-8 text-slate-400" />
+                <div className="inline-flex items-center justify-center p-4 rounded-full bg-purple-100 mb-4">
+                  <Users className="w-8 h-8 text-purple-400" />
                 </div>
-                <p className="text-slate-500 font-medium">No groups found.</p>
-                <p className="text-slate-400 text-sm mt-1">Create or join a group to get started!</p>
+                <p className="text-purple-500 font-medium">No groups found.</p>
+                <p className="text-purple-400 text-sm mt-1">Create or join a group to get started!</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {groups.map((group) => (
                   <div
                     key={group._id}
-                    className="bg-white rounded-lg border border-slate-100 p-5 flex flex-col sm:flex-row justify-between gap-4 hover:shadow-md transition-all duration-200"
+                    className="bg-white rounded-lg border border-purple-100 p-4 md:p-5 flex flex-col sm:flex-row justify-between gap-4 hover:shadow-md transition-all duration-200"
                   >
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                      <div className="bg-blue-100 p-3 rounded-lg">
-                        <Users className="w-5 h-5 text-blue-600" />
+                      <div className="bg-purple-100 p-3 rounded-lg">
+                        <Users className="w-5 h-5 text-purple-600" />
                       </div>
                       <div>
                         <Link
                           to={`/groups/${group._id}`}
-                          className="text-lg font-medium text-slate-800 hover:text-blue-600 transition-colors"
+                          className="text-lg font-medium text-purple-800 hover:text-purple-600 transition-colors"
                         >
                           {group.name}
                         </Link>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm text-slate-500 font-mono bg-slate-50 py-1 px-2 rounded">
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className="text-sm text-purple-500 font-mono bg-purple-50 py-1 px-2 rounded">
                             {group.inviteCode}
                           </span>
                           <button
                             onClick={() => copyInviteCode(group.inviteCode)}
-                            className="text-slate-400 hover:text-blue-600 transition-colors"
+                            className="text-purple-400 hover:text-purple-600 transition-colors"
                             title="Copy invite code"
                           >
                             {copiedCode === group.inviteCode ? (
@@ -253,15 +256,19 @@ const GroupBill = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex flex-wrap gap-2 justify-end">
                       <button
                         onClick={() => navigate(`/groups/${group._id}`)}
-                        className="bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-4 rounded-lg transition-colors font-medium flex items-center gap-2"
+                        className="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 py-2 px-4 rounded-lg transition-colors font-medium flex items-center gap-2"
                       >
                         <span>View Bills</span>
                       </button>
-                      <button className="ml-3 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer" onClick={() => deleteGroup(group._id)}>
-                        <span><Trash2 /></span>
+                      <button 
+                        className="text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer p-2" 
+                        onClick={() => deleteGroup(group._id)}
+                        aria-label="Delete group"
+                      >
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
@@ -274,32 +281,32 @@ const GroupBill = () => {
 
       {/* Create Group Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4 animate-fadeIn">
+        <div className="fixed inset-0 bg-purple-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-md mx-auto animate-fadeIn">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-xl font-semibold text-slate-800">Create New Group</h3>
+              <h3 className="text-xl font-semibold text-purple-800">Create New Group</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
+                className="text-purple-400 hover:text-purple-600 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="mb-5">
-              <label htmlFor="groupName" className="block text-sm font-medium text-slate-700 mb-1">Group Name</label>
+              <label htmlFor="groupName" className="block text-sm font-medium text-purple-700 mb-1">Group Name</label>
               <input
                 id="groupName"
                 type="text"
                 placeholder="Enter group name"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
-                className="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full p-3 border border-purple-200 rounded-lg bg-purple-50 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
               />
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+                className="flex-1 py-2.5 border border-purple-200 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -307,8 +314,8 @@ const GroupBill = () => {
                 onClick={createGroup}
                 disabled={!groupName.trim()}
                 className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${groupName.trim()
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-blue-200 text-blue-400 cursor-not-allowed'
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                  : 'bg-purple-200 text-purple-400 cursor-not-allowed'
                   }`}
               >
                 Create
@@ -320,35 +327,35 @@ const GroupBill = () => {
 
       {/* Join Group Modal */}
       {isJoinModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4 animate-fadeIn">
+        <div className="fixed inset-0 bg-purple-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-md mx-auto animate-fadeIn">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-xl font-semibold text-slate-800">Join a Group</h3>
+              <h3 className="text-xl font-semibold text-purple-800">Join a Group</h3>
               <button
                 onClick={() => setIsJoinModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
+                className="text-purple-400 hover:text-purple-600 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="mb-5">
-              <label htmlFor="inviteCode" className="block text-sm font-medium text-slate-700 mb-1">Invite Code</label>
+              <label htmlFor="inviteCode" className="block text-sm font-medium text-purple-700 mb-1">Invite Code</label>
               <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-4 h-4" />
                 <input
                   id="inviteCode"
                   type="text"
                   placeholder="Enter invite code"
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
-                  className="w-full p-3 pl-10 border border-slate-200 rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                  className="w-full p-3 pl-10 border border-purple-200 rounded-lg bg-purple-50 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none transition-all"
                 />
               </div>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setIsJoinModalOpen(false)}
-                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+                className="flex-1 py-2.5 border border-purple-200 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -356,8 +363,8 @@ const GroupBill = () => {
                 onClick={joinGroup}
                 disabled={!inviteCode.trim()}
                 className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${inviteCode.trim()
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                  : 'bg-indigo-200 text-indigo-400 cursor-not-allowed'
+                  ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                  : 'bg-yellow-200 text-yellow-400 cursor-not-allowed'
                   }`}
               >
                 Join

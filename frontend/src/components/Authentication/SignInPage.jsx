@@ -286,7 +286,7 @@ const SignInPage = () => {
                 placeholder="Recovery Email"
                 value={checkEmail}
                 onChange={(e) => setCheckEmail(e.target.value)}
-                className="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
               />
             </div>
             <div className="flex gap-3">
@@ -300,8 +300,8 @@ const SignInPage = () => {
                 onClick={() => checkEmailHandler()}
                 disabled={checkEmail.trim() === ""}
                 className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${checkEmail.trim()
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-blue-200 text-blue-400 cursor-not-allowed'
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                  : 'bg-purple-200 text-purple-400 cursor-not-allowed'
                   }`}
               >
                 check Email
@@ -331,7 +331,7 @@ const SignInPage = () => {
                 placeholder="Enter New Password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
               />
             </div>
             <div className="flex gap-3">
@@ -345,8 +345,8 @@ const SignInPage = () => {
                 onClick={() => ResetPasswordHandler()}
                 disabled={newPassword.trim() === ""}
                 className={`flex-1 py-2.5 rounded-lg font-medium transition-colors ${newPassword.trim()
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-blue-200 text-blue-400 cursor-not-allowed'
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                  : 'bg-purple-200 text-purple-400 cursor-not-allowed'
                   }`}
               >
                 Submit
