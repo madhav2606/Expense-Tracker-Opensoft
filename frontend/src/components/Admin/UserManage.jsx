@@ -292,7 +292,7 @@ const UserManage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+          <Loader className="w-12 h-12 animate-spin text-purple-600 mx-auto" />
           <p className="mt-4 text-lg text-gray-700">Loading Platform Users...</p>
         </div>
       </div>

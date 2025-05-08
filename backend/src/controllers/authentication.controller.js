@@ -91,7 +91,7 @@ export const logoutUser = async (req, res) => {
   }
 };
 
-export const verify= (req, res) => {
+export const verify = (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ authenticated: false, message: "No token provided" });
@@ -107,3 +107,48 @@ export const verify= (req, res) => {
     return res.json({ authenticated: true, user: decoded });
   });
 };
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ message: "User found" });
+  }
+  catch (error) {
+    console.error("Error during password reset:", error.message);
+    return res.status(500).json({ message: "Server error during password reset", error });
+  }
+}
+
+export const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  if (!email || !newPassword) {
+    return res.status(400).json({ message: "Email and new password are required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error during password reset:", error.message);
+    return res.status(500).json({ message: "Server error during password reset", error });
+  }
+}
+
