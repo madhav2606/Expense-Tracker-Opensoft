@@ -9,7 +9,7 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, handleGoogleSignIn } = useAuth();
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -144,6 +144,7 @@ const SignInPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <button
                   type="button"
+                  onClick={()=> window.open(`${import.meta.env.VITE_BACKEND_URL}/api/oauth/google`, "_self")}
                   className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200"
                 >
                   <span className="flex items-center">

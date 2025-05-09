@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from './components/Context/AuthContext.jsx'
 import React from 'react'
 import ProfileSetting2 from './components/profilepage/ProfileSetting2.jsx'
 import InactiveAccount from './components/AuthRestrict/InactiveAccount.jsx'
+import OauthSuccess from './components/Authentication/OauthSuccess.jsx'
 
 const Main = () => {
   const {isAuthenticated}=useAuth();
@@ -22,6 +23,7 @@ const Main = () => {
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/profile2" element={<ProfileSetting2 />} />
       <Route path='/inactive' element={<InactiveAccount/>} />
+      <Route path="/oauth-success" element={<OauthSuccess />} />
       {/* route path for forgot password */}
     </Routes>
   )

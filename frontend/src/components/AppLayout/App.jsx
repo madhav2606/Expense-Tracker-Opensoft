@@ -13,6 +13,7 @@ import SystemHealth from "../Admin/SystemHealth"
 import { useAuth } from "../Context/AuthContext"
 import BillDetails from "../Groups/BillDetails"
 import ProfileSetting2 from "../profilepage/ProfileSetting2"
+import OauthSuccess from "../Authentication/OauthSuccess"
 
 function App() {
   const { user } = useAuth();

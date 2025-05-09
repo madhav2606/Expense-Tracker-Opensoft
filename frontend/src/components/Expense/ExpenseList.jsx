@@ -73,7 +73,7 @@ const ExpenseList = () => {
     { amount: "", description: "", date: "", paymentMethod: "", category: "" }
   );
 
-  const filteredExpenses = expenses.filter(
+  const filteredExpenses = expenses?.filter(
     (expense) =>
       expense.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -219,7 +219,7 @@ const ExpenseList = () => {
         if (!response.ok) {
           throw new Error("Failed to delete expense");
         }
-        setExpenses(expenses.map((expense) => (expense._id === expenseToEdit._id ? expenseToEdit : expense)));
+        setExpenses(expenses?.map((expense) => (expense._id === expenseToEdit._id ? expenseToEdit : expense)));
         showToast("edited successfully!", "success")
       } catch (error) {
         showToast("Failed to edit. Please try again.", "error")

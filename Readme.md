@@ -87,6 +87,12 @@ Expense-Tracker-Opensoft/
    npm start
    ```
 
+### Google OAuth Setup
+1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/).
+2. Enable the "Google+ API" and "Google OAuth 2.0" services.
+3. Create OAuth 2.0 credentials and set the redirect URI to `http://localhost:5000/api/oauth/google/callback`.
+4. Add the `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your `.env` file.
+
 ### Frontend Setup
 1. Navigate to the `frontend` directory:
    ```sh

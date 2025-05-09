@@ -164,8 +164,33 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        console.log("Google sign-in initiated");
+        try {
+            setLoading(true);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/oauth/google`, { withCredentials: true });
+            const res=await response.json()
+            if (res.status === 200) {
+                const { token, user } = res.data;
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(user));
+
+                setIsAuthenticated(true);
+                setUser(user);
+
+                navigate("/");
+                showToast("Signed In successfully!", "success")
+            }
+        } catch (error) {
+            console.error("Google sign-in error:", error.message);
+            showToast(error.message || "Google sign-in error. Please try again.", "error")
+        }finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp, logout, setUser, showToast, removeToast, toasts, setToasts,loading }}>
+        <AuthContext.Provider value={{ isAuthenticated,setIsAuthenticated, handleGoogleSignIn, user, signIn, signUp, logout, setUser, showToast, removeToast, toasts, setToasts,loading }}>
             {children}
             <div className="fixed top-4 right-4 space-y-4">
                 {toasts.map(toast => (

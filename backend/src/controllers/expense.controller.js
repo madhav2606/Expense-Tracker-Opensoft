@@ -102,10 +102,6 @@ export const GetExpenses = async (req, res) => {
 
         const expenses = await Expense.find({ createdBy: userId });
 
-        if (!expenses.length) {
-            return res.status(404).json({ message: "No expenses found for this user" });
-        }
-
         res.status(200).json(expenses);
     } catch (error) {
         console.error(error.message);
