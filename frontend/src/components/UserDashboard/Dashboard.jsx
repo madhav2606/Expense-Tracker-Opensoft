@@ -79,7 +79,7 @@ const SpendingAnalyticsDashboard = () => {
     Food: "#FF6384",
     Shopping: "#36A2EB",
     Housing: "#FFCE56",
-    Transportation: "#4BC0C0",
+    Transport: "#4BC0C0",
     Entertainment: "#9966FF",
     Utilities: "#FF9F40",
     Healthcare: "#8ED1FC",
@@ -191,8 +191,8 @@ const SpendingAnalyticsDashboard = () => {
               <button
                 onClick={() => setTimeframe("monthly")}
                 className={`px-3 py-2 text-sm font-medium rounded ${timeframe === "monthly"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-indigo-100 text-indigo-700"
+                  : "text-gray-500 hover:bg-gray-100"
                   }`}
               >
                 Monthly
@@ -200,8 +200,8 @@ const SpendingAnalyticsDashboard = () => {
               <button
                 onClick={() => setTimeframe("quarterly")}
                 className={`px-3 py-2 text-sm font-medium rounded ${timeframe === "quarterly"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-indigo-100 text-indigo-700"
+                  : "text-gray-500 hover:bg-gray-100"
                   }`}
               >
                 Quarterly
@@ -209,8 +209,8 @@ const SpendingAnalyticsDashboard = () => {
               <button
                 onClick={() => setTimeframe("yearly")}
                 className={`px-3 py-2 text-sm font-medium rounded ${timeframe === "yearly"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-indigo-100 text-indigo-700"
+                  : "text-gray-500 hover:bg-gray-100"
                   }`}
               >
                 Yearly
@@ -227,8 +227,8 @@ const SpendingAnalyticsDashboard = () => {
                   <button
                     onClick={() => setTimeframe("monthly")}
                     className={`px-3 py-2 text-sm font-medium rounded flex-1 ${timeframe === "monthly"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "text-gray-500 hover:bg-gray-100"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "text-gray-500 hover:bg-gray-100"
                       }`}
                   >
                     Monthly
@@ -236,8 +236,8 @@ const SpendingAnalyticsDashboard = () => {
                   <button
                     onClick={() => setTimeframe("quarterly")}
                     className={`px-3 py-2 text-sm font-medium rounded flex-1 ${timeframe === "quarterly"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "text-gray-500 hover:bg-gray-100"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "text-gray-500 hover:bg-gray-100"
                       }`}
                   >
                     Quarterly
@@ -245,8 +245,8 @@ const SpendingAnalyticsDashboard = () => {
                   <button
                     onClick={() => setTimeframe("yearly")}
                     className={`px-3 py-2 text-sm font-medium rounded flex-1 ${timeframe === "yearly"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "text-gray-500 hover:bg-gray-100"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "text-gray-500 hover:bg-gray-100"
                       }`}
                   >
                     Yearly
@@ -258,8 +258,8 @@ const SpendingAnalyticsDashboard = () => {
                   <button
                     onClick={() => handleTabChange("overview")}
                     className={`block w-full text-left px-3 py-2 text-sm font-medium rounded ${activeTab === "overview"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "text-gray-500 hover:bg-gray-100"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "text-gray-500 hover:bg-gray-100"
                       }`}
                   >
                     Overview
@@ -267,8 +267,8 @@ const SpendingAnalyticsDashboard = () => {
                   <button
                     onClick={() => handleTabChange("categories")}
                     className={`block w-full text-left px-3 py-2 text-sm font-medium rounded ${activeTab === "categories"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "text-gray-500 hover:bg-gray-100"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "text-gray-500 hover:bg-gray-100"
                       }`}
                   >
                     Categories
@@ -276,8 +276,8 @@ const SpendingAnalyticsDashboard = () => {
                   <button
                     onClick={() => handleTabChange("payments")}
                     className={`block w-full text-left px-3 py-2 text-sm font-medium rounded ${activeTab === "payments"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "text-gray-500 hover:bg-gray-100"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "text-gray-500 hover:bg-gray-100"
                       }`}
                   >
                     Payment Methods
@@ -296,8 +296,8 @@ const SpendingAnalyticsDashboard = () => {
             <button
               onClick={() => setActiveTab("overview")}
               className={`pb-4 px-1 font-medium text-sm border-b-2 ${activeTab === "overview"
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-indigo-500 text-indigo-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
             >
               Overview
@@ -305,8 +305,8 @@ const SpendingAnalyticsDashboard = () => {
             <button
               onClick={() => setActiveTab("categories")}
               className={`pb-4 px-1 font-medium text-sm border-b-2 ${activeTab === "categories"
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-indigo-500 text-indigo-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
             >
               Categories
@@ -314,8 +314,8 @@ const SpendingAnalyticsDashboard = () => {
             <button
               onClick={() => setActiveTab("payments")}
               className={`pb-4 px-1 font-medium text-sm border-b-2 ${activeTab === "payments"
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-indigo-500 text-indigo-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
             >
               Payment Methods
@@ -324,7 +324,10 @@ const SpendingAnalyticsDashboard = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div
+          className={`grid gap-3 sm:gap-4 mb-6 sm:mb-8 ${totalSpending > 10000000 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            }`}
+        >
           <div className="bg-white rounded-lg shadow p-4 sm:p-6 border border-gray-100">
             <div className="flex items-center">
               <div className={`p-2 sm:p-3 rounded-full mr-3 sm:mr-4 ${profile.bgColor}`}>
@@ -332,7 +335,12 @@ const SpendingAnalyticsDashboard = () => {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-medium text-gray-500">Monthly Average</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">₹{averageMonthlySpending.toFixed(2)}</p>
+                <p
+                  className="text-lg sm:text-2xl font-bold text-gray-900"
+                  style={{ fontSize: "clamp(1rem, 1.5vw, 1.5rem)" }}
+                >
+                  ₹{averageMonthlySpending.toFixed(2)}
+                </p>
               </div>
             </div>
             <div className="mt-2 sm:mt-4">
@@ -352,7 +360,12 @@ const SpendingAnalyticsDashboard = () => {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-medium text-gray-500">Total Spent</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">₹{totalSpending.toFixed(2)}</p>
+                <p
+                  className="text-lg sm:text-2xl font-bold text-gray-900"
+                  style={{ fontSize: "clamp(1rem, 1.5vw, 1.5rem)" }}
+                >
+                  ₹{totalSpending.toFixed(2)}
+                </p>
               </div>
             </div>
             <div className="mt-2 sm:mt-4">
@@ -370,7 +383,9 @@ const SpendingAnalyticsDashboard = () => {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-medium text-gray-500">Top Category</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">{highestCategory.name}</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">
+                  {highestCategory.name === "Entertainment" ? "Entertain." : highestCategory.name}
+                </p>
               </div>
             </div>
             <div className="mt-2 sm:mt-4">

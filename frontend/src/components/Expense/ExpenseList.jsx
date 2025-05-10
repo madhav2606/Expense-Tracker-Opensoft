@@ -27,6 +27,8 @@ const ExpenseList = () => {
     message: '',
     onConfirm: () => { },
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Adjust items per page as needed
 
   const openConfirmModal = (message, action) => {
     setConfirmModal({
@@ -43,7 +45,7 @@ const ExpenseList = () => {
     "Food",
     "Shopping",
     "Housing",
-    "Transportation",
+    "Transport",
     "Entertainment",
     "Utilities",
     "Healthcare",
@@ -98,6 +100,22 @@ const ExpenseList = () => {
       return 0;
     }
   });
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(sortedExpenses.length / itemsPerPage);
+
+  // Get the expenses for the current page
+  const paginatedExpenses = sortedExpenses.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -358,8 +376,8 @@ const ExpenseList = () => {
         {/* Mobile Card View */}
         {mobileView && (
           <div className="space-y-4 mb-4">
-            {sortedExpenses.length > 0 ? (
-              sortedExpenses.map((expense, index) => (
+            {paginatedExpenses.length > 0 ? (
+              paginatedExpenses.map((expense, index) => (
                 <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div>
@@ -412,8 +430,8 @@ const ExpenseList = () => {
 
               {/* Table Body */}
               <tbody className="bg-white divide-y divide-gray-200">
-                {sortedExpenses.length > 0 ? (
-                  sortedExpenses.map((expense, index) => (
+                {paginatedExpenses.length > 0 ? (
+                  paginatedExpenses.map((expense, index) => (
                     <tr
                       key={index}
                       className="hover:bg-yellow-50 transition-colors duration-150"
@@ -465,6 +483,27 @@ const ExpenseList = () => {
             </table>
           </div>
         )}
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <p className="text-sm text-gray-700">
+            Page {currentPage} of {totalPages}
+          </p>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </main>
 
       {/* Add Expense Modal */}
