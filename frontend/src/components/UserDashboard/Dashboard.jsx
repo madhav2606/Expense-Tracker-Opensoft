@@ -16,7 +16,7 @@ import {
   Area,
   AreaChart
 } from "recharts";
-import { TrendingUp, PieChartIcon, CreditCard, Calendar, ArrowRight, DollarSign, Loader, Menu, X } from "lucide-react";
+import { TrendingUp, PieChartIcon, CreditCard, Calendar, ArrowRight, DollarSign, Loader, Menu, X, IndianRupeeIcon } from "lucide-react";
 
 const SpendingAnalyticsDashboard = () => {
   const [timeframe, setTimeframe] = useState("monthly");
@@ -141,7 +141,7 @@ const SpendingAnalyticsDashboard = () => {
       return (
         <div className="bg-white p-2 border border-gray-200 shadow-lg rounded text-xs sm:text-sm sm:p-4">
           <p className="font-semibold">{label}</p>
-          <p className="text-base sm:text-lg font-bold text-indigo-600">${payload[0].value.toFixed(2)}</p>
+          <p className="text-base sm:text-lg font-bold text-indigo-600">₹{payload[0].value.toFixed(2)}</p>
         </div>
       );
     }
@@ -328,11 +328,11 @@ const SpendingAnalyticsDashboard = () => {
           <div className="bg-white rounded-lg shadow p-4 sm:p-6 border border-gray-100">
             <div className="flex items-center">
               <div className={`p-2 sm:p-3 rounded-full mr-3 sm:mr-4 ${profile.bgColor}`}>
-                <DollarSign className={`w-4 h-4 sm:w-6 sm:h-6 ${profile.color}`} />
+                <IndianRupeeIcon className={`w-4 h-4 sm:w-6 sm:h-6 ${profile.color}`} />
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-medium text-gray-500">Monthly Average</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">${averageMonthlySpending.toFixed(2)}</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">₹{averageMonthlySpending.toFixed(2)}</p>
               </div>
             </div>
             <div className="mt-2 sm:mt-4">
@@ -352,7 +352,7 @@ const SpendingAnalyticsDashboard = () => {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-medium text-gray-500">Total Spent</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">${totalSpending.toFixed(2)}</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">₹{totalSpending.toFixed(2)}</p>
               </div>
             </div>
             <div className="mt-2 sm:mt-4">
@@ -375,7 +375,7 @@ const SpendingAnalyticsDashboard = () => {
             </div>
             <div className="mt-2 sm:mt-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500">${highestCategory.value.toFixed(2)}</span>
+                <span className="text-xs sm:text-sm text-gray-500">₹{highestCategory.value.toFixed(2)}</span>
                 <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-600 rounded">
                   {totalSpending > 0 ? Math.round((highestCategory.value / totalSpending) * 100) : 0}%
                 </span>
@@ -395,7 +395,7 @@ const SpendingAnalyticsDashboard = () => {
             </div>
             <div className="mt-2 sm:mt-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500">${highestMonth.amount.toFixed(2)}</span>
+                <span className="text-xs sm:text-sm text-gray-500">₹{highestMonth.amount.toFixed(2)}</span>
                 <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
               </div>
             </div>
@@ -427,7 +427,7 @@ const SpendingAnalyticsDashboard = () => {
                         axisLine={false}
                         tickLine={false}
                         tick={{ fill: '#6B7280', fontSize: 10 }}
-                        tickFormatter={(value) => `$${value}`}
+                        tickFormatter={(value) => `₹${value}`}
                         width={40}
                       />
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -470,7 +470,7 @@ const SpendingAnalyticsDashboard = () => {
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                               ))}
                             </Pie>
-                            <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                            <Tooltip formatter={(value) => `₹${value.toFixed(2)}`} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -485,7 +485,7 @@ const SpendingAnalyticsDashboard = () => {
                             ></div>
                             <div className="flex-1 flex justify-between items-center">
                               <span className="text-xs sm:text-sm text-gray-700">{category.name}</span>
-                              <span className="font-medium text-xs sm:text-sm">${category.value.toFixed(2)}</span>
+                              <span className="font-medium text-xs sm:text-sm">₹{category.value.toFixed(2)}</span>
                             </div>
                           </li>
                         ))}
@@ -511,7 +511,7 @@ const SpendingAnalyticsDashboard = () => {
                           axisLine={false}
                           tickLine={false}
                           tick={{ fill: '#6B7280', fontSize: 10 }}
-                          tickFormatter={(value) => `$${value}`}
+                          tickFormatter={(value) => `₹${value}`}
                         />
                         <YAxis
                           type="category"
@@ -563,7 +563,7 @@ const SpendingAnalyticsDashboard = () => {
                           <Cell key={`cell-${index}`} fill={categoryColors[category] || "#CCCCCC"} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                      <Tooltip formatter={(value) => `₹${value.toFixed(2)}`} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -583,7 +583,7 @@ const SpendingAnalyticsDashboard = () => {
                           <div className="flex-1 flex justify-between items-center">
                             <span className="text-xs sm:text-sm text-gray-700">{category}</span>
                             <div className="text-right">
-                              <span className="block text-xs sm:text-sm font-medium">${categoriesMap[category].toFixed(2)}</span>
+                              <span className="block text-xs sm:text-sm font-medium">₹{categoriesMap[category].toFixed(2)}</span>
                               <span className="text-xs text-gray-500">
                                 {totalSpending > 0 ? ((categoriesMap[category] / totalSpending) * 100).toFixed(1) : 0}% of total
                               </span>
@@ -620,7 +620,7 @@ const SpendingAnalyticsDashboard = () => {
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: '#6B7280', fontSize: 12 }}
-                      tickFormatter={(value) => `$${value}`}
+                      tickFormatter={(value) => `₹${value}`}
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f3f4f6' }} />
                     <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
@@ -660,7 +660,7 @@ const SpendingAnalyticsDashboard = () => {
                       <div className="flex-1 flex justify-between items-center">
                         <span className="text-sm font-medium text-gray-800">{method.method}</span>
                         <div className="text-right">
-                          <span className="block font-medium">${method.amount.toFixed(2)}</span>
+                          <span className="block font-medium">₹{method.amount.toFixed(2)}</span>
                           <span className="text-xs text-gray-500">
                             {totalSpending > 0 ? ((method.amount / totalSpending) * 100).toFixed(1) : 0}% of total
                           </span>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, Calendar, DollarSign, Tag, CreditCard, FileText } from 'lucide-react'
+import { X, Calendar, DollarSign, Tag, CreditCard, FileText, IndianRupee, IndianRupeeIcon } from 'lucide-react'
 
 const Modal = ({ title, onClose, onSave, expense, handleInputChange }) => {
   return (
@@ -37,7 +37,7 @@ const Modal = ({ title, onClose, onSave, expense, handleInputChange }) => {
                   Amount
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <IndianRupeeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
                     type="text"
                     id="amount"

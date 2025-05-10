@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Pencil, Trash2, Eye, X, Calendar, DollarSign, Tag, CreditCard, FileText, Search, ChevronUp, ChevronDown, Plus, Menu, Loader } from 'lucide-react'
+import { Pencil, Trash2, Eye, X, Calendar, DollarSign, Tag, CreditCard, FileText, Search, ChevronUp, ChevronDown, Plus, Menu, Loader, IndianRupeeIcon } from 'lucide-react'
 import Modal from './Modal';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
@@ -91,8 +91,8 @@ const ExpenseList = () => {
         ? new Date(a.date) - new Date(b.date)
         : new Date(b.date) - new Date(a.date);
     } else if (sortBy === "amount") {
-      const amountA = parseFloat(a.amount.replace("$", ""));
-      const amountB = parseFloat(b.amount.replace("$", ""));
+      const amountA = parseFloat(a.amount.replace("₹", ""));
+      const amountB = parseFloat(b.amount.replace("₹", ""));
       return isAscending ? amountA - amountB : amountB - amountA;
     } else {
       return 0;
@@ -364,7 +364,7 @@ const ExpenseList = () => {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <p className="text-sm text-gray-500">{formatDate(expense.date)}</p>
-                      <p className="text-lg font-semibold text-gray-900">${expense.amount}</p>
+                      <p className="text-lg font-semibold text-gray-900">₹{expense.amount}</p>
                     </div>
                     <MobileActionMenu expense={expense} handleDeleteExpense={handleDeleteExpense} handleEditExpense={handleEditExpense} handleViewExpense={handleViewExpense} />
                   </div>
@@ -419,7 +419,7 @@ const ExpenseList = () => {
                       className="hover:bg-yellow-50 transition-colors duration-150"
                     >
                       <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(expense.date)}</td>
-                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">${expense.amount}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">₹{expense.amount}</td>
                       <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm text-gray-700">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                           {expense.category}
@@ -503,7 +503,7 @@ const ExpenseList = () => {
                   Amount
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <IndianRupeeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
                     type="text"
                     id="amount"
@@ -625,11 +625,11 @@ const ExpenseList = () => {
               </div>
               <div className="flex items-center space-x-4">
                 <div className="bg-green-100 p-3 rounded-full">
-                  <DollarSign className="text-green-600" size={20} />
+                  <IndianRupeeIcon className="text-green-600" size={20} />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 font-medium">Amount</p>
-                  <p className="font-semibold text-gray-800">${selectedExpense.amount}</p>
+                  <p className="font-semibold text-gray-800">₹{selectedExpense.amount}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
