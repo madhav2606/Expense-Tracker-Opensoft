@@ -117,14 +117,6 @@ const SignInPage = () => {
           <p className="text-white text-lg mb-8">
             Manage your finances smarter and take control of your spending habits
           </p>
-
-
-          <div className="mt-12 hidden lg:block">
-            <p className="text-white text-sm">
-              "The app that helped me save over $5,000 in just six months!"
-            </p>
-            <p className="text-white text-xs mt-2">- Sarah Johnson</p>
-          </div>
         </div>
       </div>
 
@@ -141,7 +133,7 @@ const SignInPage = () => {
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="space-y-4">
               {/* Social login buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
                 <button
                   type="button"
                   onClick={()=> window.open(`${import.meta.env.VITE_BACKEND_URL}/api/oauth/google`, "_self")}
@@ -154,19 +146,6 @@ const SignInPage = () => {
                       alt="Google"
                     />
                     Google
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200"
-                >
-                  <span className="flex items-center">
-                    <img
-                      src="https://img.icons8.com/color/48/000000/facebook-new.png"
-                      className="w-5 h-5 mr-2"
-                      alt="Facebook"
-                    />
-                    Facebook
                   </span>
                 </button>
               </div>
